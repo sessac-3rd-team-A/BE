@@ -71,6 +71,7 @@ public class ResultController {
             // 예외 발생 시 로깅
             log.error("postTextDiary 메서드 실행 중 예외 발생", e);
         }
+
     }
 
 //    private void extractWordsFromResult(String result) {

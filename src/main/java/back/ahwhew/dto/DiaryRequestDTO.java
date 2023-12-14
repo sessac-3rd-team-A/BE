@@ -7,6 +7,7 @@ public class DiaryRequestDTO {
 
     public String getTextDiary() {
         return textDiary;
+
     }
 
     public void setTextDiary(String textDiary) {
