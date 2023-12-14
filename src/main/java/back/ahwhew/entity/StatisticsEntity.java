@@ -24,11 +24,10 @@ public class StatisticsEntity {
     private double negative;
     @Column(name="neutral", nullable = false)
     private double neutral;
-    @Column(name="total", nullable = false)
-    private double total;
+
     @Column(name="date", nullable = false)
     private Timestamp date;
     @Column(name="recommended_gif",nullable = false)
-    private String gif;
+    private String recommendedGif;
 
 }

@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
-import org.springframework.security.core.userdetails.User;
+//import org.springframework.security.core.userdetails.User;
 
 import java.sql.Timestamp;
 
@@ -21,10 +21,10 @@ public class ResultEntity {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "userId")
     private UserEntity userId;
 
-    @Column(name = "picture_diary", nullable = false)
+    @Column(name = "pictureDiary", nullable = false)
     private String pictureDiary;
 
     @Column(name = "sentiment", length = 20, nullable = false)

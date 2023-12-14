@@ -1,2 +1,4 @@
-package back.ahwhew.controller;public class StatisticController {
+package back.ahwhew.controller;
+
+public class StatisticController {
 }

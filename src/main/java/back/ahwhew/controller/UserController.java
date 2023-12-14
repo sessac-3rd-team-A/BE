@@ -1,2 +1,4 @@
-package back.ahwhew.controller;public class UserController {
+package back.ahwhew.controller;
+
+public class UserController {
 }
