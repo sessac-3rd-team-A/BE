@@ -8,6 +8,6 @@ naver-api:
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/ahwhew
+    url: jdbc:mysql://localhost:3306/ahwhew?characterEncoding=UTF-8
     username: root
     password: 12345678
