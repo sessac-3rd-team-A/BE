@@ -93,6 +93,10 @@ public class UserController {
             final UserDTO resUserDTO = UserDTO.builder()
                     // 나중에 프론트와 연결시 필요한 요소 추가할것
                     .userId(user.getUserId())
+                    .password(user.getPassword())
+                    .nickname(user.getNickname())
+                    .age(user.getAge())
+                    .gender(user.getGender())
                     .token(token) // jwt 토큰 설정
                     .build();
 
