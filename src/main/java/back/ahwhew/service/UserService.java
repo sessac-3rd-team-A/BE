@@ -20,6 +20,7 @@ public class UserService {
     public UserEntity create(final UserEntity userEntity) {
         final String userId = userEntity.getUserId();
         final String password = userEntity.getPassword();
+        final String nickname = userEntity.getNickname();
 
         // user 정보 확인 - 필드 하나라도 비어있을 경우 확인
         if(userEntity == null) {
@@ -42,6 +43,9 @@ public class UserService {
         }
 
         // 닉네임
+        if(nickname == null || nickname.trim().isEmpty()) {
+            throw new RuntimeException("Nickname is invalid arguments");
+        }
 
         return repo.save(userEntity);
     }
