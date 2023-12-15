@@ -9,14 +9,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 //import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 //import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 @Slf4j
 @RestController
-@RequestMapping("/login")
 public class UserController {
     @Autowired
     private UserService service;
@@ -50,5 +47,15 @@ public class UserController {
             ResponseDTO resDTO = ResponseDTO.builder().error(e.getMessage()).build();
             return ResponseEntity.badRequest().body(resDTO);
         }
+    }
+
+    @GetMapping("/signup")
+    public ResponseEntity<?> getNickname() {
+        RestTemplate restTemplate = new RestTemplate();
+        String apiUrl = "https://nickname.hwanmoo.kr/?format=json&count=1";
+        ResponseEntity<String> response = restTemplate.getForEntity(apiUrl, String.class);
+
+        // 외부 API 응답 반환
+        return ResponseEntity.ok().body(response.getBody());
     }
 }
