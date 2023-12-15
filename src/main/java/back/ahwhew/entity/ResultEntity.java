@@ -28,8 +28,23 @@ public class ResultEntity {
     private String pictureDiary;
 
     @Column(name = "sentiment", length = 20, nullable = false)
-    private String sentiment;
+    private String sentiment;//대표감정
+
+    //세부감정 Ratio
+    @Column(name="positive",nullable=false)
+    private double positive;
+
+    @Column(name="negetive", nullable = false)
+    private double negetive;
+
+    @Column(name="neutral", nullable = false)
+    private double neutral;
 
     @Column(name = "date", nullable = false)
     private Timestamp date;
+
+    @Column(name="recommended_gif",nullable = false)
+    private String recommendedGif;
+
+
 }

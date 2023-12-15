@@ -18,15 +18,19 @@ public class StatisticsEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(name="positive", nullable = false)
     private double positive;
+
     @Column(name="negative", nullable = false)
     private double negative;
+
     @Column(name="neutral", nullable = false)
     private double neutral;
 
     @Column(name="date", nullable = false)
     private Timestamp date;
+
     @Column(name="recommended_gif",nullable = false)
     private String recommendedGif;
 
