@@ -87,7 +87,7 @@ public class ResultController {
 //            // 'sentences' 노드 추출
 //            JSONArray sentences = jsonObject.optJSONArray("sentences");
 //
-//             'sentences'가 null이 아닌지 확인
+////             'sentences'가 null이 아닌지 확인
 //            if (sentences == null || sentences.isEmpty()) {
 //                log.warn("'sentences' 노드가 적절하게 포맷되지 않았습니다.");
 //                return;

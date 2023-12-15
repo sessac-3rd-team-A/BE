@@ -27,7 +27,7 @@ public class UserEntity {
     private String password;
 
     @Column(name = "age", nullable = false)
-    private int age;
+    private String age;
 
     @Column(name = "gender", nullable = false, length = 1)
     private char gender;
