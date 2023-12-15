@@ -1,8 +1,11 @@
 package back.ahwhew.service;
 
+import back.ahwhew.entity.ResultEntity;
+import back.ahwhew.repository.ResultRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -11,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.HttpHeaders;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +22,9 @@ import java.util.List;
 @Service
 @Slf4j
 public class NaverSentimentService {
+    @Autowired
+    private ResultRepository resultRepository;
+
     @Value("${naver-api.endpoint}")
     private String naverApiEndpoint;
 
@@ -58,6 +65,21 @@ public class NaverSentimentService {
             log.info("negativeRatio::{}",negativeRatio);
             Double neutralRatio=extractNeutralRatio(result);
             log.info("neutralRatio::{}",neutralRatio);
+            ResultEntity resultEntity = new ResultEntity();
+//            resultEntity.setUserId(user);
+//            resultEntity.setPictureDiary("이미지 주소"); // 이미지 주소는 필요에 따라 설정
+            resultEntity.setSentiment(sentiment);
+            resultEntity.setPositiveRatio(positiveRatio);
+            resultEntity.setNegativeRatio(negativeRatio);
+            resultEntity.setNeutralRatio(neutralRatio);
+            resultEntity.setDate(new Timestamp(System.currentTimeMillis())); // 현재 시간을 사용
+//            resultEntity.setRecommendedGif("추천 GIF 주소"); // 추천 GIF 주소는 필요에 따라 설정
+
+            // ResultEntity를 저장(이미지와
+            resultRepository.save(resultEntity);
+
+
+
 
         } catch (Exception e) {
             log.error("naverSentiment AI 감정 분석 중 에러 발생!{}", e);
