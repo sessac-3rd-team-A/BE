@@ -26,8 +26,11 @@ public class UserEntity {
     @Column(name = "password", nullable = false)
     private String password;
 
+    @Column(name = "nickname", nullable = false)
+    private String nickname;
+
     @Column(name = "age", nullable = false)
-    private int age;
+    private String age;
 
     @Column(name = "gender", nullable = false, length = 1)
     private char gender;
