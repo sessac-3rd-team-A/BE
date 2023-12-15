@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 
 import java.sql.Timestamp;
+import java.util.Date;
 
 @Entity
 @Table(name = "statistics")
@@ -42,4 +43,8 @@ public class StatisticsEntity {
     @Column(name="age")
     private String age;
 
+    @PrePersist
+    protected void onCreate() {
+        date = new Timestamp(new Date().getTime());
+    }
 }
