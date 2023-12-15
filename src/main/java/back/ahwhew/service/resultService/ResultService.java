@@ -1,4 +1,4 @@
-package back.ahwhew.service;
+package back.ahwhew.service.resultService;
 
 import back.ahwhew.repository.ResultRepository;
 import lombok.extern.slf4j.Slf4j;
