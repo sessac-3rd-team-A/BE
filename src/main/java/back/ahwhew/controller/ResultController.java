@@ -1,8 +1,8 @@
 package back.ahwhew.controller;
 
 import back.ahwhew.dto.DiaryRequestDTO;
-import back.ahwhew.service.NaverSentimentService;
-import back.ahwhew.service.ResultService;
+import back.ahwhew.service.resultService.NaverSentimentService;
+import back.ahwhew.service.resultService.ResultService;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
