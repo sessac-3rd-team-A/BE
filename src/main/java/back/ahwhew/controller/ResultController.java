@@ -1,14 +1,8 @@
 package back.ahwhew.controller;
 
 import back.ahwhew.dto.DiaryRequestDTO;
-
-import back.ahwhew.dto.StatisticsDTO;
-import back.ahwhew.entity.StatisticsEntity;
-
 import back.ahwhew.service.NaverSentimentService;
-
 import back.ahwhew.service.ResultService;
-import back.ahwhew.service.StatisticsService;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -30,9 +24,6 @@ import java.util.List;
 @Slf4j
 @Controller
 public class ResultController {
-
-    @Autowired
-    private StatisticsService statisticsService;
 
     @Autowired
     private ResultService resultService;
@@ -78,19 +69,6 @@ public class ResultController {
 
             // 감정 분석 결과 로깅
 //            log.info("감정 분석 결과: {}", result);
-
-            // result에서 감정값 저장
-            List<StatisticsEntity> entities = statisticsService.create(result);
-
-//            List<StatisticsDTO> dtos = new ArrayList<>();
-//            for(StatisticsEntity sEntity:entities){
-//                StatisticsDTO sDto = new StatisticsDTO(sEntity); //dto로 바꾸기
-//                dtos.add(sDto); //dto 배열에 추가하기
-//            }
-//
-
-
-
 
             // 추출된 단어 로깅
 //            List<String> extractWords = extractWordsFromResult(result);

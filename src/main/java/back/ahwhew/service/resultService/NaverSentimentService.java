@@ -1,8 +1,11 @@
-package back.ahwhew.service;
+package back.ahwhew.service.resultService;
 
+import back.ahwhew.entity.ResultEntity;
+import back.ahwhew.repository.ResultRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -11,6 +14,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.http.HttpHeaders;
 
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +22,12 @@ import java.util.List;
 @Service
 @Slf4j
 public class NaverSentimentService {
+    @Autowired
+    private ResultRepository resultRepository;
+
+    @Autowired
+    private NaverPapagoService  naverPapagoService;
+
     @Value("${naver-api.endpoint}")
     private String naverApiEndpoint;
 
@@ -47,6 +57,8 @@ public class NaverSentimentService {
 
             //단어 추출
             List<String> extractWords = extractWordsFromResult(result);
+            //추출한 단어를 papago에 돌림
+            naverPapagoService.transfer(extractWords);
 
             //db에 User의(null일수도 있음) date 별 sentiment(대표감정), positive, negative, neutral 비율 resultDTO 만들기.
             //resultDTO 일단 만들고 그 다음 짤 생성되고, 그림일기 생성 된 다음에 이미지 주소값 DTO에 추가해서 저장하기
@@ -58,6 +70,21 @@ public class NaverSentimentService {
             log.info("negativeRatio::{}",negativeRatio);
             Double neutralRatio=extractNeutralRatio(result);
             log.info("neutralRatio::{}",neutralRatio);
+            ResultEntity resultEntity = new ResultEntity();
+//            resultEntity.setUserId(user);
+//            resultEntity.setPictureDiary("이미지 주소"); // 이미지 주소는 필요에 따라 설정
+//            resultEntity.setSentiment(sentiment);
+//            resultEntity.setPositiveRatio(positiveRatio);
+//            resultEntity.setNegativeRatio(negativeRatio);
+//            resultEntity.setNeutralRatio(neutralRatio);
+//            resultEntity.setDate(new Timestamp(System.currentTimeMillis())); // 현재 시간을 사용
+//            resultEntity.setRecommendedGif("추천 GIF 주소"); // 추천 GIF 주소는 필요에 따라 설정
+
+            // ResultEntity를 저장(이미지와 짤은 추후에 ai 더 돌리고 나서..)
+//            resultRepository.save(resultEntity);
+
+
+
 
         } catch (Exception e) {
             log.error("naverSentiment AI 감정 분석 중 에러 발생!{}", e);

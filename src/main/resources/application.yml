@@ -3,6 +3,11 @@ naver-api:
   api-key: YsGhPPnxNSuzAkPTwrGjOknlFzFCgDFN1eYQzIYx
   api-key-id: t7ho4lh6as
 
+naver-papago:
+  endpoint: https://naveropenapi.apigw.ntruss.com/nmt/v1/translation
+  api-key: 2CiNUx3lwNdwHD4rtI7pm5zxZTjPlXNAQzAheXYE
+  api-key-id: nshlfk46cj
+
 
 # MySQL
 spring:
