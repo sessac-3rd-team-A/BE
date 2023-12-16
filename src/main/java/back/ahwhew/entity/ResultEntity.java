@@ -31,14 +31,14 @@ public class ResultEntity {
     private String sentiment;//대표감정
 
     //세부감정 Ratio
-    @Column(name="positive",nullable=false)
-    private double positive;
+    @Column(name="positiveRatio",nullable=false)
+    private double positiveRatio;
 
-    @Column(name="negetive", nullable = false)
-    private double negetive;
+    @Column(name="negativeRatio", nullable = false)
+    private double negativeRatio;
 
-    @Column(name="neutral", nullable = false)
-    private double neutral;
+    @Column(name="neutralRatio", nullable = false)
+    private double neutralRatio;
 
     @Column(name = "date", nullable = false)
     private Timestamp date;
