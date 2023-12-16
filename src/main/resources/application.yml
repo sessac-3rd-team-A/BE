@@ -16,3 +16,4 @@ spring:
 jwt:
   issuer: admin@spring.security.com
   secret_key: sesac-spring-boot-123456
+

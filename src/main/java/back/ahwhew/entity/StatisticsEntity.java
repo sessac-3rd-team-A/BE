@@ -2,11 +2,13 @@ package back.ahwhew.entity;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 
 import java.sql.Timestamp;
+import java.util.Date;
 
 @Entity
 @Table(name = "statistics")
@@ -14,6 +16,7 @@ import java.sql.Timestamp;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@Builder
 public class StatisticsEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -34,4 +37,14 @@ public class StatisticsEntity {
     @Column(name="recommended_gif",nullable = false)
     private String recommendedGif;
 
+    @Column(name="gender",length = 1)
+    private char gender;
+
+    @Column(name="age")
+    private String age;
+
+    @PrePersist
+    protected void onCreate() {
+        date = new Timestamp(new Date().getTime());
+    }
 }
