@@ -26,6 +26,9 @@ public class UserEntity {
     @Column(name = "password", nullable = false)
     private String password;
 
+    @Column(name = "nickname", nullable = false)
+    private String nickname;
+
     @Column(name = "age", nullable = false)
     private String age;
 
