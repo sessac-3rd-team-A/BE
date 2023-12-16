@@ -8,6 +8,10 @@ naver-papago:
   api-key: 2CiNUx3lwNdwHD4rtI7pm5zxZTjPlXNAQzAheXYE
   api-key-id: nshlfk46cj
 
+karlo:
+  url: https://api.kakaobrain.com/v2/inference/karlo/t2i
+  key: 36f389847c38aeb1bc4fb2dc89c92a01
+
 
 # MySQL
 spring:
@@ -15,7 +19,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/ahwhew?characterEncoding=UTF-8
     username: root
-    password: 1234
+    password: 12345678
 
 # JWT
 jwt:

@@ -1,6 +1,9 @@
 package back.ahwhew.service.resultService;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -8,6 +11,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -22,7 +26,12 @@ public class NaverPapagoService {
     @Value("${naver-papago.api-key}")
     private String naverPapagoApiSecret;
 
-    public void transfer(List<String> extractsWords) {
+    @Autowired
+    KarloService karloService;
+
+    public List<String> transfer(List<String> extractsWords) {
+        List<String> translatedResults = new ArrayList<>();
+
         try {
             HttpHeaders headers = new HttpHeaders();
             // 요청 헤더 설정
@@ -43,11 +52,21 @@ public class NaverPapagoService {
                 String result = restTemplate.postForObject(naverPapagoEndpoint, entity, String.class);
 
                 log.info("Word: {}, Translated Result: {}", word, result);
+
+                // JSON 파싱하여 "translatedText" 값 가져오기
+                ObjectMapper objectMapper = new ObjectMapper();
+                JsonNode rootNode = objectMapper.readTree(result);
+                String translatedText = rootNode.path("message").path("result").path("translatedText").asText();
+
+                // 리스트에 번역 결과 추가
+                translatedResults.add(translatedText);
             }
 
         } catch (Exception e) {
             log.error("네이버 파파고 오류: {}", e.getMessage());
         }
+        log.info("Translated Results: {}", translatedResults);
+        karloService.getKarloResult(translatedResults);
+        return translatedResults;
     }
 }
-
