@@ -16,7 +16,9 @@ import org.springframework.http.HttpHeaders;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -148,8 +150,11 @@ public class NaverSentimentService {
             log.error("결과에서 단어 추출 중 오류 발생", e);
         }
 
-        // List에 저장된 추출된 단어 반환
+        // 공백을 기준으로 자르고 중복 제거
         return extractedWords;
+//        return Arrays.stream(String.join(" ", extractedWords).split("\\s+"))
+//                .distinct()
+//                .collect(Collectors.toList());
     }
     private String extractSentiment(String result) {
         String sentiment = null;

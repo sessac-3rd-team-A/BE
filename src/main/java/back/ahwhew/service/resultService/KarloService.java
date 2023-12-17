@@ -3,6 +3,8 @@ package back.ahwhew.service.resultService;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
@@ -10,6 +12,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +27,7 @@ public class KarloService {
 
     @Value("${karlo.key}")
     private String karloKey;
-
+    private static final List<String> negativePrompt = Arrays.asList("text, letter, signature, watermark");
     public void getKarloResult(List<String> transferedWords) {
         try {
             HttpHeaders headers = new HttpHeaders();
@@ -33,8 +36,28 @@ public class KarloService {
 
             RestTemplate restTemplate = new RestTemplate();
 
-            // 문자열로 이어서 JSON 요청 본문 생성
-            String requestBody = "{\"prompt\": \"" + String.join(",", transferedWords) + "\"}";
+            // 요청 본문을 위한 맵 생성
+            // 번역된 언어 이미지 생성을 위한 키워드 추가
+//            transferedWords.add("cartoon");
+            //cartoon을 프롬프트에 넣으니까 자꾸 텍스트가 추가되는 현상이 벌어짐
+            transferedWords.add("cute");
+
+
+            //요청 본문 만들기
+            Map<String, Object> requestBodyMap = new HashMap<>();
+            requestBodyMap.put("prompt", String.join(",", transferedWords));
+//            requestBodyMap.put("negative_prompt", String.join(",", negativePrompt));
+            requestBodyMap.put("negative_prompt","text,letter,signature,watermark,person");
+            requestBodyMap.put("width",600);
+            requestBodyMap.put("height",600);
+            requestBodyMap.put("image_format","png");
+
+
+
+
+            // 맵을 JSON으로 직렬화
+            ObjectMapper objectMapper = new ObjectMapper();
+            String requestBody = objectMapper.writeValueAsString(requestBodyMap);
 
             HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
             log.info("Karlo API에 보낼 요청 entity: {}", entity);
@@ -56,7 +79,7 @@ public class KarloService {
             }
         } catch (HttpClientErrorException e) {
             log.error("Karlo API 요청 오류: {} - {}", e.getRawStatusCode(), e.getResponseBodyAsString());
-        } catch (RestClientException e) {
+        } catch (RestClientException | JsonProcessingException e) {
             log.error("Karlo API 요청 오류: {}", e.getMessage());
         }
     }
@@ -64,7 +87,32 @@ public class KarloService {
     private void processKarloResult(String result) {
         // JSON 응답 파싱 및 결과 처리
         log.info("Karlo API 결과: {}", result);
-        // Karlo API 응답을 기반으로 추가 처리 구현
-        // 예를 들어, 결과 저장 또는 추가 작업 수행
+// Karlo API 응답을 기반으로 추가 처리 구현
+// 이미지 저장
+        try {
+            if (result == null || result.isEmpty()) {
+                log.info("Karlo API 결과가 없습니다.");
+            }
+            JSONObject karloResult = new JSONObject(result);
+            // "images" 노드 추출
+            JSONArray karloImageArray = karloResult.optJSONArray("images");
+            log.info("images: {}", karloImageArray);
+            if (karloImageArray == null || karloImageArray.isEmpty()) {
+                log.info("Karlo API Image 결과가 없습니다.");
+            } else {
+                // "images" 배열 순회
+                for (int i = 0; i < karloImageArray.length(); i++) {
+                    JSONObject karloImage = karloImageArray.getJSONObject(i);
+                    // 각 이미지의 "image" 속성 값 추출
+                    String imageUrl = karloImage.optString("image");
+                    log.info("Image URL {}: {}", i + 1, imageUrl);
+
+
+                }
+            }
+        } catch (Exception e) {
+            log.error("카를로 이미지 추출 실패: {}", e.getMessage());
+        }
+
     }
 }
