@@ -8,13 +8,11 @@ import back.ahwhew.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @RestController
 @Slf4j
@@ -102,6 +100,7 @@ public class UserController {
             log.info("finish creating token");
             final UserDTO resUserDTO = UserDTO.builder()
                     // 나중에 프론트와 연결시 필요한 요소 추가할것
+                    .id(user.getId())
                     .userId(user.getUserId())
                     .password(user.getPassword())
                     .nickname(user.getNickname())
@@ -122,6 +121,15 @@ public class UserController {
         }
     }
 
+    @GetMapping("/check")
+    public ResponseEntity<?> check(@AuthenticationPrincipal String id){
+        // 요청에 토큰 담아서 보냈을때 User정보 가져오는 코드
+        log.info("check 경로 id : {}", id);
+        UserEntity user = service.getById(id);
+        log.info("check 경로 UserEntity : {}", String.valueOf(user));
+        return ResponseEntity.ok().body(String.valueOf(user));
+    }
+
     private String isValidUser(UserDTO userDTO){
 
         if(userDTO.getUserId() == null || userDTO.getUserId().isEmpty()){ //userId가 null이거나 빈 값일때
@@ -135,5 +143,6 @@ public class UserController {
             return "checked";
         }
     }
+
 
 }
