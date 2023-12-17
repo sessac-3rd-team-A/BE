@@ -44,14 +44,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             if(token != null && !token.equalsIgnoreCase("null")){ //equalsIgnoreCase 대소문자 상관 안하고 비교
                 // 토큰이 null, "null"이 아니라면 토큰 검사 진행
 
-                // userId 가져오기
+                // user의 id 가져오기
                 // - 만양 토큰이 위조되었다면 예외 처리
-                String userId = tokenProvider.validateAndGetUserId(token);
-                log.info(("Authenticated user ID: " + userId));
+                String id = tokenProvider.validateAndGetUserId(token);
+                log.info(("Authenticated user ID: " + id));
 
                 // 인증 완료 -> SecurityContextHolder 에 등록 되어야 인증된 사용자!
                 AbstractAuthenticationToken authentication
-                        = new UsernamePasswordAuthenticationToken(userId, null, AuthorityUtils.NO_AUTHORITIES); // 사용자 정보
+                        = new UsernamePasswordAuthenticationToken(id, null, AuthorityUtils.NO_AUTHORITIES); // 사용자 정보
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request)); // 사용자 인증 세부 정보 설정
 
                 SecurityContext securityContext = SecurityContextHolder.createEmptyContext(); /// 빈 SecurityContext 생성
@@ -79,19 +79,3 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
         return null;
     }
 }
-
-// doFilterInternal 메소드 사용법 (시그니처)
-// - 요청을 가로채서 필요한 작업을 수행한 다음에 다음 필터로 요청 전달
-/*
-protected void doFfilterInternal(
- HttpServletRequest req,
- HttpServletResponse res,
- FilterChain filterChain
- ) throws ServletException, IOExceptrion {
-  // 해당 필터에서 필요한 작업
-  // ...
-
-  // 다음 필터 요청 전달
-  filterChain.doFilter(req, res)
- }
- */

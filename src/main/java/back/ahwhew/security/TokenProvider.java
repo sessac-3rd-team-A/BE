@@ -16,10 +16,8 @@ import java.util.Date;
 @Slf4j
 @Service
 public class TokenProvider {
-    // JWT 토큰 생성을 위한 비밀키 (하드코딩)
-//    private static final String SECRET_KEY = "sesac-spring-boot-123456";
 
-    // [after] JWTProperties 클래스를 이용해 설정파일 (application.properties) 값 꺼내오기
+    // JWTProperties 클래스를 이용해 설정파일 (yml) 값 꺼내오기
     @Autowired
     private JWTProperties jwtProperties;
 
