@@ -26,14 +26,14 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Slf4j
 public class WebConfig implements WebMvcConfigurer {
 
-    @Override
-    public void addCorsMappings(CorsRegistry registry) {
-        registry.addMapping("/diary")
-                .allowedOrigins("*")
-                .allowedMethods("GET", "POST")
-                .allowCredentials(false)
-                .maxAge(3600);
-    }
+//    @Override
+//    public void addCorsMappings(CorsRegistry registry) {
+//        registry.addMapping("/diary")
+//                .allowedOrigins("*")
+//                .allowedMethods("GET", "POST")
+//                .allowCredentials(false)
+//                .maxAge(3600);
+//    }
 
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
