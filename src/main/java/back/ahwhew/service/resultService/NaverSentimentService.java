@@ -2,6 +2,7 @@ package back.ahwhew.service.resultService;
 
 import back.ahwhew.entity.ResultEntity;
 import back.ahwhew.repository.ResultRepository;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -16,10 +17,9 @@ import org.springframework.http.HttpHeaders;
 
 import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
-import java.util.stream.Collectors;
-
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -28,7 +28,7 @@ public class NaverSentimentService {
     private ResultRepository resultRepository;
 
     @Autowired
-    private NaverPapagoService  naverPapagoService;
+    private NaverPapagoService naverPapagoService;
 
     @Value("${naver-api.endpoint}")
     private String naverApiEndpoint;
@@ -39,7 +39,7 @@ public class NaverSentimentService {
     @Value("${naver-api.api-key-id}")
     private String naverApiKeyId;
 
-    public void getSentiment (String text) {
+    public String getSentiment(String text) {
         try {
             HttpHeaders headers = new HttpHeaders();
             //요청 헤더 설정
@@ -47,8 +47,21 @@ public class NaverSentimentService {
             headers.set("X-NCP-APIGW-API-KEY-ID", naverApiKeyId);
             headers.set("X-NCP-APIGW-API-KEY", naverApiKey);
             //요청 본문 설정
-            String requestBody = "{\"content\": \"" + text + "\", \"config\": {\"negativeClassification\": true}}";
+            // 요청 본문 설정
+            Map<String, Object> requestBodyMap = new HashMap<>();
+            requestBodyMap.put("content", text);
 
+            // config 설정
+            Map<String, Object> requestConfigMap = new HashMap<>();
+            requestConfigMap.put("negativeClassification", true);
+
+            // config를 requestBodyMap에 추가
+            requestBodyMap.put("config", requestConfigMap);
+
+            // Map을 JSON으로 변환
+            ObjectMapper objectMapper = new ObjectMapper();
+
+            String requestBody = objectMapper.writeValueAsString(requestBodyMap);
             HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
 
             RestTemplate restTemplate = new RestTemplate();
@@ -57,45 +70,57 @@ public class NaverSentimentService {
 
             log.info("감정 분석 결과: {}", result);
 
-            //단어 추출
-            List<String> extractWords = extractWordsFromResult(result);
-            //추출한 단어를 papago에 돌림
-            naverPapagoService.transfer(extractWords);
+//            List<String> extractWords = extractWordsFromResult(result);
+//            naverPapagoService.transfer(extractWords);
 
-            //db에 User의(null일수도 있음) date 별 sentiment(대표감정), positive, negative, neutral 비율 resultDTO 만들기.
-            //resultDTO 일단 만들고 그 다음 짤 생성되고, 그림일기 생성 된 다음에 이미지 주소값 DTO에 추가해서 저장하기
-            String sentiment=extractSentiment(result);
-            log.info("naverSentimentService로 저장할 대표 감정->{}",sentiment);
-            Double positiveRatio=extractPositiveRatio(result);
-            log.info("positiveRatio::{}",positiveRatio);
-            Double negativeRatio=extractNegativeRatio(result);
-            log.info("negativeRatio::{}",negativeRatio);
-            Double neutralRatio=extractNeutralRatio(result);
-            log.info("neutralRatio::{}",neutralRatio);
-            ResultEntity resultEntity = new ResultEntity();
-//            resultEntity.setUserId(user);
-//            resultEntity.setPictureDiary("이미지 주소"); // 이미지 주소는 필요에 따라 설정
-//            resultEntity.setSentiment(sentiment);
-//            resultEntity.setPositiveRatio(positiveRatio);
-//            resultEntity.setNegativeRatio(negativeRatio);
-//            resultEntity.setNeutralRatio(neutralRatio);
-//            resultEntity.setDate(new Timestamp(System.currentTimeMillis())); // 현재 시간을 사용
-//            resultEntity.setRecommendedGif("추천 GIF 주소"); // 추천 GIF 주소는 필요에 따라 설정
+//            saveSentimentToDatabase(result);
 
-            // ResultEntity를 저장(이미지와 짤은 추후에 ai 더 돌리고 나서..)
-//            resultRepository.save(resultEntity);
-
-
-
+            return result;
 
         } catch (Exception e) {
-            log.error("naverSentiment AI 감정 분석 중 에러 발생!{}", e);
-
+            log.error("naverSentiment AI 감정 분석 중 에러 발생! {}", e);
+            return null; // 오류 발생 시 null 반환
         }
-
     }
 
-    private List<String> extractWordsFromResult(String result) {
+    private HttpHeaders createRequestHeaders() {
+        HttpHeaders headers = new HttpHeaders();
+        // 요청 헤더 설정
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        headers.set("X-NCP-APIGW-API-KEY-ID", naverApiKeyId);
+        headers.set("X-NCP-APIGW-API-KEY", naverApiKey);
+        return headers;
+    }
+
+    public void saveSentimentToDatabase(String result) {
+        try {
+            String sentiment = extractSentiment(result);
+            log.info("naverSentimentService로 저장할 대표 감정 -> {}", sentiment);
+
+            double positiveRatio = extractPositiveRatio(result);
+//            log.info("positiveRatio: {}", positiveRatio);
+
+            double negativeRatio = extractNegativeRatio(result);
+//            log.info("negativeRatio: {}", negativeRatio);
+
+            double neutralRatio = extractNeutralRatio(result);
+//            log.info("neutralRatio: {}", neutralRatio);
+
+            ResultEntity resultEntity = new ResultEntity();
+            resultEntity.setSentiment(sentiment);
+            resultEntity.setPositiveRatio(positiveRatio);
+            resultEntity.setNegativeRatio(negativeRatio);
+            resultEntity.setNeutralRatio(neutralRatio);
+            resultEntity.setDate(new Timestamp(System.currentTimeMillis()));
+
+            resultRepository.save(resultEntity);
+
+        } catch (Exception e) {
+            log.error("결과를 데이터베이스에 저장하는 중 오류 발생", e);
+        }
+    }
+
+    public List<String> extractWordsFromResult(String result) {
         List<String> extractedWords = new ArrayList<>();
 
         try {
@@ -109,8 +134,7 @@ public class NaverSentimentService {
 
             // 'sentences' 노드 추출
             JSONArray sentencesArray = jsonObject.optJSONArray("sentences");
-            log.info("sentencesArray: {}", sentencesArray);
-            log.info("sentencesArray: {}", sentencesArray.length());
+
             // 'sentences'가 null이 아닌지 확인
             if (sentencesArray == null || sentencesArray.isEmpty()) {
                 log.warn("'sentences' 노드가 적절하게 포맷되지 않았거나 비어 있습니다.");
@@ -120,7 +144,7 @@ public class NaverSentimentService {
             // 문장 반복 처리
             for (int i = 0; i < sentencesArray.length(); i++) {
                 JSONObject sentence = sentencesArray.getJSONObject(i);
-                log.info("sentence::{}", sentence);
+
                 // 'content' 노드 추출
                 String content = sentence.optString("content");
 
@@ -146,28 +170,24 @@ public class NaverSentimentService {
                 }
             }
         } catch (Exception e) {
-            // 필요에 따라 예외 처리
             log.error("결과에서 단어 추출 중 오류 발생", e);
         }
 
         // 공백을 기준으로 자르고 중복 제거
         return extractedWords;
-//        return Arrays.stream(String.join(" ", extractedWords).split("\\s+"))
-//                .distinct()
-//                .collect(Collectors.toList());
     }
-    private String extractSentiment(String result) {
+
+    public String extractSentiment(String result) {
         String sentiment = null;
         try {
             JSONObject jsonObject = new JSONObject(result);
 
             // "document" 객체 추출
             JSONObject document = jsonObject.optJSONObject("document");
-            log.info("document: {}", document);
+
             // "sentiment" 키값 추출
             if (document != null) {
                 sentiment = document.optString("sentiment");
-                log.info("sentiment: {}", sentiment);
             }
 
             return sentiment;
@@ -176,60 +196,55 @@ public class NaverSentimentService {
         }
         return sentiment;
     }
-    private double extractPositiveRatio(String result) {
+
+    public double extractPositiveRatio(String result) {
         double positiveRatio = 0.0;
-        try{
+        try {
             JSONObject jsonObject = new JSONObject(result);
             JSONObject document = jsonObject.optJSONObject("document");
             if (document != null) {
                 JSONObject confidence = document.optJSONObject("confidence");
                 if (confidence != null) {
                     positiveRatio = confidence.optDouble("positive");
-                    log.info("positiveRatio: {}", positiveRatio);
-                    return positiveRatio;
                 }
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             log.error("결과에서 감정 추출 중 오류 발생", e);
         }
         return positiveRatio;
     }
-    private double extractNegativeRatio(String result) {
+
+    public double extractNegativeRatio(String result) {
         double negativeRatio = 0.0;
-        try{
+        try {
             JSONObject jsonObject = new JSONObject(result);
             JSONObject document = jsonObject.optJSONObject("document");
             if (document != null) {
                 JSONObject confidence = document.optJSONObject("confidence");
                 if (confidence != null) {
                     negativeRatio = confidence.optDouble("negative");
-                    log.info("negativeRatio: {}", negativeRatio);
-                    return negativeRatio;
                 }
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             log.error("결과에서 감정 추출 중 오류 발생", e);
         }
         return negativeRatio;
     }
-    private double extractNeutralRatio(String result) {
+
+    public double extractNeutralRatio(String result) {
         double neutralRatio = 0.0;
-        try{
+        try {
             JSONObject jsonObject = new JSONObject(result);
             JSONObject document = jsonObject.optJSONObject("document");
             if (document != null) {
                 JSONObject confidence = document.optJSONObject("confidence");
                 if (confidence != null) {
                     neutralRatio = confidence.optDouble("neutral");
-                    log.info("neutralRatio: {}", neutralRatio);
-                    return neutralRatio;
                 }
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             log.error("결과에서 감정 추출 중 오류 발생", e);
         }
         return neutralRatio;
     }
-
 }
-
