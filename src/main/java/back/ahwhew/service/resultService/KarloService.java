@@ -27,8 +27,8 @@ public class KarloService {
 
     @Value("${karlo.key}")
     private String karloKey;
-    private static final List<String> negativePrompt = Arrays.asList("text, letter, signature, watermark");
-    public void getKarloResult(List<String> transferedWords) {
+    private static final List<String> negativePrompt = Arrays.asList("text","letter", "signature", "watermark","string");
+    public String getKarloResult(List<String> transferedWords) {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
@@ -40,17 +40,19 @@ public class KarloService {
             // 번역된 언어 이미지 생성을 위한 키워드 추가
 //            transferedWords.add("cartoon");
             //cartoon을 프롬프트에 넣으니까 자꾸 텍스트가 추가되는 현상이 벌어짐
-            transferedWords.add("cute");
+//            transferedWords.add("cute");
+//            transferedWords.add("Draw a picture diary that matches this diary without text.");
 
 
             //요청 본문 만들기
             Map<String, Object> requestBodyMap = new HashMap<>();
             requestBodyMap.put("prompt", String.join(",", transferedWords));
-//            requestBodyMap.put("negative_prompt", String.join(",", negativePrompt));
-            requestBodyMap.put("negative_prompt","text,letter,signature,watermark,person");
+            requestBodyMap.put("negative_prompt", String.join(",", negativePrompt));
+//            requestBodyMap.put("negative_prompt","text,letter,signature,watermark");
             requestBodyMap.put("width",600);
             requestBodyMap.put("height",600);
             requestBodyMap.put("image_format","png");
+            requestBodyMap.put("guidance_scale",20);
 
 
 
@@ -60,7 +62,7 @@ public class KarloService {
             String requestBody = objectMapper.writeValueAsString(requestBodyMap);
 
             HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
-            log.info("Karlo API에 보낼 요청 entity: {}", entity);
+//            log.info("Karlo API에 보낼 요청 entity: {}", entity);
 
             // Karlo API 엔드포인트로 POST 요청 보내기
             ResponseEntity<String> response = restTemplate.exchange(
@@ -71,8 +73,8 @@ public class KarloService {
             );
 
             if (response.getStatusCode() == HttpStatus.OK) {
-                // 결과 처리
-                processKarloResult(response.getBody());
+                // 결과 처리 -> 이미지 주소 반환!
+                return processKarloResult(response.getBody());
             } else {
                 // API 요청이 실패한 경우
                 log.error("Karlo API 요청 실패. 응답 코드: {}", response.getStatusCodeValue());
@@ -82,11 +84,12 @@ public class KarloService {
         } catch (RestClientException | JsonProcessingException e) {
             log.error("Karlo API 요청 오류: {}", e.getMessage());
         }
+        return null;//오류발생시 null 반환
     }
 
-    private void processKarloResult(String result) {
+    private String processKarloResult(String result) {
         // JSON 응답 파싱 및 결과 처리
-        log.info("Karlo API 결과: {}", result);
+//        log.info("Karlo API 결과: {}", result);
 // Karlo API 응답을 기반으로 추가 처리 구현
 // 이미지 저장
         try {
@@ -96,7 +99,7 @@ public class KarloService {
             JSONObject karloResult = new JSONObject(result);
             // "images" 노드 추출
             JSONArray karloImageArray = karloResult.optJSONArray("images");
-            log.info("images: {}", karloImageArray);
+//            log.info("images: {}", karloImageArray);
             if (karloImageArray == null || karloImageArray.isEmpty()) {
                 log.info("Karlo API Image 결과가 없습니다.");
             } else {
@@ -105,14 +108,14 @@ public class KarloService {
                     JSONObject karloImage = karloImageArray.getJSONObject(i);
                     // 각 이미지의 "image" 속성 값 추출
                     String imageUrl = karloImage.optString("image");
-                    log.info("Image URL {}: {}", i + 1, imageUrl);
+//                    log.info("Image URL {}: {}", i + 1, imageUrl);
 
-
+                    return imageUrl; // 첫 번째 이미지 주소 반환 또는 필요한 작업 수행
                 }
             }
         } catch (Exception e) {
             log.error("카를로 이미지 추출 실패: {}", e.getMessage());
         }
-
+        return null;
     }
 }

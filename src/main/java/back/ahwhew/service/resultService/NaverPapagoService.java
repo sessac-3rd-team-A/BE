@@ -7,12 +7,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 @Slf4j
@@ -29,7 +32,7 @@ public class NaverPapagoService {
     @Autowired
     KarloService karloService;
 
-    public List<String> transfer(List<String> extractsWords) {
+    public List<String> translate(List<String> extractsWords) {
         List<String> translatedResults = new ArrayList<>();
 
         try {
@@ -44,18 +47,23 @@ public class NaverPapagoService {
             // 각 단어를 번역하여 로그에 출력
             for (String word : extractsWords) {
                 // 요청 본문 설정
-                String requestBody = "{\"source\": \"ko\", \"target\": \"en\", \"text\": \"" + word + "\"}";
+                Map<String, Object> requestBodyMap = new HashMap<>();
+                requestBodyMap.put("source", "ko");
+                requestBodyMap.put("target", "en");
+                requestBodyMap.put("text", word);
 
-                HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
-
+// Map을 JSON으로 변환
+                ObjectMapper objectMapper = new ObjectMapper();
+                String requestBody = objectMapper.writeValueAsString(requestBodyMap);
+                HttpEntity<String> entity=new HttpEntity<>(requestBody, headers);
                 // 번역 서비스 호출
-                String result = restTemplate.postForObject(naverPapagoEndpoint, entity, String.class);
+                String result = restTemplate.exchange(naverPapagoEndpoint, HttpMethod.POST,entity,String.class).getBody();
 
-                log.info("Word: {}, Translated Result: {}", word, result);
+//                log.info("Word: {}, Translated Result: {}", word, result);
 
                 // JSON 파싱하여 "translatedText" 값 가져오기
-                ObjectMapper objectMapper = new ObjectMapper();
-                JsonNode rootNode = objectMapper.readTree(result);
+                ObjectMapper responseObjectMapper = new ObjectMapper();
+                JsonNode rootNode = responseObjectMapper.readTree(result);
                 String translatedText = rootNode.path("message").path("result").path("translatedText").asText();
 
                 // 리스트에 번역 결과 추가
@@ -65,8 +73,8 @@ public class NaverPapagoService {
         } catch (Exception e) {
             log.error("네이버 파파고 오류: {}", e.getMessage());
         }
-        log.info("Translated Results: {}", translatedResults);
-        karloService.getKarloResult(translatedResults);
+//        log.info("Translated Results: {}", translatedResults);
+//        karloService.getKarloResult(translatedResults);
         return translatedResults;
     }
 }
