@@ -100,7 +100,6 @@ public class UserController {
             log.info("finish creating token");
             final UserDTO resUserDTO = UserDTO.builder()
                     // 나중에 프론트와 연결시 필요한 요소 추가할것
-                    .id(user.getId())
                     .userId(user.getUserId())
                     .password(user.getPassword())
                     .nickname(user.getNickname())
