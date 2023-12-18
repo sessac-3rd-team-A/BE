@@ -53,6 +53,8 @@ public class KarloService {
             requestBodyMap.put("height",600);
             requestBodyMap.put("image_format","png");
             requestBodyMap.put("guidance_scale",20);
+            requestBodyMap.put("return_type","base64_string");
+
 
 
 
@@ -102,20 +104,22 @@ public class KarloService {
 //            log.info("images: {}", karloImageArray);
             if (karloImageArray == null || karloImageArray.isEmpty()) {
                 log.info("Karlo API Image 결과가 없습니다.");
+                return null;
             } else {
                 // "images" 배열 순회
                 for (int i = 0; i < karloImageArray.length(); i++) {
                     JSONObject karloImage = karloImageArray.getJSONObject(i);
                     // 각 이미지의 "image" 속성 값 추출
-                    String imageUrl = karloImage.optString("image");
+                    String encodedImgInfo = karloImage.optString("image");
 //                    log.info("Image URL {}: {}", i + 1, imageUrl);
 
-                    return imageUrl; // 첫 번째 이미지 주소 반환 또는 필요한 작업 수행
+                    return encodedImgInfo; // 첫 번째 이미지 주소 반환 또는 필요한 작업 수행
                 }
             }
         } catch (Exception e) {
             log.error("카를로 이미지 추출 실패: {}", e.getMessage());
+            return null;
         }
-        return null;
+        return null; // 오류 발생 시 null 반환
     }
 }

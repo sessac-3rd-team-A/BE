@@ -31,3 +31,14 @@ jwt:
   issuer: admin@spring.security.com
   secret_key: sesac-spring-boot-123456
 
+# ASWS3
+cloud:
+  aws:
+    s3:
+      bucket: example-bucket-seeun
+    stack.auto: false
+    region:
+      static: ap-northeast-2
+    credentials:
+      accessKey: AKIA55BXXA2BFGVUXJ7P
+      secretKey: S3JL7vZsBHSM3kR4CBkOWVkP4KYcS2YOVOzz2iep
