@@ -48,7 +48,7 @@ public class WebConfig implements WebMvcConfigurer {
                 .sessionManagement(sessionManagement -> sessionManagement
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 사용하지 않음 (STATELESS 설정)
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/", "/auth/**","/diary").permitAll() // /, /auth/** 경로는 모두 허용
+                        .requestMatchers("/", "/auth/**","/api/diary").permitAll() // /, /auth/** 경로는 모두 허용
                         .anyRequest().authenticated() // 그 외 나머지 경로에 대한 요청은 인증 필요
                 );
 

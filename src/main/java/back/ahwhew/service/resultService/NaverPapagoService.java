@@ -30,7 +30,7 @@ public class NaverPapagoService {
     private String naverPapagoApiSecret;
 
     @Autowired
-    KarloService karloService;
+    KarloImageGeneratorService karloImageGeneratorService;
 
     public List<String> translate(List<String> extractsWords) {
         List<String> translatedResults = new ArrayList<>();

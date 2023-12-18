@@ -24,9 +24,11 @@ public class MypageController {
     private MypageService mypageService;
 
     @PostMapping("/account")
-    public ResponseEntity<?> updateProfile(@AuthenticationPrincipal String id, @RequestBody UserDTO dto) {
+    public ResponseEntity<?> updateProfile(@AuthenticationPrincipal UserEntity userInfo, @RequestBody UserDTO dto) {
         try{
             log.info("Profile update start");
+
+            log.info("확인: " + userInfo.getId());
 
             UserEntity user = UserEntity.builder()
                     .userId(dto.getUserId())
@@ -34,9 +36,7 @@ public class MypageController {
                     .gender(dto.getGender())
                     .build();
 
-            log.info("닉네임 확인" + dto.getNickname());
-
-            UserEntity registeredUser = mypageService.updateProfile(id, user);
+            UserEntity registeredUser = mypageService.updateProfile(userInfo.getId(), user);
 
             log.info("닉네임 확인2");
 

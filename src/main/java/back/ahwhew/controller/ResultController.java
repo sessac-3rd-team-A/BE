@@ -13,17 +13,19 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @Slf4j
-@Controller
+//@Controller //타임리프 테스트용
+@RestController
+@RequestMapping("/api")
 public class ResultController {
 
     @Autowired
     private ResultService resultService;
     //test용(동적폼전송으로..)
-    @GetMapping("/diary")
-    public String getDiaryPage() {
-        // GET 요청이 들어오면 diary.html 템플릿을 보여줌
-        return "diary";
-    }
+//    @GetMapping("/diary")
+//    public String getDiaryPage() {
+//        // GET 요청이 들어오면 diary.html 템플릿을 보여줌
+//        return "diary";
+//    }
 
     @PostMapping("/diary")
     @ResponseBody

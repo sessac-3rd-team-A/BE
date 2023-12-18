@@ -18,16 +18,16 @@ public class MypageService {
     @Autowired
     private UserRepository userRepository;
 
-    public UserEntity updateProfile(String id,final UserEntity userEntity) {
+    public UserEntity updateProfile(UUID id,final UserEntity userEntity) {
         log.info("Profile update start (Service)");
 
         final String userId = userEntity.getUserId();
         final String age = userEntity.getAge();
         // gender는 문자열이 아니므로 필드가 비어있을 경우만 확인하면 됨
 
-        final UserEntity user = userRepository.findById(UUID.fromString(id)); // 조건 문제
+        final UserEntity user = userRepository.findById(id); // 조건 문제
 
-        log.info(String.valueOf(user.getId()));
+        log.info("아이디 확인 : " + user.getId());
 
         if (userEntity == null) {
             throw new RuntimeException("Invalid arguments");
