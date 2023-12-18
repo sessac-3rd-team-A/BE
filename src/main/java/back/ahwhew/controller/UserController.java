@@ -27,6 +27,7 @@ public class UserController {
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @GetMapping("/signup")
+    @ResponseBody
     public ResponseEntity<?> getNickname() {
         RestTemplate restTemplate = new RestTemplate();
         String apiUrl = "https://nickname.hwanmoo.kr/?format=json&count=1";

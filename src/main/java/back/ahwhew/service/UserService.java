@@ -8,8 +8,6 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Service
 @Slf4j
@@ -21,6 +19,8 @@ public class UserService {
         final String userId = userEntity.getUserId();
         final String password = userEntity.getPassword();
         final String nickname = userEntity.getNickname();
+        final String age = userEntity.getAge();
+        // gender는 문자열이 아니므로 필드가 비어있을 경우만 확인하면 됨
 
         // user 정보 확인 - 필드 하나라도 비어있을 경우 확인
         if (userEntity == null) {
@@ -46,6 +46,11 @@ public class UserService {
         // 닉네임
         if (nickname == null || nickname.trim().isEmpty()) {
             throw new RuntimeException("Nickname is invalid arguments");
+        }
+
+        // 나이
+        if (age == null || age.trim().isEmpty()) {
+            throw new RuntimeException("Age is invalid arguments");
         }
 
         return repo.save(userEntity);

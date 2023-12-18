@@ -1,0 +1,55 @@
+package back.ahwhew.controller;
+
+import back.ahwhew.dto.ResponseDTO;
+import back.ahwhew.dto.UserDTO;
+import back.ahwhew.entity.UserEntity;
+import back.ahwhew.service.MypageService;
+import back.ahwhew.service.UserService;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.UUID;
+
+@RestController
+@Slf4j
+@RequestMapping("/mypage")
+public class MypageController {
+    @Autowired
+    private MypageService mypageService;
+
+    @PostMapping("/account")
+    public ResponseEntity<?> updateProfile(@AuthenticationPrincipal String id, @RequestBody UserDTO dto) {
+        try{
+            log.info("Profile update start");
+
+            UserEntity user = UserEntity.builder()
+                    .userId(dto.getUserId())
+                    .age(dto.getAge())
+                    .gender(dto.getGender())
+                    .build();
+
+            log.info("닉네임 확인" + dto.getNickname());
+
+            UserEntity registeredUser = mypageService.updateProfile(id, user);
+
+            log.info("닉네임 확인2");
+
+            UserDTO resDTO = UserDTO.builder()
+                    .userId(registeredUser.getUserId())
+                    .age(registeredUser.getAge())
+                    .gender(registeredUser.getGender())
+                    .build();
+
+            return ResponseEntity.ok().body(resDTO);
+        } catch(Exception e) {
+            ResponseDTO resDTO = ResponseDTO.builder().error(e.getMessage()).build();
+            return ResponseEntity.badRequest().body(resDTO);
+        }
+    }
+}

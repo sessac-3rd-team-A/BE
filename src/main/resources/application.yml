@@ -16,15 +16,24 @@ naver-summary:
 karlo:
   url: https://api.kakaobrain.com/v2/inference/karlo/t2i
   key: 36f389847c38aeb1bc4fb2dc89c92a01
+  imgEditUrl: https://api.kakaobrain.com/v2/inference/karlo/inpainting
 
 
-# MySQL
+# MySQL(공용 db)
+#spring:
+#  datasource:
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://3.34.188.175:3306/ahwhew?characterEncoding=UTF-8
+#    username: ahwhew
+#    password: ahwhewhong1106
+
+# MySQL(로컬 db)
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/ahwhew?characterEncoding=UTF-8
     username: root
-    password: 12345678
+    password: 1234
 
 # JWT
 jwt:
