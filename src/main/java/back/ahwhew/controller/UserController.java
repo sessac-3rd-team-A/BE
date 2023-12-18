@@ -63,6 +63,7 @@ public class UserController {
                 UserEntity registeredUser = service.create(user);
 
                 UserDTO resDTO = UserDTO.builder()
+//                        .id(registeredUser.getId())
                         .userId(registeredUser.getUserId())
                         .password(registeredUser.getPassword())
                         .age(registeredUser.getAge())
