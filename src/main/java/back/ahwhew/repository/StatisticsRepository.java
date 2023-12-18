@@ -13,6 +13,8 @@ public interface StatisticsRepository extends JpaRepository<StatisticsEntity,Lon
     StatisticsEntity findById(long id);
     List<StatisticsEntity> findAll();
 
+    List<StatisticsEntity> findByGenderAndAge(char gender, String age);
+
     List<StatisticsEntity> findByAge(String age);
     List<StatisticsEntity> findByGender(char gender);
 
