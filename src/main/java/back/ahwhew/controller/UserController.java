@@ -5,6 +5,7 @@ import back.ahwhew.dto.UserDTO;
 import back.ahwhew.entity.UserEntity;
 import back.ahwhew.security.TokenProvider;
 import back.ahwhew.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -121,13 +122,19 @@ public class UserController {
     }
 
     @GetMapping("/check")
-    public ResponseEntity<?> check(@AuthenticationPrincipal String id){
+    public ResponseEntity<?> check(@AuthenticationPrincipal UserEntity user, HttpServletRequest request){
+        // @AuthenticationPrincipal UserEntity user 사용시 주의 사항
+        // user에는 id, age, gender만 들어가있음. 이외에는 service.getById(user.getId());를 활용해 user값을 가져와야함
+        log.info("UserEntity age from 어노테이션 : {}", user.getAge());
+        log.info("UserEntity Gender from 어노테이션 : {}", user.getGender());
+
         // 요청에 토큰 담아서 보냈을때 User정보 가져오는 코드
-        log.info("check 경로 id : {}", id);
-        UserEntity user = service.getById(id);
-        log.info("check 경로 UserEntity : {}", String.valueOf(user));
-        return ResponseEntity.ok().body(String.valueOf(user));
+        log.info("check 경로 id : {}", user.getId());
+        UserEntity newUser = service.getById(user.getId());
+        log.info("check 경로 UserEntity : {}", String.valueOf(newUser));
+        return ResponseEntity.ok().body(String.valueOf(newUser));
     }
+
 
     private String isValidUser(UserDTO userDTO){
 

@@ -1,5 +1,7 @@
 package back.ahwhew.security;
 
+import back.ahwhew.entity.UserEntity;
+import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -17,6 +19,7 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.UUID;
 
 @Slf4j
 @Component
@@ -45,13 +48,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 // 토큰이 null, "null"이 아니라면 토큰 검사 진행
 
                 // user의 id 가져오기
-                // - 만양 토큰이 위조되었다면 예외 처리
-                String id = tokenProvider.validateAndGetUserId(token);
-                log.info(("Authenticated user ID: " + id));
+                // - 만약 토큰이 위조되었다면 예외 처리
+//                String id = tokenProvider.validateAndGetId(token);
+//                log.info(("Authenticated user ID: " + id));
+
+                Claims claims = tokenProvider.extractClaims(token);
+                log.info("claims : {}", claims);
+
+                UserEntity user = new UserEntity();
+                user.setId(UUID.fromString(claims.getSubject()));
+                user.setAge(claims.get("age",String.class));
+                user.setGender(claims.get("gender", String.class).charAt(0));
 
                 // 인증 완료 -> SecurityContextHolder 에 등록 되어야 인증된 사용자!
                 AbstractAuthenticationToken authentication
-                        = new UsernamePasswordAuthenticationToken(id, null, AuthorityUtils.NO_AUTHORITIES); // 사용자 정보
+                        = new UsernamePasswordAuthenticationToken(user, null, AuthorityUtils.NO_AUTHORITIES); // 사용자 정보
                 authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request)); // 사용자 인증 세부 정보 설정
 
                 SecurityContext securityContext = SecurityContextHolder.createEmptyContext(); /// 빈 SecurityContext 생성

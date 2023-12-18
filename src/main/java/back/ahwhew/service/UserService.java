@@ -65,8 +65,8 @@ public class UserService {
         return null;
     }
 
-    public UserEntity getById(String id){
-        UserEntity user = repo.findById(UUID.fromString(id));
+    public UserEntity getById(UUID id){
+        UserEntity user = repo.findById(id);
         return user;
     }
 }
