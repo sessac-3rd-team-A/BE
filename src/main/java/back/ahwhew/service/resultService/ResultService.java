@@ -1,6 +1,8 @@
 package back.ahwhew.service.resultService;
 
+import back.ahwhew.entity.StatisticsEntity;
 import back.ahwhew.repository.ResultRepository;
+import back.ahwhew.service.StatisticsService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,6 +29,9 @@ public class ResultService {
 
     @Autowired
     AmazonS3Service amazonS3Service;
+
+    @Autowired
+    private StatisticsService statisticsService;
     public void getTextDiary(String textDiary) {
         try {
 
@@ -46,6 +51,7 @@ public class ResultService {
             double neutralRatio = naverSentimentService.extractNeutralRatio(sentimentResult);
             log.info("neutralRatio:: {}", neutralRatio);
 
+            List<StatisticsEntity> statisticsEntities = statisticsService.create(textDiary);
             //파파고 돌리기
             List<String> extractWords=naverSentimentService.extractWordsFromResult(sentimentResult);
             List<String> translatedText=naverPapagoService.translate(extractWords);
