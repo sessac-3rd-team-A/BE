@@ -24,7 +24,7 @@ spring:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/ahwhew?characterEncoding=UTF-8
     username: root
-    password: testtest
+    password: testㅈ[비리리릴릴sfffdff
 
 # JWT
 jwt:
