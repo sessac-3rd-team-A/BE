@@ -5,6 +5,8 @@ import back.ahwhew.dto.UserDTO;
 import back.ahwhew.entity.UserEntity;
 import back.ahwhew.security.TokenProvider;
 import back.ahwhew.service.UserService;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,21 +29,25 @@ public class UserController {
 
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    @GetMapping("/signup")
-    @ResponseBody
-    public ResponseEntity<?> getNickname() {
-        RestTemplate restTemplate = new RestTemplate();
-        String apiUrl = "https://nickname.hwanmoo.kr/?format=json&count=1";
-        ResponseEntity<String> response = restTemplate.getForEntity(apiUrl, String.class);
-
-        // 외부 API 응답 반환
-        return ResponseEntity.ok().body(response.getBody());
-    }
-
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@RequestBody UserDTO dto) {
         try{
             log.info("Start signup");
+
+            RestTemplate restTemplate = new RestTemplate();
+            String apiUrl = "https://nickname.hwanmoo.kr/?format=json&count=1";
+            ResponseEntity<String> response = restTemplate.getForEntity(apiUrl, String.class);
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(response.getBody());
+
+            // "words" 키에 해당하는 값을 추출
+            JsonNode wordsNode = jsonNode.get("words");
+
+            // JsonNode를 String으로 변환
+            String firstWord = wordsNode.get(0).asText();
+
+            log.info(firstWord);
 
             // 유저 유효성 검사
             String validCheck = isValidUser(dto);
@@ -56,7 +62,7 @@ public class UserController {
                 UserEntity user = UserEntity.builder()
                         .userId(dto.getUserId())
                         .password(passwordEncoder.encode(dto.getPassword()))
-                        .nickname(dto.getNickname())
+                        .nickname(firstWord)
                         .age(dto.getAge())
                         .gender(dto.getGender())
                         .build();
