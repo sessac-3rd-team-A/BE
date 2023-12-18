@@ -3,6 +3,7 @@ package back.ahwhew.controller;
 import back.ahwhew.dto.ResponseDTO;
 import back.ahwhew.dto.UserDTO;
 import back.ahwhew.entity.UserEntity;
+import back.ahwhew.security.TokenProvider;
 import back.ahwhew.service.MypageService;
 import back.ahwhew.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -23,6 +24,9 @@ public class MypageController {
     @Autowired
     private MypageService mypageService;
 
+    @Autowired
+    private TokenProvider tokenProvider;
+
     @PostMapping("/account")
     public ResponseEntity<?> updateProfile(@AuthenticationPrincipal UserEntity userInfo, @RequestBody UserDTO dto) {
         try{
@@ -38,12 +42,14 @@ public class MypageController {
 
             UserEntity registeredUser = mypageService.updateProfile(userInfo.getId(), user);
 
-            log.info("닉네임 확인2");
+            // 토큰 재생성
+            final String token = tokenProvider.create(user);
 
-            UserDTO resDTO = UserDTO.builder()
+            final UserDTO resDTO = UserDTO.builder()
                     .userId(registeredUser.getUserId())
                     .age(registeredUser.getAge())
                     .gender(registeredUser.getGender())
+                    .token(token)
                     .build();
 
             return ResponseEntity.ok().body(resDTO);
