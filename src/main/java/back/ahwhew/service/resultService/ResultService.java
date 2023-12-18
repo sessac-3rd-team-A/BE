@@ -31,6 +31,9 @@ public class ResultService {
     AmazonS3Service amazonS3Service;
 
     @Autowired
+    ClassifyTagService classifyTagService;
+
+    @Autowired
     private StatisticsService statisticsService;
     public void getTextDiary(String textDiary) {
         try {
@@ -50,6 +53,14 @@ public class ResultService {
             // extractNeutralRatio 함수 호출->부정 감정 비율
             double neutralRatio = naverSentimentService.extractNeutralRatio(sentimentResult);
             log.info("neutralRatio:: {}", neutralRatio);
+
+            //부정감정인지 아닌지 판단 후 세부감정 추출
+            String detailNegativeSentiment=naverSentimentService.extractDetailNegativeSentiment(sentimentResult);
+            log.info("detailNegativeSentiment:: {}",detailNegativeSentiment);
+
+            //Gif 태그값 지정
+            String classifyTag= classifyTagService.classifySentiment(sentiment,positiveRatio,negativeRatio,neutralRatio,detailNegativeSentiment);
+            log.info("지정된 태그값:: {}",classifyTag);
 
             // 통계값 저장
             List<StatisticsEntity> statisticsEntities = statisticsService.create(sentimentResult);
