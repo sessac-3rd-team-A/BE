@@ -16,7 +16,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api")
-public class StatisticsController {
+public class StatisticController {
 
     @Autowired
     private StatisticsService statisticsService;
