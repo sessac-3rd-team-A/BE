@@ -6,6 +6,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -61,5 +63,10 @@ public class UserService {
 
         log.info("wrongPassword");
         return null;
+    }
+
+    public UserEntity getById(String id){
+        UserEntity user = repo.findById(UUID.fromString(id));
+        return user;
     }
 }

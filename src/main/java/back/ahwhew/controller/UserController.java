@@ -8,13 +8,11 @@ import back.ahwhew.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
-
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @RestController
 @Slf4j
@@ -43,8 +41,14 @@ public class UserController {
         try{
             log.info("Start signup");
 
-            if(SpecialCharacterCheck(dto.getPassword())) {
-                throw new RuntimeException("Password is invalid arguments");
+            // 유저 유효성 검사
+            String validCheck = isValidUser(dto);
+            if (!validCheck.equals("checked")){
+                ResponseDTO resDTO = ResponseDTO.builder()
+                        .error(validCheck)
+                        .build();
+
+                return ResponseEntity.badRequest().body(resDTO);
             }
 
                 UserEntity user = UserEntity.builder()
@@ -75,13 +79,17 @@ public class UserController {
     @PostMapping("/signin")
     public ResponseEntity<?> authenticate(@RequestBody UserDTO dto){
         log.info("Start signin");
-        if (!isValidUser(dto)){
+
+        // 유저 유효성 검사
+        String validCheck = isValidUser(dto);
+        if (!validCheck.equals("checked")){
             ResponseDTO resDTO = ResponseDTO.builder()
-                    .error("user valid fail")
+                    .error(validCheck)
                     .build();
 
             return ResponseEntity.badRequest().body(resDTO);
         }
+
         UserEntity user = service.getByCredentials(dto.getUserId(), dto.getPassword(), passwordEncoder);
 
         log.info("user: {}",user);
@@ -93,6 +101,10 @@ public class UserController {
             final UserDTO resUserDTO = UserDTO.builder()
                     // 나중에 프론트와 연결시 필요한 요소 추가할것
                     .userId(user.getUserId())
+                    .password(user.getPassword())
+                    .nickname(user.getNickname())
+                    .age(user.getAge())
+                    .gender(user.getGender())
                     .token(token) // jwt 토큰 설정
                     .build();
 
@@ -108,27 +120,28 @@ public class UserController {
         }
     }
 
-    private Boolean isValidUser(UserDTO userDTO){
-        if(userDTO.getUserId() == null){
-            log.warn("userId is null");
-            return false;
-        }else if(userDTO.getPassword() == null){
-            log.warn("password is null");
-            return false;
+    @GetMapping("/check")
+    public ResponseEntity<?> check(@AuthenticationPrincipal String id){
+        // 요청에 토큰 담아서 보냈을때 User정보 가져오는 코드
+        log.info("check 경로 id : {}", id);
+        UserEntity user = service.getById(id);
+        log.info("check 경로 UserEntity : {}", String.valueOf(user));
+        return ResponseEntity.ok().body(String.valueOf(user));
+    }
+
+    private String isValidUser(UserDTO userDTO){
+
+        if(userDTO.getUserId() == null || userDTO.getUserId().isEmpty()){ //userId가 null이거나 빈 값일때
+            log.warn("userId is null or empty");
+            return "userId is null or empty";
+        }else if(userDTO.getPassword() == null || userDTO.getPassword().isEmpty()){ //password가 null이거나 빈 값일때
+            log.warn("password is null or empty");
+            return "password is null or empty";
         }else {
-            log.info("user vail checked");
-            return true;
+            log.info("user valid checked");
+            return "checked";
         }
     }
 
-    // 특수 문자 확인
-    public Boolean SpecialCharacterCheck(String pw) {
-        // 확인해야 할 특수문자
-        String specialCharacterPattern = "[!@#$%^&*()\\\\?/.,]";
 
-        Pattern pattern = Pattern.compile(specialCharacterPattern);
-        Matcher matcher = pattern.matcher(pw);
-
-        return matcher.find();
-    }
 }
