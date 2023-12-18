@@ -16,11 +16,10 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service
 @Slf4j
-public class KarloService {
+public class KarloImageGeneratorService {
 
     @Value("${karlo.url}")
     private String karloUrl;
@@ -56,9 +55,6 @@ public class KarloService {
             requestBodyMap.put("return_type","base64_string");
 
 
-
-
-
             // 맵을 JSON으로 직렬화
             ObjectMapper objectMapper = new ObjectMapper();
             String requestBody = objectMapper.writeValueAsString(requestBodyMap);
@@ -75,7 +71,7 @@ public class KarloService {
             );
 
             if (response.getStatusCode() == HttpStatus.OK) {
-                // 결과 처리 -> 이미지 주소 반환!
+                // 결과 처리 -> 인코딩된 이미지 값 반환
                 return processKarloResult(response.getBody());
             } else {
                 // API 요청이 실패한 경우
@@ -89,7 +85,7 @@ public class KarloService {
         return null;//오류발생시 null 반환
     }
 
-    private String processKarloResult(String result) {
+    String processKarloResult(String result) {
         // JSON 응답 파싱 및 결과 처리
 //        log.info("Karlo API 결과: {}", result);
 // Karlo API 응답을 기반으로 추가 처리 구현

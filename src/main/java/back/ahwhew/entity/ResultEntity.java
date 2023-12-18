@@ -43,7 +43,7 @@ public class ResultEntity {
     @Column(name = "date", nullable = false)
     private Timestamp date;
 
-    @Column(name="recommended_gif",nullable = false)
+    @Column(name="recommendedGif",nullable = false)
     private String recommendedGif;
 
 

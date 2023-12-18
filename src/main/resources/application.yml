@@ -16,6 +16,7 @@ naver-summary:
 karlo:
   url: https://api.kakaobrain.com/v2/inference/karlo/t2i
   key: 36f389847c38aeb1bc4fb2dc89c92a01
+  imgEditUrl: https://api.kakaobrain.com/v2/inference/karlo/inpainting
 
 
 # MySQL
