@@ -1,12 +1,14 @@
 package back.ahwhew.controller;
 
 import back.ahwhew.dto.DiaryRequestDTO;
+import back.ahwhew.entity.UserEntity;
 import back.ahwhew.service.resultService.NaverSentimentService;
 import back.ahwhew.service.resultService.ResultService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,11 +31,11 @@ public class ResultController {
 
     @PostMapping("/diary")
     @ResponseBody
-    public ResponseEntity<String> postTextDiary(@RequestBody DiaryRequestDTO diaryRequest) {
+    public ResponseEntity<String> postTextDiary(@AuthenticationPrincipal UserEntity userInfo, @RequestBody DiaryRequestDTO diaryRequest) {
         try {
             String textDiary = diaryRequest.getTextDiary();
             // 클라이언트로부터 받은 일기 result Service에 넘겨서 서비스에 모든 로직 처리 후 필요한 값 반환
-            resultService.getTextDiary(textDiary);
+            resultService.getTextDiary(userInfo,textDiary);
 
 
         } catch (Exception e) {
