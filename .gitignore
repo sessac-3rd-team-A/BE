@@ -38,5 +38,6 @@ out/
 
 
 ## 환경변수 설정
-.yml
+*.yml
+application.properties
 /src/main/resources/application.yml
