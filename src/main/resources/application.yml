@@ -8,10 +8,7 @@ naver-papago:
   api-key: 2CiNUx3lwNdwHD4rtI7pm5zxZTjPlXNAQzAheXYE
   api-key-id: nshlfk46cj
 
-naver-summary:
-  endpoint: https://naveropenapi.apigw.ntruss.com/text-summary/v1/summarize
-  api-key: rWxhuOwO4Nf5w360ASGSaBT8iuoYUa16WlRxQnEE
-  api-key-id: qgsfydxfoa
+
 
 karlo:
   url: https://api.kakaobrain.com/v2/inference/karlo/t2i
@@ -19,13 +16,22 @@ karlo:
   imgEditUrl: https://api.kakaobrain.com/v2/inference/karlo/inpainting
 
 
-# MySQL
+# MySQL(공용 db)
+#spring:
+#  datasource:
+#    driver-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://3.34.188.175:3306/ahwhew?characterEncoding=UTF-8
+#    username: ahwhew
+#    password: ahwhewhong1106
+
+# MySQL(로컬 db)
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/ahwhew?characterEncoding=UTF-8
     username: root
     password: 12345678
+
 
 # JWT
 jwt:

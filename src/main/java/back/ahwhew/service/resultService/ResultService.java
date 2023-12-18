@@ -55,7 +55,7 @@ public class ResultService {
             String karloImgEncodedInfo= karloImageGeneratorService.getKarloResult(translatedText);
             log.info("karlo result::{}",karloImgEncodedInfo);
 
-            //karlod이미지 변환(Base64값)
+            //karlo이미지 변환(Base64값)
             String editedImgInfo= karloImageEditService.changeImage(karloImgEncodedInfo,translatedText);
             log.info("edited result::{}",editedImgInfo);
 
