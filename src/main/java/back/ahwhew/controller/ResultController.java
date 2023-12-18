@@ -14,7 +14,8 @@ import java.util.List;
 
 @Slf4j
 //@Controller //타임리프 테스트용
-@RestController("/api")
+@RestController
+@RequestMapping("/api")
 public class ResultController {
 
     @Autowired
