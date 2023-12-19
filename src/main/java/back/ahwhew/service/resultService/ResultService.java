@@ -1,14 +1,20 @@
 package back.ahwhew.service.resultService;
 
 import back.ahwhew.dto.GifDTO;
+import back.ahwhew.dto.ResultDTO;
 import back.ahwhew.entity.StatisticsEntity;
+import back.ahwhew.entity.UserEntity;
 import back.ahwhew.repository.ResultRepository;
 import back.ahwhew.service.StatisticsService;
+import back.ahwhew.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.sql.Timestamp;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -38,9 +44,24 @@ public class ResultService {
     GifService gifService;
 
     @Autowired
+    UserService userService;
+
+    @Autowired
     private StatisticsService statisticsService;
-    public void getTextDiary(String textDiary) {
+    public  ResultDTO getTextDiary(UserEntity user, String textDiary) {
         try {
+            String userId = (user != null && user.getId() != null) ? user.getId().toString() : null;
+
+            UserEntity newUser = null;
+            Optional<UserEntity> optionalUser = null;
+            if (userId != null) {
+                optionalUser = Optional.ofNullable(userService.getById(UUID.fromString(userId)));
+                newUser = optionalUser.orElse(null);
+                log.info("check 경로 UserEntity: {}", String.valueOf(newUser));
+            } else {
+                // userId가 null인 경우 처리
+                log.warn("User ID is null");
+            }
 
             //센티멘트 전체 결과값
             String sentimentResult = naverSentimentService.getSentiment(textDiary);
@@ -67,8 +88,8 @@ public class ResultService {
             log.info("지정된 태그값:: {}",classifyTag);
 
             //지정된 태그값으로 사진 가져오기
-            List<GifDTO> imageUrls=gifService.getGifs(classifyTag);
-            log.info("imageUrls:: {}",imageUrls);
+            List<GifDTO> gifUrls=gifService.getGifs(classifyTag);
+            log.info("imageUrls:: {}",gifUrls);
 
 
             // 통계값 저장
@@ -91,9 +112,24 @@ public class ResultService {
             String imageUrl=amazonS3Service.uploadImageFromBase64(editedImgInfo);
             log.info("s3에 업로드한 imageUrl::{}",imageUrl);
 
+            ResultDTO resultDTO = ResultDTO.builder()
+                    .userId((user != null && user.getId() != null) ? user.getId().toString() : null)
+                    .sentiment(sentiment)
+                    .positive(positiveRatio)
+                    .negative(negativeRatio)
+                    .neutral(neutralRatio)
+                    .date(new Timestamp(System.currentTimeMillis()))
+                    .recommendedGif(gifUrls.stream().map(GifDTO::getGifUrl).toList())
+                    .pictureDiary(imageUrl)
+                    .build();
+
+            return resultDTO;
+
+
         } catch (Exception e) {
             // 예외 발생 시 로깅
             log.error("getTextDiary 메서드 실행 중 예외 발생", e);
+            throw new RuntimeException("Failed to process text diary", e);
         }
     }
 }
