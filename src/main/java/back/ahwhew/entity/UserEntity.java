@@ -37,4 +37,7 @@ public class UserEntity {
 
     @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ResultEntity> results;
+
+    @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<DiaryEntity> diaries;
 }

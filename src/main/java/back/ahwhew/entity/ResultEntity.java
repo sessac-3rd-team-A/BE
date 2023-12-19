@@ -8,6 +8,7 @@ import org.hibernate.annotations.DynamicInsert;
 //import org.springframework.security.core.userdetails.User;
 
 import java.sql.Timestamp;
+import java.util.UUID;
 
 @Entity
 @Table(name = "result")
@@ -20,9 +21,9 @@ public class ResultEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "userId")
-    private UserEntity userId;
+    @ManyToOne(targetEntity = UserEntity.class)
+    @JoinColumn(name = "userId",nullable=true)
+    private UUID userId;
 
     @Column(name = "pictureDiary", nullable = false)
     private String pictureDiary;

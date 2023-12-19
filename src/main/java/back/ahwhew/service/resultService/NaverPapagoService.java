@@ -13,13 +13,16 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.ArrayList;
+
 import java.util.HashMap;
+
 import java.util.List;
 import java.util.Map;
 
 @Service
 @Slf4j
 public class NaverPapagoService {
+
     @Value("${naver-papago.endpoint}")
     private String naverPapagoEndpoint;
 
@@ -33,18 +36,17 @@ public class NaverPapagoService {
     KarloImageGeneratorService karloImageGeneratorService;
 
     public List<String> translate(List<String> extractsWords) {
+
         List<String> translatedResults = new ArrayList<>();
 
         try {
             HttpHeaders headers = new HttpHeaders();
-            // 요청 헤더 설정
             headers.setContentType(MediaType.APPLICATION_JSON);
             headers.set("X-NCP-APIGW-API-KEY", naverPapagoApiSecret);
             headers.set("X-NCP-APIGW-API-KEY-ID", naverPapagoApiKey);
 
             RestTemplate restTemplate = new RestTemplate();
 
-            // 각 단어를 번역하여 로그에 출력
             for (String word : extractsWords) {
                 // 요청 본문 설정
                 Map<String, Object> requestBodyMap = new HashMap<>();
@@ -68,13 +70,16 @@ public class NaverPapagoService {
 
                 // 리스트에 번역 결과 추가
                 translatedResults.add(translatedText);
+
             }
 
         } catch (Exception e) {
             log.error("네이버 파파고 오류: {}", e.getMessage());
         }
+
 //        log.info("Translated Results: {}", translatedResults);
 //        karloService.getKarloResult(translatedResults);
         return translatedResults;
     }
 }
+

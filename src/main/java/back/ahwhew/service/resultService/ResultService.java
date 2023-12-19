@@ -93,7 +93,7 @@ public class ResultService {
 
 
             // 통계값 저장
-            List<StatisticsEntity> statisticsEntities = statisticsService.create(user,sentimentResult,gifUrl);
+//            List<StatisticsEntity> statisticsEntities = statisticsService.create(user,sentimentResult);
 
 
             //파파고 돌리기
