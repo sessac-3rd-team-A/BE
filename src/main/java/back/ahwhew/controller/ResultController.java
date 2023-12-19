@@ -1,7 +1,9 @@
 package back.ahwhew.controller;
 
 import back.ahwhew.dto.DiaryRequestDTO;
+import back.ahwhew.dto.ResultDTO;
 import back.ahwhew.entity.UserEntity;
+import back.ahwhew.service.UserService;
 import back.ahwhew.service.resultService.NaverSentimentService;
 import back.ahwhew.service.resultService.ResultService;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +15,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 //@Controller //타임리프 테스트용
@@ -22,6 +26,8 @@ public class ResultController {
 
     @Autowired
     private ResultService resultService;
+    @Autowired
+    private UserService userService;
     //test용(동적폼전송으로..)
 //    @GetMapping("/diary")
 //    public String getDiaryPage() {
@@ -31,20 +37,37 @@ public class ResultController {
 
     @PostMapping("/diary")
     @ResponseBody
-    public ResponseEntity<String> postTextDiary(@AuthenticationPrincipal UserEntity userInfo, @RequestBody DiaryRequestDTO diaryRequest) {
+    public ResponseEntity<ResultDTO> postTextDiary(@AuthenticationPrincipal UserEntity user, @RequestBody DiaryRequestDTO diaryRequest) {
+
         try {
+//            String userId = (user != null && user.getId() != null) ? user.getId().toString() : null;
+//
+//            UserEntity newUser = null;
+//            Optional<UserEntity> optionalUser = null;
+//            if (userId != null) {
+//                optionalUser = Optional.ofNullable(userService.getById(UUID.fromString(userId)));
+//                newUser = optionalUser.orElse(null);
+//                log.info("check 경로 UserEntity: {}", String.valueOf(newUser));
+//            } else {
+//                // userId가 null인 경우 처리
+//                log.warn("User ID is null");
+//            }
+
+
+//            log.info("check 경로 UserEntity : {}", String.valueOf(newUser));
+
             String textDiary = diaryRequest.getTextDiary();
             // 클라이언트로부터 받은 일기 result Service에 넘겨서 서비스에 모든 로직 처리 후 필요한 값 반환
-            resultService.getTextDiary(userInfo,textDiary);
 
+            ResultDTO resultDTO = resultService.getTextDiary(user, textDiary);
+
+            return ResponseEntity.ok().body(resultDTO);
 
         } catch (Exception e) {
             // 예외 발생 시 로깅
             log.error("postTextDiary 메서드 실행 중 예외 발생", e);
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Failed");
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
         }
-        return ResponseEntity.ok().body("Success");
-
     }
 
 }

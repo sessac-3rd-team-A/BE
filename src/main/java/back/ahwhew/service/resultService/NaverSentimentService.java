@@ -247,4 +247,35 @@ public class NaverSentimentService {
         }
         return neutralRatio;
     }
+    public String extractDetailNegativeSentiment(String result) {
+        JSONObject jsonObject = new JSONObject(result);
+        JSONObject document = jsonObject.optJSONObject("document");
+
+        // document 객체가 null인 경우 예외 처리
+        if (document == null) {
+            log.error("document 객체가 null입니다. 감정 추출에 실패했습니다.");
+            return null;
+        }
+
+        JSONArray sentences = jsonObject.optJSONArray("sentences");
+
+        // sentences 배열이 null이거나 비어있는 경우 예외 처리
+        if (sentences != null && sentences.length() > 0) {
+            for (int i = 0; i < sentences.length(); i++) {
+                JSONObject sentence = sentences.getJSONObject(i);
+                JSONObject negativeSentiment = sentence.optJSONObject("negativeSentiment");
+
+                // negativeSentiment 객체가 null이 아닌 경우에만 처리
+                if (negativeSentiment != null) {
+                    String detailedNegativeSentiment = negativeSentiment.optString("sentiment");
+                    return detailedNegativeSentiment;
+                }
+            }
+        }
+
+        return null; // 부정 감정이 나타나지 않는 경우
+    }
+
+
+
 }

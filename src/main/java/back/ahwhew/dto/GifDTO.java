@@ -11,6 +11,10 @@ import lombok.NoArgsConstructor;
 @Data
 public class GifDTO {
     private Long id;
-    private String girUrl;
+    private String gifUrl;
     private String tag;
+
+    public String getGifUrl() {
+        return gifUrl;
+    }
 }

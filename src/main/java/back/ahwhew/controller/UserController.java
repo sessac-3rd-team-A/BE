@@ -5,6 +5,8 @@ import back.ahwhew.dto.UserDTO;
 import back.ahwhew.entity.UserEntity;
 import back.ahwhew.security.TokenProvider;
 import back.ahwhew.service.UserService;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +15,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
 @RestController
 @Slf4j
@@ -27,20 +29,29 @@ public class UserController {
 
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
-    @GetMapping("/signup")
-    public ResponseEntity<?> getNickname() {
-        RestTemplate restTemplate = new RestTemplate();
-        String apiUrl = "https://nickname.hwanmoo.kr/?format=json&count=1";
-        ResponseEntity<String> response = restTemplate.getForEntity(apiUrl, String.class);
-
-        // 외부 API 응답 반환
-        return ResponseEntity.ok().body(response.getBody());
-    }
-
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@RequestBody UserDTO dto) {
         try{
             log.info("Start signup");
+
+            // 닉네임 api 호출
+            WebClient webClient = WebClient.create();
+            String apiUrl = "https://nickname.hwanmoo.kr/?format=json&count=1";
+
+            String response = webClient.get()
+                    .uri(apiUrl)
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
+
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(response);
+
+            // "words" 키에 해당하는 값을 추출
+            JsonNode wordsNode = jsonNode.get("words");
+
+            // JsonNode를 String으로 변환
+            String firstWord = wordsNode.get(0).asText();
 
             // 유저 유효성 검사
             String validCheck = isValidUser(dto);
@@ -55,7 +66,7 @@ public class UserController {
                 UserEntity user = UserEntity.builder()
                         .userId(dto.getUserId())
                         .password(passwordEncoder.encode(dto.getPassword()))
-                        .nickname(dto.getNickname())
+                        .nickname(firstWord)
                         .age(dto.getAge())
                         .gender(dto.getGender())
                         .build();
@@ -136,7 +147,6 @@ public class UserController {
         return ResponseEntity.ok().body(String.valueOf(newUser));
     }
 
-
     private String isValidUser(UserDTO userDTO){
 
         if(userDTO.getUserId() == null || userDTO.getUserId().isEmpty()){ //userId가 null이거나 빈 값일때
@@ -150,6 +160,4 @@ public class UserController {
             return "checked";
         }
     }
-
-
 }
