@@ -15,7 +15,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.reactive.function.client.WebClient;
 
 @RestController
 @Slf4j
@@ -34,20 +34,24 @@ public class UserController {
         try{
             log.info("Start signup");
 
-            RestTemplate restTemplate = new RestTemplate();
+            // 닉네임 api 호출
+            WebClient webClient = WebClient.create();
             String apiUrl = "https://nickname.hwanmoo.kr/?format=json&count=1";
-            ResponseEntity<String> response = restTemplate.getForEntity(apiUrl, String.class);
+
+            String response = webClient.get()
+                    .uri(apiUrl)
+                    .retrieve()
+                    .bodyToMono(String.class)
+                    .block();
 
             ObjectMapper objectMapper = new ObjectMapper();
-            JsonNode jsonNode = objectMapper.readTree(response.getBody());
+            JsonNode jsonNode = objectMapper.readTree(response);
 
             // "words" 키에 해당하는 값을 추출
             JsonNode wordsNode = jsonNode.get("words");
 
             // JsonNode를 String으로 변환
             String firstWord = wordsNode.get(0).asText();
-
-            log.info(firstWord);
 
             // 유저 유효성 검사
             String validCheck = isValidUser(dto);
@@ -143,7 +147,6 @@ public class UserController {
         return ResponseEntity.ok().body(String.valueOf(newUser));
     }
 
-
     private String isValidUser(UserDTO userDTO){
 
         if(userDTO.getUserId() == null || userDTO.getUserId().isEmpty()){ //userId가 null이거나 빈 값일때
@@ -157,6 +160,4 @@ public class UserController {
             return "checked";
         }
     }
-
-
 }

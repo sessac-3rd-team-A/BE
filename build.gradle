@@ -44,7 +44,7 @@ dependencies {
 	implementation 'io.jsonwebtoken:jjwt:0.9.1' // 자바 JWT 라이브러리
 	implementation 'javax.xml.bind:jaxb-api:2.3.1' // XML 문서와 JAVA 객체간 매핑 자동화
 
-
+	implementation 'org.springframework.boot:spring-boot-starter-webflux' // 외부 api와의 통신
 }
 
 tasks.named('test') {
