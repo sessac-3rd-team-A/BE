@@ -1,6 +1,7 @@
 package back.ahwhew.service;
 
 import back.ahwhew.dto.AverageDTO;
+import back.ahwhew.dto.GifDTO;
 import back.ahwhew.entity.StatisticsEntity;
 import back.ahwhew.entity.UserEntity;
 import back.ahwhew.repository.StatisticsRepository;
@@ -26,7 +27,7 @@ public class StatisticsService {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     // create statistics
-    public List<StatisticsEntity> create(@AuthenticationPrincipal UserEntity userInfo,String result){
+    public List<StatisticsEntity> create(UserEntity user,String result){
         // result 값 파싱해서 entity에 넣고 저장
         List<StatisticsEntity> statisticsEntities = new ArrayList<>();
 
@@ -43,9 +44,10 @@ public class StatisticsService {
             entity.setNegative(negative);
             entity.setPositive(positive);
             entity.setNeutral(neutral);
-            if (userInfo != null) {
-                entity.setAge(userInfo.getAge());
-                entity.setGender(userInfo.getGender());
+
+            if (user != null) {
+                entity.setAge(user.getAge());
+                entity.setGender(user.getGender());
             } else {
                 //유저가 비로그인시 Null
                 entity.setAge(null);
