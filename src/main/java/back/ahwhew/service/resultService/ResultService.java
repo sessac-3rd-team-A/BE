@@ -1,5 +1,6 @@
 package back.ahwhew.service.resultService;
 
+import back.ahwhew.dto.GifDTO;
 import back.ahwhew.entity.StatisticsEntity;
 import back.ahwhew.repository.ResultRepository;
 import back.ahwhew.service.StatisticsService;
@@ -34,6 +35,9 @@ public class ResultService {
     ClassifyTagService classifyTagService;
 
     @Autowired
+    GifService gifService;
+
+    @Autowired
     private StatisticsService statisticsService;
     public void getTextDiary(String textDiary) {
         try {
@@ -62,8 +66,13 @@ public class ResultService {
             String classifyTag= classifyTagService.classifySentiment(sentiment,positiveRatio,negativeRatio,neutralRatio,detailNegativeSentiment);
             log.info("지정된 태그값:: {}",classifyTag);
 
+            //지정된 태그값으로 사진 가져오기
+            List<GifDTO> imageUrls=gifService.getGifs(classifyTag);
+            log.info("imageUrls:: {}",imageUrls);
+
+
             // 통계값 저장
-            List<StatisticsEntity> statisticsEntities = statisticsService.create(sentimentResult);
+//            List<StatisticsEntity> statisticsEntities = statisticsService.create(sentimentResult);
 
             //파파고 돌리기
             List<String> extractWords=naverSentimentService.extractWordsFromResult(sentimentResult);
