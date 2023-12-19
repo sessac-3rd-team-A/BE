@@ -13,4 +13,8 @@ public class GifDTO {
     private Long id;
     private String gifUrl;
     private String tag;
+
+    public String getGifUrl() {
+        return gifUrl;
+    }
 }
