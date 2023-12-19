@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 @Slf4j
 //@Controller //타임리프 테스트용
@@ -38,16 +39,25 @@ public class ResultController {
     @ResponseBody
     public ResponseEntity<ResultDTO> postTextDiary(@AuthenticationPrincipal UserEntity user, @RequestBody DiaryRequestDTO diaryRequest) {
         try {
-            Optional<UserEntity> optionalUser = Optional.ofNullable(userService.getById(user.getId()));
-            UserEntity newUser = optionalUser.orElse(null); // null을 기본값으로 사용
-            //null인 경우에도 동작하게 하려고 함
+//            String userId = (user != null && user.getId() != null) ? user.getId().toString() : null;
+//
+//            UserEntity newUser = null;
+//            Optional<UserEntity> optionalUser = null;
+//            if (userId != null) {
+//                optionalUser = Optional.ofNullable(userService.getById(UUID.fromString(userId)));
+//                newUser = optionalUser.orElse(null);
+//                log.info("check 경로 UserEntity: {}", String.valueOf(newUser));
+//            } else {
+//                // userId가 null인 경우 처리
+//                log.warn("User ID is null");
+//            }
 
 
-            log.info("check 경로 UserEntity : {}", String.valueOf(newUser));
+//            log.info("check 경로 UserEntity : {}", String.valueOf(newUser));
 
             String textDiary = diaryRequest.getTextDiary();
             // 클라이언트로부터 받은 일기 result Service에 넘겨서 서비스에 모든 로직 처리 후 필요한 값 반환
-            ResultDTO resultDTO = resultService.getTextDiary(newUser,textDiary);
+            ResultDTO resultDTO = resultService.getTextDiary(user, textDiary);
 
             return ResponseEntity.ok().body(resultDTO);
 

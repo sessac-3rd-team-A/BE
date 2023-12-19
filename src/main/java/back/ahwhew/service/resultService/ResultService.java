@@ -6,12 +6,15 @@ import back.ahwhew.entity.StatisticsEntity;
 import back.ahwhew.entity.UserEntity;
 import back.ahwhew.repository.ResultRepository;
 import back.ahwhew.service.StatisticsService;
+import back.ahwhew.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 @Service
 @Slf4j
@@ -41,10 +44,24 @@ public class ResultService {
     GifService gifService;
 
     @Autowired
+    UserService userService;
+
+    @Autowired
     private StatisticsService statisticsService;
-    public  ResultDTO getTextDiary(UserEntity userInfo, String textDiary) {
+    public  ResultDTO getTextDiary(UserEntity user, String textDiary) {
         try {
-            log.info("resultService에서 찍힌 UserInfo::{}",userInfo);
+            String userId = (user != null && user.getId() != null) ? user.getId().toString() : null;
+
+            UserEntity newUser = null;
+            Optional<UserEntity> optionalUser = null;
+            if (userId != null) {
+                optionalUser = Optional.ofNullable(userService.getById(UUID.fromString(userId)));
+                newUser = optionalUser.orElse(null);
+                log.info("check 경로 UserEntity: {}", String.valueOf(newUser));
+            } else {
+                // userId가 null인 경우 처리
+                log.warn("User ID is null");
+            }
 
             //센티멘트 전체 결과값
             String sentimentResult = naverSentimentService.getSentiment(textDiary);
@@ -96,13 +113,13 @@ public class ResultService {
             log.info("s3에 업로드한 imageUrl::{}",imageUrl);
 
             ResultDTO resultDTO = ResultDTO.builder()
-                    .userId((userInfo.getId() != null) ? userInfo.getId().toString() : null)//로그인 한 경우 Null, 하지 않은 경우 해당 유저의 userID
+                    .userId((user != null && user.getId() != null) ? user.getId().toString() : null)
                     .sentiment(sentiment)
                     .positive(positiveRatio)
                     .negative(negativeRatio)
                     .neutral(neutralRatio)
-                    .date(new Timestamp(System.currentTimeMillis())) // 현재 시간으로 설정
-                    .recommendedGif(gifUrls.stream().map(GifDTO::getGifUrl).toList()) // Assuming GifDTO has a method getGirUrl() to get the URL
+                    .date(new Timestamp(System.currentTimeMillis()))
+                    .recommendedGif(gifUrls.stream().map(GifDTO::getGifUrl).toList())
                     .pictureDiary(imageUrl)
                     .build();
 
