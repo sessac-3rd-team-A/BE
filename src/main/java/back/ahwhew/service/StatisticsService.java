@@ -27,7 +27,7 @@ public class StatisticsService {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     // create statistics
-    public List<StatisticsEntity> create(UserEntity user,String result){
+    public List<StatisticsEntity> create(UserEntity user,String result,String gifUrl){
         // result 값 파싱해서 entity에 넣고 저장
         List<StatisticsEntity> statisticsEntities = new ArrayList<>();
 
@@ -53,7 +53,7 @@ public class StatisticsService {
                 entity.setAge(null);
                 entity.setGender(null);
             }
-            entity.setRecommendedGif("임의값");
+            entity.setRecommendedGif(gifUrl);
 
             repository.save(entity);
             log.info("Entity id: {} is saved. 통계데이터 추가 완료", entity.getId()); // 통계데이터 생성시 로그
