@@ -38,6 +38,7 @@ public class ResultController {
     @PostMapping("/diary")
     @ResponseBody
     public ResponseEntity<ResultDTO> postTextDiary(@AuthenticationPrincipal UserEntity user, @RequestBody DiaryRequestDTO diaryRequest) {
+
         try {
 //            String userId = (user != null && user.getId() != null) ? user.getId().toString() : null;
 //
@@ -57,6 +58,7 @@ public class ResultController {
 
             String textDiary = diaryRequest.getTextDiary();
             // 클라이언트로부터 받은 일기 result Service에 넘겨서 서비스에 모든 로직 처리 후 필요한 값 반환
+
             ResultDTO resultDTO = resultService.getTextDiary(user, textDiary);
 
             return ResponseEntity.ok().body(resultDTO);

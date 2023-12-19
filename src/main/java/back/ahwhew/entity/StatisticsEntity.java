@@ -38,7 +38,7 @@ public class StatisticsEntity {
     private String recommendedGif;
 
     @Column(name="gender",length = 1)
-    private char gender;
+    private Character gender;
 
     @Column(name="age")
     private String age;
