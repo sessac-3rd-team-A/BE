@@ -88,8 +88,8 @@ public class ResultService {
             log.info("지정된 태그값:: {}",classifyTag);
 
             //지정된 태그값으로 사진 가져오기
-            List<GifDTO> gifUrls=gifService.getGifs(classifyTag);
-            log.info("imageUrls:: {}",gifUrls);
+            String gifUrl=gifService.getRandomGifUrl(classifyTag);
+            log.info("imageUrls:: {}",gifUrl);
 
 
             // 통계값 저장
@@ -119,7 +119,7 @@ public class ResultService {
                     .negative(negativeRatio)
                     .neutral(neutralRatio)
                     .date(new Timestamp(System.currentTimeMillis()))
-                    .recommendedGif(gifUrls.stream().map(GifDTO::getGifUrl).toList())
+                    .recommendedGif(gifUrl)
                     .pictureDiary(imageUrl)
                     .build();
 

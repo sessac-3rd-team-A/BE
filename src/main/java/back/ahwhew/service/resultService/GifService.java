@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Random;
 
 @Service
 @Slf4j
@@ -21,16 +21,20 @@ public class GifService {
         this.gifRepository = gifRepository;
     }
 
-    public List<GifDTO> getGifs(String classifyTag) {
-        List<GifEntity> gifEntities = gifRepository.findByTag(classifyTag);
+    public String getRandomGifUrl(String classifyTag) {
+        // 주어진 태그와 일치하는 모든 GifEntity 검색
+        List<GifEntity> gifEntities = gifRepository.findAllByTag(classifyTag);
 
-        // GifEntity를 GifDTO로 변환
-        return gifEntities.stream()
-                .map(gifEntity -> GifDTO.builder()
-                        .id(gifEntity.getId())
-                        .gifUrl(gifEntity.getGifUrl())
-                        .tag(gifEntity.getTag())
-                        .build())
-                .collect(Collectors.toList());
+        // 일치하는 GifEntity가 없는 경우 null을 반환하거나 해당하는 방식으로 처리
+        if (gifEntities == null || gifEntities.isEmpty()) {
+            return null;
+        }
+
+        // 랜덤하게 GifEntity 선택
+        Random random = new Random();
+        GifEntity randomGifEntity = gifEntities.get(random.nextInt(gifEntities.size()));
+
+        // GifEntity의 gifUrl 반환
+        return randomGifEntity.getGifUrl();
     }
-    }
+}
