@@ -9,6 +9,7 @@ import back.ahwhew.service.StatisticsService;
 import back.ahwhew.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
@@ -65,7 +66,6 @@ public class ResultService {
 
             //센티멘트 전체 결과값
             String sentimentResult = naverSentimentService.getSentiment(textDiary);
-
             //대표 감정 추출
             String sentiment = naverSentimentService.extractSentiment(sentimentResult);
             log.info("sentiment:: {}", sentiment);
@@ -93,7 +93,8 @@ public class ResultService {
 
 
             // 통계값 저장
-//            List<StatisticsEntity> statisticsEntities = statisticsService.create(sentimentResult);
+            List<StatisticsEntity> statisticsEntities = statisticsService.create(user,sentimentResult);
+
 
             //파파고 돌리기
             List<String> extractWords=naverSentimentService.extractWordsFromResult(sentimentResult);
