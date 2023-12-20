@@ -111,7 +111,6 @@ public class NaverSentimentService {
             resultEntity.setPositiveRatio(positiveRatio);
             resultEntity.setNegativeRatio(negativeRatio);
             resultEntity.setNeutralRatio(neutralRatio);
-            resultEntity.setDate(new Timestamp(System.currentTimeMillis()));
 
             resultRepository.save(resultEntity);
 

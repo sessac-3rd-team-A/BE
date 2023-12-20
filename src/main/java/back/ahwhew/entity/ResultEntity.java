@@ -2,13 +2,12 @@ package back.ahwhew.entity;
 
 import back.ahwhew.dto.ResultDTO;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 //import org.springframework.security.core.userdetails.User;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
@@ -22,6 +21,8 @@ public class ResultEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Setter
+    @Getter
     @ManyToOne(targetEntity = UserEntity.class)
     @JoinColumn(name = "userId", nullable = true)
     private UserEntity user;
@@ -43,10 +44,15 @@ public class ResultEntity {
     private double neutralRatio;
 
     @Column(name = "date", nullable = false)
-    private Timestamp date;
+    private LocalDate date;
 
     @Column(name="recommendedGif",nullable = false)
     private String recommendedGif;
+
+    @PrePersist
+    protected void onCreate() {
+        date = LocalDate.now();
+    }
 
     public static ResultEntity fromDTO(ResultDTO resultDTO) {
         ResultEntity resultEntity = new ResultEntity();
