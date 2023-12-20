@@ -215,4 +215,38 @@ public class StatisticsService {
         return new ArrayList<>(dailyAveragesMap.values());
         }
 
+
+    public String getMemeByGenderAndAge(Character gender, String age) {
+        try {
+            List<StatisticsEntity> genderAndAgeData = repository.findByGenderAndAge(gender, age);
+
+            // recommende_gif 값을 기준으로 내림차순 정렬
+            genderAndAgeData.sort((a, b) -> Integer.compare(b.getRecommendeGif(), a.getRecommendeGif()));
+
+            // 정렬된 리스트에서 첫 번째 요소의 recommende_gif 값을 가져옴
+            if (!genderAndAgeData.isEmpty()) {
+                return genderAndAgeData.get(0).getRecommendeGif();
+            } else {
+                // 데이터가 없는 경우 처리
+                return "No data available";
+            }
+        } catch (Exception e) {
+            // 예외 처리
+            return "Error occurred";
+        }
+    }
+
+
+    public String getMemeByGender(Character gender){
+
+    }
+
+    public String getMemeByAge(String age){
+
+    }
+
+
+
+
 }
+x

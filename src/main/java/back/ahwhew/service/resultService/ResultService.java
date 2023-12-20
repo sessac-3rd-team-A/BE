@@ -115,9 +115,9 @@ public class ResultService {
 
             //아마존S3에 이미지 업로드(업로드하고 url반환하는 함수)
 
-            String imageUrl=amazonS3Service.uploadImageFromBase64(editedImgInfo);
-            log.info("s3에 업로드한 imageUrl::{}",imageUrl);
-            resultRepository.save(user,sentiment,positiveRatio,negativeRatio,neutralRatio,gifUrl,imageUrl);
+//            String imageUrl=amazonS3Service.uploadImageFromBase64(editedImgInfo);
+//            log.info("s3에 업로드한 imageUrl::{}",imageUrl);
+//            resultRepository.save(user,sentiment,positiveRatio,negativeRatio,neutralRatio,gifUrl,imageUrl);
 
 
             ResultDTO resultDTO = ResultDTO.builder()
@@ -127,7 +127,7 @@ public class ResultService {
                     .negative(negativeRatio)
                     .neutral(neutralRatio)
                     .recommendedGif(gifUrl)
-                    .pictureDiary(imageUrl)
+//                    .pictureDiary(imageUrl)
                     .date(LocalDate.now())
 
                     .build();
