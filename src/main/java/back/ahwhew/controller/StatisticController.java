@@ -10,6 +10,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.util.List;
+
 
 @RestController
 @Slf4j
@@ -19,24 +22,26 @@ public class StatisticController {
     private StatisticsService statisticsService;
 
     @GetMapping("/statistics")
-    public ResponseEntity<AverageDTO> getAverages(@RequestParam(required = false) Character gender,
-                                                  @RequestParam(required = false) String age) {
-        AverageDTO result = null;
+    public ResponseEntity<List<AverageDTO>> getAverages(@RequestParam(required = false) Character gender,
+                                                       @RequestParam(required = false) String age) {
+        List<AverageDTO> result = null;
 
         try {
-            log.info("get/api/statistics 실행 ");
+            LocalDate endDate = LocalDate.now();
+            LocalDate startDate = endDate.minusMonths(1); //한달 전
 
             if (gender != null && age != null) {
-                log.info("params 값 : {},{}", gender, age);
-                result = statisticsService.getAveragesByGenderAndAge(gender, age);
+                log.info("params 값: {}, {}", gender, age);
+                result = statisticsService.getAveragesByGenderAndAge(gender, age, startDate, endDate);
             } else if (gender != null) {
-                result = statisticsService.getAveragesByGender(gender);
+                result = statisticsService.getAveragesByGender(gender, startDate, endDate);
             } else if (age != null) {
-                result = statisticsService.getAveragesByAge(age);
+                result = statisticsService.getAveragesByAge(age, startDate, endDate);
             } else {
                 // 카테고리 선택 안했으면 전체 유저 평균 데이터 전송
-                result = statisticsService.getOverallAverages();
+                result = statisticsService.getOverallAverages(startDate, endDate);
             }
+
 
             return ResponseEntity.ok().body(result);
         } catch (Exception e) {

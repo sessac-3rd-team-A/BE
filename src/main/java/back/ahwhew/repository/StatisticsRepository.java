@@ -20,6 +20,8 @@ public interface StatisticsRepository extends JpaRepository<StatisticsEntity,Lon
 
     List<StatisticsEntity> findByDate(LocalDate date);
 
+    List<StatisticsEntity> findAllByDateBetween(LocalDate startDate,LocalDate endDate);
+
 
 }
 
