@@ -37,6 +37,15 @@ public class MypageService {
             throw new RuntimeException("UserId is invalid arguments");
         }
 
+        // 아이디 중복 검사 - (본인이 본인 기존의 아이디를 유지하는 경우 제외)
+        final UserEntity existUser = userRepository.findByUserId(userId);
+
+        if (existUser != null) {
+            if (user.getId() != existUser.getId()) {
+                throw new RuntimeException("UserId is already exist");
+            }
+        }
+
         if (age == null || age.trim().isEmpty()) {
             throw new RuntimeException("Age is invalid arguments");
         }
