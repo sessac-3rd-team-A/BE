@@ -14,6 +14,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -50,6 +51,8 @@ public class ResultService {
 
     @Autowired
     private StatisticsService statisticsService;
+
+
     public  ResultDTO getTextDiary(UserEntity user, String textDiary) {
         try {
             String userId = (user != null && user.getId() != null) ? user.getId().toString() : null;
@@ -113,6 +116,7 @@ public class ResultService {
             //아마존S3에 이미지 업로드(업로드하고 url반환하는 함수)
             String imageUrl=amazonS3Service.uploadImageFromBase64(editedImgInfo);
             log.info("s3에 업로드한 imageUrl::{}",imageUrl);
+            resultRepository.save(user,sentiment,positiveRatio,negativeRatio,neutralRatio,gifUrl,imageUrl);
 
             ResultDTO resultDTO = ResultDTO.builder()
                     .userId((user != null && user.getId() != null) ? UUID.fromString(user.getId().toString()) : null)
@@ -122,6 +126,7 @@ public class ResultService {
                     .neutral(neutralRatio)
                     .recommendedGif(gifUrl)
                     .pictureDiary(imageUrl)
+                    .date(LocalDate.now())
                     .build();
 
             return resultDTO;

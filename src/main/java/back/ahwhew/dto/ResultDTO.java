@@ -1,6 +1,7 @@
 package back.ahwhew.dto;
 
 import back.ahwhew.entity.ResultEntity;
+import back.ahwhew.entity.UserEntity;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -40,16 +41,16 @@ public class ResultDTO {
 
 
 
-    public static ResultDTO toEntity(ResultEntity resultEntity) {
-        return new ResultDTO(
-                (resultEntity.getUser() != null) ? resultEntity.getUser().getId() : null,
-                resultEntity.getPictureDiary(),
-                resultEntity.getRecommendedGif(),
-                resultEntity.getSentiment(),
-                resultEntity.getDate(),
-                resultEntity.getPositiveRatio(),
-                resultEntity.getNegativeRatio(),
-                resultEntity.getNeutralRatio()
-        );
+    public static ResultEntity toEntity(ResultDTO resultDTO) {
+        return ResultEntity.builder()
+//                .user(userEntity.getId())  // Assuming userEntity has an 'id' field of type UUID
+                .pictureDiary(resultDTO.getPictureDiary())
+                .recommendedGif(resultDTO.getRecommendedGif())
+                .sentiment(resultDTO.getSentiment())
+                .date(resultDTO.getDate())
+                .positiveRatio(resultDTO.getPositive())
+                .negativeRatio(resultDTO.getNegative())
+                .neutralRatio(resultDTO.getNeutral())
+                .build();
     }
 }
