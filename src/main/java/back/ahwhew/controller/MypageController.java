@@ -67,6 +67,7 @@ public class MypageController {
     public ResponseEntity<?> dashboard(@AuthenticationPrincipal UserEntity userEntity) {
         try{
             log.info("Dashboard start");
+            log.info("userEntity : {}",userEntity);
             if(userEntity==null)
                 return ResponseEntity.badRequest().body("로그인 후 이용해주세요.");
             // 대시보드 정보 저장(유저 정보, 날짜 정보 등 저장해야함)
@@ -76,7 +77,7 @@ public class MypageController {
 
             log.info("user의 dashboard list::{}",userResultList);
 
-            Map<String, DashboardDTO> resultMap = new HashMap<>();
+            TreeMap<String, DashboardDTO> resultMap = new TreeMap<>();
 
             for (ResultEntity result : userResultList) {
                 ResultDTO resultDTO = new ResultDTO();
