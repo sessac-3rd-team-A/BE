@@ -1,9 +1,7 @@
 package back.ahwhew.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
 
 
@@ -21,7 +19,9 @@ public class DiaryEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @Setter
+    @Getter
+    @ManyToOne(targetEntity = UserEntity.class)
     @JoinColumn(name = "userId", nullable = false)
     private UserEntity user;
 
@@ -31,7 +31,9 @@ public class DiaryEntity {
     @Column(name = "date", nullable = false)
     private LocalDate date;
 
-    public void setUser(UserEntity user) {
-        this.user = user;
+    @PrePersist
+    protected void onCreate() {
+        date = LocalDate.now();
     }
+
 }

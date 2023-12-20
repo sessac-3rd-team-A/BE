@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.UUID;
 
 
@@ -23,9 +24,9 @@ public class ResultDTO {
     private Double positive;
     private Double negative;
     private Double neutral;
-    private Timestamp date;
+    private LocalDate date;
 
-    public ResultDTO(UUID userId, String pictureDiary, String recommendedGif, String sentiment, Timestamp date, double positiveRatio, double negativeRatio, double neutralRatio) {
+    public ResultDTO(UUID userId, String pictureDiary, String recommendedGif, String sentiment, LocalDate date, double positiveRatio, double negativeRatio, double neutralRatio) {
         this.userId = userId;
         this.pictureDiary = pictureDiary;
         this.recommendedGif = recommendedGif;

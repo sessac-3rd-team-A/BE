@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.DynamicInsert;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.Date;
 
 @Entity
@@ -32,7 +33,7 @@ public class StatisticsEntity {
     private double neutral;
 
     @Column(name="date", nullable = false)
-    private Timestamp date;
+    private LocalDate date;
 
     @Column(name="recommended_gif",nullable = false)
     private String recommendedGif;
@@ -45,6 +46,6 @@ public class StatisticsEntity {
 
     @PrePersist
     protected void onCreate() {
-        date = new Timestamp(new Date().getTime());
+        date = LocalDate.now();
     }
 }

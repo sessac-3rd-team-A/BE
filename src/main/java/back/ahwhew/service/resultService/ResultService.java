@@ -120,7 +120,6 @@ public class ResultService {
                     .positive(positiveRatio)
                     .negative(negativeRatio)
                     .neutral(neutralRatio)
-                    .date(new Timestamp(System.currentTimeMillis()))
                     .recommendedGif(gifUrl)
                     .pictureDiary(imageUrl)
                     .build();
