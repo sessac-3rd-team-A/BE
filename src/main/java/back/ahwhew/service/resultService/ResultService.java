@@ -2,6 +2,7 @@ package back.ahwhew.service.resultService;
 
 import back.ahwhew.dto.GifDTO;
 import back.ahwhew.dto.ResultDTO;
+import back.ahwhew.entity.ResultEntity;
 import back.ahwhew.entity.StatisticsEntity;
 import back.ahwhew.entity.UserEntity;
 import back.ahwhew.repository.ResultRepository;
@@ -114,7 +115,7 @@ public class ResultService {
             log.info("s3에 업로드한 imageUrl::{}",imageUrl);
 
             ResultDTO resultDTO = ResultDTO.builder()
-                    .userId((user != null && user.getId() != null) ? user.getId().toString() : null)
+                    .userId((user != null && user.getId() != null) ? UUID.fromString(user.getId().toString()) : null)
                     .sentiment(sentiment)
                     .positive(positiveRatio)
                     .negative(negativeRatio)
@@ -131,6 +132,26 @@ public class ResultService {
             // 예외 발생 시 로깅
             log.error("getTextDiary 메서드 실행 중 예외 발생", e);
             throw new RuntimeException("Failed to process text diary", e);
+        }
+    }
+    public String save( ResultEntity resultEntity) {
+        try {
+            // 여기에서 필요한 로직 수행
+
+            // ResultDTO를 ResultEntity로 변환
+//            ResultEntity resultEntity = ResultEntity.fromDTO(resultDTO);
+
+            // UserEntity를 가져와서 ResultEntity에 설정
+//            resultEntity.setUserId(user.getId());
+
+            // ResultEntity를 저장
+            resultRepository.save(resultEntity);
+
+            return "success"; // 또는 저장 성공에 대한 적절한 응답 메시지
+        } catch (Exception e) {
+            // 예외 처리
+            e.printStackTrace(); // 혹은 로깅
+            return "fail"; // 또는 실패에 대한 적절한 응답 메시지
         }
     }
 }

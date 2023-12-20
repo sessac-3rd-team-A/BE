@@ -32,7 +32,7 @@ public class DiaryService {
                 // userId가 null인 경우 처리
                 log.warn("User ID is null");
             }
-            diaryRepository.save(user.getId(), text);
+            diaryRepository.save(user , text);
             return "success";
         }catch(Exception e){
             log.error("Error saving diary:", e);

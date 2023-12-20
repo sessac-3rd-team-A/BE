@@ -1,5 +1,6 @@
 package back.ahwhew.entity;
 
+import back.ahwhew.dto.ResultDTO;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -22,8 +23,8 @@ public class ResultEntity {
     private Long id;
 
     @ManyToOne(targetEntity = UserEntity.class)
-    @JoinColumn(name = "userId",nullable=true)
-    private UUID userId;
+    @JoinColumn(name = "userId", nullable = true)
+    private UserEntity user;
 
     @Column(name = "pictureDiary", nullable = false)
     private String pictureDiary;
@@ -47,5 +48,21 @@ public class ResultEntity {
     @Column(name="recommendedGif",nullable = false)
     private String recommendedGif;
 
+    public static ResultEntity fromDTO(ResultDTO resultDTO) {
+        ResultEntity resultEntity = new ResultEntity();
+
+        UserEntity userEntity = new UserEntity();
+        userEntity.setId(UUID.fromString(String.valueOf(resultDTO.getUserId())));
+        resultEntity.setUser(userEntity);
+        resultEntity.setPictureDiary(resultDTO.getPictureDiary());
+        resultEntity.setRecommendedGif(resultDTO.getRecommendedGif());
+        resultEntity.setSentiment(resultDTO.getSentiment());
+        resultEntity.setPositiveRatio(resultDTO.getPositive());
+        resultEntity.setNegativeRatio(resultDTO.getNegative());
+        resultEntity.setNeutralRatio(resultDTO.getNeutral());
+        resultEntity.setDate(resultDTO.getDate());
+
+        return resultEntity;
+    }
 
 }

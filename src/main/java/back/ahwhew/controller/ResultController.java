@@ -2,7 +2,9 @@ package back.ahwhew.controller;
 
 import back.ahwhew.dto.DiaryDTO;
 import back.ahwhew.dto.ResultDTO;
+import back.ahwhew.entity.ResultEntity;
 import back.ahwhew.entity.UserEntity;
+import back.ahwhew.repository.ResultRepository;
 import back.ahwhew.service.DiaryService;
 import back.ahwhew.service.UserService;
 import back.ahwhew.service.resultService.ResultService;
@@ -37,6 +39,8 @@ public class ResultController {
 //        // GET 요청이 들어오면 diary.html 템플릿을 보여줌
 //        return "diary";
 //    }
+    @Autowired
+    private ResultRepository resultRepository;
 
 
     @PostMapping("/diary")
@@ -80,5 +84,25 @@ public class ResultController {
         }
     }
 
+    public ResponseEntity<String> postPictureDiarySave(@AuthenticationPrincipal UserEntity user, @RequestBody ResultDTO resultDTO) {
+        try {
+            // ResultDTO를 ResultEntity로 변환
+            ResultEntity resultEntity = ResultEntity.fromDTO(resultDTO);
+
+            // 현재 로그인한 사용자의 UserEntity를 설정
+            resultEntity.setUser(user);
+
+            // ResultEntity를 저장
+            String saveResult = resultService.save(resultEntity);
+
+            // 저장이 성공하면 "success"를 반환
+            return ResponseEntity.ok().body(saveResult);
+        } catch (Exception e) {
+            // 예외 발생 시 로깅
+            log.error("postPictureDiarySave 메서드 실행 중 예외 발생", e);
+            // 저장이 실패하면 "fail"을 반환
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("fail");
+        }
+    }
 
 }

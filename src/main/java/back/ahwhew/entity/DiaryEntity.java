@@ -21,13 +21,17 @@ public class DiaryEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne(targetEntity = UserEntity.class)
-    @JoinColumn(name = "userId", nullable = false) // Change the name to avoid conflict
-    private UUID userId;
+    @ManyToOne
+    @JoinColumn(name = "userId", nullable = false)
+    private UserEntity user;
 
     @Column(name="text", length = 1000, nullable = false)
     private String text;
 
     @Column(name = "date", nullable = false)
     private LocalDate date;
+
+    public void setUser(UserEntity user) {
+        this.user = user;
+    }
 }

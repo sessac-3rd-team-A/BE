@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.util.UUID;
 
 
 @Builder
@@ -15,7 +16,7 @@ import java.sql.Timestamp;
 @Data
 public class ResultDTO {
     private Long id;
-    private String userId;
+    private UUID userId;
     private String pictureDiary;
     private String recommendedGif; //gif
     private String sentiment;
@@ -24,7 +25,7 @@ public class ResultDTO {
     private Double neutral;
     private Timestamp date;
 
-    public ResultDTO(String userId, String pictureDiary, String recommendedGif, String sentiment, Timestamp date, double positiveRatio, double negativeRatio, double neutralRatio) {
+    public ResultDTO(UUID userId, String pictureDiary, String recommendedGif, String sentiment, Timestamp date, double positiveRatio, double negativeRatio, double neutralRatio) {
         this.userId = userId;
         this.pictureDiary = pictureDiary;
         this.recommendedGif = recommendedGif;
@@ -40,7 +41,7 @@ public class ResultDTO {
 
     public static ResultDTO toEntity(ResultEntity resultEntity) {
         return new ResultDTO(
-                (resultEntity.getUserId() != null) ? resultEntity.getUserId().toString() : null,
+                (resultEntity.getUser() != null) ? resultEntity.getUser().getId() : null,
                 resultEntity.getPictureDiary(),
                 resultEntity.getRecommendedGif(),
                 resultEntity.getSentiment(),
