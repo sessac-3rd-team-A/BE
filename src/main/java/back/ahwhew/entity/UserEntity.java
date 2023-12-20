@@ -35,6 +35,9 @@ public class UserEntity {
     @Column(name = "gender", nullable = false, length = 1)
     private char gender;
 
-    @OneToMany(mappedBy = "userId", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<ResultEntity> results;
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<DiaryEntity> diaries;
 }
