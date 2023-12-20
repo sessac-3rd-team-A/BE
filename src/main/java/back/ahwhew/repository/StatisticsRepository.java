@@ -4,7 +4,7 @@ import back.ahwhew.entity.StatisticsEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.List;
 
 @Repository
@@ -18,7 +18,9 @@ public interface StatisticsRepository extends JpaRepository<StatisticsEntity,Lon
     List<StatisticsEntity> findByAge(String age);
     List<StatisticsEntity> findByGender(char gender);
 
-    List<StatisticsEntity> findByDate(Date date);
+    List<StatisticsEntity> findByDate(LocalDate date);
+
+    List<StatisticsEntity> findAllByDateBetween(LocalDate startDate,LocalDate endDate);
 
 
 }
