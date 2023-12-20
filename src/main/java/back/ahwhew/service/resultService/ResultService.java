@@ -106,12 +106,12 @@ public class ResultService {
             log.info("translated result:: {}",translatedText);
 
             //karlo 돌리기(여기서는 base64로 인코딩된 값이 넘어옴
-//            String karloImgEncodedInfo= karloImageGeneratorService.getKarloResult(translatedText);
-//            log.info("karlo result::{}",karloImgEncodedInfo);
+            String karloImgEncodedInfo= karloImageGeneratorService.getKarloResult(translatedText);
+//            log.info("karlo result::{}",karloImgEncodedInfo);//이거 주석 풀면 엄청 긴 인코딩 된 암호 나오니까 안푸는거 추천함
 
             //karlo이미지 변환(Base64값)
-//            String editedImgInfo= karloImageEditService.changeImage(karloImgEncodedInfo,translatedText);
-//            log.info("edited result::{}",editedImgInfo);
+            String editedImgInfo= karloImageEditService.changeImage(karloImgEncodedInfo,translatedText);
+//            log.info("edited result::{}",editedImgInfo);//이거 주석 풀면 엄청 긴 인코딩 된 암호 나오니까 안푸는거 추천함
 
             //아마존S3에 이미지 업로드(업로드하고 url반환하는 함수)
 
@@ -131,6 +131,7 @@ public class ResultService {
                     .date(LocalDate.now())
 
                     .build();
+//            List<StatisticsEntity> statisticsEntities = statisticsService.create(user,sentimentResult,gifUrl);
 
             return resultDTO;
 
