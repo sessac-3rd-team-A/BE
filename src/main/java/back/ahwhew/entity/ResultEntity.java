@@ -1,9 +1,11 @@
 package back.ahwhew.entity;
 
 import back.ahwhew.dto.ResultDTO;
+import back.ahwhew.service.UserService;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.DynamicInsert;
+import org.springframework.beans.factory.annotation.Autowired;
 //import org.springframework.security.core.userdetails.User;
 
 import java.sql.Timestamp;
@@ -16,6 +18,7 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
+@Builder
 public class ResultEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -54,6 +57,7 @@ public class ResultEntity {
         date = LocalDate.now();
     }
 
+
     public static ResultEntity fromDTO(ResultDTO resultDTO) {
         ResultEntity resultEntity = new ResultEntity();
 
@@ -70,5 +74,9 @@ public class ResultEntity {
 
         return resultEntity;
     }
+
+
+
+
 
 }
