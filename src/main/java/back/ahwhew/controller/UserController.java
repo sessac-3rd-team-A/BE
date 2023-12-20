@@ -27,6 +27,9 @@ public class UserController {
     @Autowired
     private TokenProvider tokenProvider;
 
+    @Autowired
+    private ObjectMapper objectMapper;
+
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @PostMapping("/signup")
@@ -44,7 +47,6 @@ public class UserController {
                     .bodyToMono(String.class)
                     .block();
 
-            ObjectMapper objectMapper = new ObjectMapper();
             JsonNode jsonNode = objectMapper.readTree(response);
 
             // "words" 키에 해당하는 값을 추출
