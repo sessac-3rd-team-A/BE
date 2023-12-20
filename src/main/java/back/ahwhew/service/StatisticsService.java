@@ -214,25 +214,5 @@ public class StatisticsService {
         }
         return new ArrayList<>(dailyAveragesMap.values());
         }
-//    private double calculateAverage(List<StatisticsEntity> data, String field) {
-//        double sum = 0.0;
-//        int count = 0;
-//
-//        for (StatisticsEntity entity : data) {
-//            switch (field) {
-//                case "positiveValue":
-//                    sum += entity.getPositive();
-//                    break;
-//                case "negativeValue":
-//                    sum += entity.getNegative();
-//                    break;
-//                case "neutralValue":
-//                    sum += entity.getNeutral();
-//                    break;
-//            }
-//            count++;
-//        }
-//
-//        return count > 0 ? sum / count : 0.0;
-//    }
+
 }
