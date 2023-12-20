@@ -22,9 +22,9 @@ public class ResultDTO {
     private String pictureDiary;
     private String recommendedGif; //gif
     private String sentiment;
-    private Double positive;
-    private Double negative;
-    private Double neutral;
+    private Double positiveRatio;
+    private Double negativeRatio;
+    private Double neutralRatio;
     private LocalDate date;
 
     public ResultDTO(UUID userId, String pictureDiary, String recommendedGif, String sentiment, LocalDate date, double positiveRatio, double negativeRatio, double neutralRatio) {
@@ -33,9 +33,9 @@ public class ResultDTO {
         this.recommendedGif = recommendedGif;
         this.sentiment = sentiment;
         this.date = date;
-        this.positive = positiveRatio;
-        this.negative = negativeRatio;
-        this.neutral = neutralRatio;
+        this.positiveRatio = positiveRatio;
+        this.negativeRatio = negativeRatio;
+        this.neutralRatio = neutralRatio;
     }
 
 
@@ -48,9 +48,9 @@ public class ResultDTO {
                 .recommendedGif(resultDTO.getRecommendedGif())
                 .sentiment(resultDTO.getSentiment())
                 .date(resultDTO.getDate())
-                .positiveRatio(resultDTO.getPositive())
-                .negativeRatio(resultDTO.getNegative())
-                .neutralRatio(resultDTO.getNeutral())
+                .positiveRatio(resultDTO.getPositiveRatio())
+                .negativeRatio(resultDTO.getNegativeRatio())
+                .neutralRatio(resultDTO.getNeutralRatio())
                 .build();
     }
 }
