@@ -13,6 +13,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -85,42 +86,78 @@ public class StatisticsService {
         return repository.findByAge(age);
     }
 
-    public List<StatisticsEntity> getStatisticsByDate(Date date) {
+    public List<StatisticsEntity> getStatisticsByDate(LocalDate date) {
         // 날짜별 통계를 얻기 위한 메서드
         return repository.findByDate(date);
     }
 
     public AverageDTO getOverallAverages() {
-        List<StatisticsEntity> allData = repository.findAll();
+        try {
+            List<StatisticsEntity> allData = repository.findAll();
 
-        // 긍정, 부정, 중립값들의 평균을 계산
-        double averagePositive = calculateAverage(allData, "positiveValue");
-        double averageNegative = calculateAverage(allData, "negativeValue");
-        double averageNeutral = calculateAverage(allData, "neutralValue");
+            // 긍정, 부정, 중립값들의 평균을 계산
+            double averagePositive = calculateAverage(allData, "positiveValue");
+            double averageNegative = calculateAverage(allData, "negativeValue");
+            double averageNeutral = calculateAverage(allData, "neutralValue");
 
-        return new AverageDTO(averagePositive, averageNegative, averageNeutral);
+            return new AverageDTO(averagePositive, averageNegative, averageNeutral);
+        } catch (RuntimeException e) {
+            log.error("에러 발생: {}", e.getMessage(), e);
+            // 예외 처리. 기본값 반환
+            return new AverageDTO(0.0, 0.0, 0.0);
+        }
     }
 
     public AverageDTO getAveragesByGender(char gender) {
-        List<StatisticsEntity> genderData = repository.findByGender(gender);
+        try {
+            List<StatisticsEntity> genderData = repository.findByGender(gender);
 
-        // 긍정, 부정, 중립값들의 평균을 계산
-        double averagePositive = calculateAverage(genderData, "positiveValue");
-        double averageNegative = calculateAverage(genderData, "negativeValue");
-        double averageNeutral = calculateAverage(genderData, "neutralValue");
+            // 긍정, 부정, 중립값들의 평균을 계산
+            double averagePositive = calculateAverage(genderData, "positiveValue");
+            double averageNegative = calculateAverage(genderData, "negativeValue");
+            double averageNeutral = calculateAverage(genderData, "neutralValue");
 
-        return new AverageDTO(averagePositive, averageNegative, averageNeutral);
+            return new AverageDTO(averagePositive, averageNegative, averageNeutral);
+        } catch (RuntimeException e) {
+            log.error("에러 발생: {}", e.getMessage(), e);
+            // 예외 처리. 기본값 반환
+            return new AverageDTO(0.0, 0.0, 0.0);
+        }
     }
 
     public AverageDTO getAveragesByAge(String age) {
-        List<StatisticsEntity> ageData = repository.findByAge(age);
+        try {
+            List<StatisticsEntity> ageData = repository.findByAge(age);
 
-        // 긍정, 부정, 중립값들의 평균을 계산
-        double averagePositive = calculateAverage(ageData, "positiveValue");
-        double averageNegative = calculateAverage(ageData, "negativeValue");
-        double averageNeutral = calculateAverage(ageData, "neutralValue");
+            // 긍정, 부정, 중립값들의 평균을 계산
+            double averagePositive = calculateAverage(ageData, "positiveValue");
+            double averageNegative = calculateAverage(ageData, "negativeValue");
+            double averageNeutral = calculateAverage(ageData, "neutralValue");
 
-        return new AverageDTO(averagePositive, averageNegative, averageNeutral);
+            return new AverageDTO(averagePositive, averageNegative, averageNeutral);
+        } catch (RuntimeException e) {
+            log.error("에러 발생: {}", e.getMessage(), e);
+            // 예외 처리. 기본값 반환
+            return new AverageDTO(0.0, 0.0, 0.0);
+        }
+    }
+
+    public AverageDTO getAveragesByGenderAndAge(char gender, String age) {
+        try {
+            log.info("평균값 계산 메서드 실행:c");
+            List<StatisticsEntity> genderAndAgeData = repository.findByGenderAndAge(gender, age);
+
+            // 긍정, 부정, 중립값들의 평균을 계산
+            double averagePositive = calculateAverage(genderAndAgeData, "positiveValue");
+            double averageNegative = calculateAverage(genderAndAgeData, "negativeValue");
+            double averageNeutral = calculateAverage(genderAndAgeData, "neutralValue");
+
+            return new AverageDTO(averagePositive, averageNegative, averageNeutral);
+        } catch (RuntimeException e) {
+            log.error("에러 발생: {}", e.getMessage(), e);
+            // 예외 처리. 기본값 반환
+            return new AverageDTO(0.0, 0.0, 0.0);
+        }
     }
 
     private double calculateAverage(List<StatisticsEntity> data, String field) {
@@ -143,15 +180,5 @@ public class StatisticsService {
         }
 
         return count > 0 ? sum / count : 0.0;
-    }
-    public AverageDTO getAveragesByGenderAndAge(char gender, String age) {
-        List<StatisticsEntity> genderAndAgeData = repository.findByGenderAndAge(gender, age);
-
-        // 긍정, 부정, 중립값들의 평균을 계산
-        double averagePositive = calculateAverage(genderAndAgeData, "positiveValue");
-        double averageNegative = calculateAverage(genderAndAgeData, "negativeValue");
-        double averageNeutral = calculateAverage(genderAndAgeData, "neutralValue");
-
-        return new AverageDTO(averagePositive, averageNegative, averageNeutral);
     }
 }
