@@ -94,7 +94,7 @@ public class ResultService {
 
 
             // 통계값 저장
-//            List<StatisticsEntity> statisticsEntities = statisticsService.create(user,sentimentResult);
+            List<StatisticsEntity> statisticsEntities = statisticsService.create(user,sentimentResult,gifUrl);
 
 
             //파파고 돌리기
@@ -103,16 +103,16 @@ public class ResultService {
             log.info("translated result:: {}",translatedText);
 
             //karlo 돌리기(여기서는 base64로 인코딩된 값이 넘어옴
-            String karloImgEncodedInfo= karloImageGeneratorService.getKarloResult(translatedText);
+//            String karloImgEncodedInfo= karloImageGeneratorService.getKarloResult(translatedText);
 //            log.info("karlo result::{}",karloImgEncodedInfo);
 
             //karlo이미지 변환(Base64값)
-            String editedImgInfo= karloImageEditService.changeImage(karloImgEncodedInfo,translatedText);
+//            String editedImgInfo= karloImageEditService.changeImage(karloImgEncodedInfo,translatedText);
 //            log.info("edited result::{}",editedImgInfo);
 
             //아마존S3에 이미지 업로드(업로드하고 url반환하는 함수)
-            String imageUrl=amazonS3Service.uploadImageFromBase64(editedImgInfo);
-            log.info("s3에 업로드한 imageUrl::{}",imageUrl);
+//            String imageUrl=amazonS3Service.uploadImageFromBase64(editedImgInfo);
+//            log.info("s3에 업로드한 imageUrl::{}",imageUrl);
 
             ResultDTO resultDTO = ResultDTO.builder()
                     .userId((user != null && user.getId() != null) ? UUID.fromString(user.getId().toString()) : null)
@@ -121,7 +121,7 @@ public class ResultService {
                     .negative(negativeRatio)
                     .neutral(neutralRatio)
                     .recommendedGif(gifUrl)
-                    .pictureDiary(imageUrl)
+//                    .pictureDiary(imageUrl)
                     .build();
 
             return resultDTO;
