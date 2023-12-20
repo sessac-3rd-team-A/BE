@@ -123,9 +123,9 @@ public class ResultService {
             ResultDTO resultDTO = ResultDTO.builder()
                     .userId((user != null && user.getId() != null) ? UUID.fromString(user.getId().toString()) : null)
                     .sentiment(sentiment)
-                    .positive(positiveRatio)
-                    .negative(negativeRatio)
-                    .neutral(neutralRatio)
+                    .positiveRatio(positiveRatio)
+                    .negativeRatio(negativeRatio)
+                    .neutralRatio(neutralRatio)
                     .recommendedGif(gifUrl)
                     .pictureDiary(imageUrl)
                     .date(LocalDate.now())
@@ -143,13 +143,6 @@ public class ResultService {
     }
     public String save( ResultEntity resultEntity) {
         try {
-            // 여기에서 필요한 로직 수행
-
-            // ResultDTO를 ResultEntity로 변환
-//            ResultEntity resultEntity = ResultEntity.fromDTO(resultDTO);
-
-            // UserEntity를 가져와서 ResultEntity에 설정
-//            resultEntity.setUserId(user.getId());
 
             // ResultEntity를 저장
             resultRepository.save(resultEntity);

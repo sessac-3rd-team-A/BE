@@ -40,4 +40,24 @@ public class UserEntity {
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Set<DiaryEntity> diaries;
+
+    public void addResult(ResultEntity result) {
+        results.add(result);
+        result.setUser(this);
+    }
+
+    public void removeResult(ResultEntity result) {
+        results.remove(result);
+        result.setUser(null);
+    }
+
+    public void addDiary(DiaryEntity diary) {
+        diaries.add(diary);
+        diary.setUser(this);
+    }
+
+    public void removeDiary(DiaryEntity diary) {
+        diaries.remove(diary);
+        diary.setUser(null);
+    }
 }
