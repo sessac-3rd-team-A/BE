@@ -6,6 +6,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -36,10 +37,11 @@ public class UserEntity {
     private char gender;
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<ResultEntity> results;
+    private Set<ResultEntity> results = new HashSet<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
-    private Set<DiaryEntity> diaries;
+    private Set<DiaryEntity> diaries = new HashSet<>();
+
 
     public void addResult(ResultEntity result) {
         results.add(result);

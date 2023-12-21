@@ -117,21 +117,21 @@ public class ResultService {
 
             String imageUrl=amazonS3Service.uploadImageFromBase64(editedImgInfo);
             log.info("s3에 업로드한 imageUrl::{}",imageUrl);
-            resultRepository.save(user,sentiment,positiveRatio,negativeRatio,neutralRatio,gifUrl,imageUrl);
+
+            ResultDTO resultDTO=resultRepository.saveOrUpdateResult(user,sentiment,positiveRatio,negativeRatio,neutralRatio,gifUrl,imageUrl);
 
 
-            ResultDTO resultDTO = ResultDTO.builder()
-                    .userId((user != null && user.getId() != null) ? UUID.fromString(user.getId().toString()) : null)
-                    .sentiment(sentiment)
-                    .positiveRatio(positiveRatio)
-                    .negativeRatio(negativeRatio)
-                    .neutralRatio(neutralRatio)
-                    .recommendedGif(gifUrl)
-                    .pictureDiary(imageUrl)
-                    .date(LocalDate.now())
-
-                    .build();
-//            List<StatisticsEntity> statisticsEntities = statisticsService.create(user,sentimentResult,gifUrl);
+//            ResultDTO resultDTO = ResultDTO.builder()
+//                    .userId((user != null && user.getId() != null) ? UUID.fromString(user.getId().toString()) : null)
+//                    .sentiment(sentiment)
+//                    .positiveRatio(positiveRatio)
+//                    .negativeRatio(negativeRatio)
+//                    .neutralRatio(neutralRatio)
+//                    .recommendedGif(gifUrl)
+//                    .pictureDiary(imageUrl)
+//                    .date(LocalDate.now())
+//
+//                    .build();
 
             return resultDTO;
 
@@ -147,6 +147,7 @@ public class ResultService {
 
             // ResultEntity를 저장
             resultRepository.save(resultEntity);
+
 
             return "success"; // 또는 저장 성공에 대한 적절한 응답 메시지
         } catch (Exception e) {
