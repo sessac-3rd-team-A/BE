@@ -71,16 +71,7 @@ public class UserController {
                         .gender(dto.getGender())
                         .build();
 
-                UserEntity registeredUser = service.create(user);
-
-            UserDTO.builder()
-//                    .id(registeredUser.getId())
-                    .userId(registeredUser.getUserId())
-                    .password(registeredUser.getPassword())
-                    .age(registeredUser.getAge())
-                    .nickname(registeredUser.getNickname())
-                    .gender(registeredUser.getGender())
-                    .build();
+                service.create(user);
 
             return ResponseEntity.ok().body(true);
         } catch(Exception e) {
