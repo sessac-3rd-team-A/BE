@@ -31,6 +31,7 @@ public interface DiaryRepository extends JpaRepository<DiaryEntity, Long> {
             diaryEntity.setText(text);
             diaryEntity.setDate(today);
             save(diaryEntity); // JpaRepository의 save 메서드 호출
+//            user.addDiary(diaryEntity);
         } else {
             update(user.getId(), text, today);
         }

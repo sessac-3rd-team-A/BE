@@ -106,31 +106,32 @@ public class ResultService {
             log.info("translated result:: {}",translatedText);
 
             //karlo 돌리기(여기서는 base64로 인코딩된 값이 넘어옴
-//            String karloImgEncodedInfo= karloImageGeneratorService.getKarloResult(translatedText);
-//            log.info("karlo result::{}",karloImgEncodedInfo);
+            String karloImgEncodedInfo= karloImageGeneratorService.getKarloResult(translatedText);
+//            log.info("karlo result::{}",karloImgEncodedInfo);//이거 주석 풀면 엄청 긴 인코딩 된 암호 나오니까 안푸는거 추천함
 
             //karlo이미지 변환(Base64값)
-//            String editedImgInfo= karloImageEditService.changeImage(karloImgEncodedInfo,translatedText);
-//            log.info("edited result::{}",editedImgInfo);
+            String editedImgInfo= karloImageEditService.changeImage(karloImgEncodedInfo,translatedText);
+//            log.info("edited result::{}",editedImgInfo);//이거 주석 풀면 엄청 긴 인코딩 된 암호 나오니까 안푸는거 추천함
 
             //아마존S3에 이미지 업로드(업로드하고 url반환하는 함수)
 
-//            String imageUrl=amazonS3Service.uploadImageFromBase64(editedImgInfo);
-//            log.info("s3에 업로드한 imageUrl::{}",imageUrl);
-//            resultRepository.save(user,sentiment,positiveRatio,negativeRatio,neutralRatio,gifUrl,imageUrl);
+            String imageUrl=amazonS3Service.uploadImageFromBase64(editedImgInfo);
+            log.info("s3에 업로드한 imageUrl::{}",imageUrl);
+
+            ResultDTO resultDTO=resultRepository.saveOrUpdateResult(user,sentiment,positiveRatio,negativeRatio,neutralRatio,gifUrl,imageUrl);
 
 
-            ResultDTO resultDTO = ResultDTO.builder()
-                    .userId((user != null && user.getId() != null) ? UUID.fromString(user.getId().toString()) : null)
-                    .sentiment(sentiment)
-                    .positive(positiveRatio)
-                    .negative(negativeRatio)
-                    .neutral(neutralRatio)
-                    .recommendedGif(gifUrl)
+//            ResultDTO resultDTO = ResultDTO.builder()
+//                    .userId((user != null && user.getId() != null) ? UUID.fromString(user.getId().toString()) : null)
+//                    .sentiment(sentiment)
+//                    .positiveRatio(positiveRatio)
+//                    .negativeRatio(negativeRatio)
+//                    .neutralRatio(neutralRatio)
+//                    .recommendedGif(gifUrl)
 //                    .pictureDiary(imageUrl)
-                    .date(LocalDate.now())
-
-                    .build();
+//                    .date(LocalDate.now())
+//
+//                    .build();
 
             return resultDTO;
 
@@ -143,16 +144,10 @@ public class ResultService {
     }
     public String save( ResultEntity resultEntity) {
         try {
-            // 여기에서 필요한 로직 수행
-
-            // ResultDTO를 ResultEntity로 변환
-//            ResultEntity resultEntity = ResultEntity.fromDTO(resultDTO);
-
-            // UserEntity를 가져와서 ResultEntity에 설정
-//            resultEntity.setUserId(user.getId());
 
             // ResultEntity를 저장
             resultRepository.save(resultEntity);
+
 
             return "success"; // 또는 저장 성공에 대한 적절한 응답 메시지
         } catch (Exception e) {

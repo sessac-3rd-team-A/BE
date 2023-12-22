@@ -1,31 +1,36 @@
 package back.ahwhew.controller;
 
+import back.ahwhew.dto.DashboardDTO;
 import back.ahwhew.dto.ResponseDTO;
+import back.ahwhew.dto.ResultDTO;
 import back.ahwhew.dto.UserDTO;
+import back.ahwhew.entity.ResultEntity;
 import back.ahwhew.entity.UserEntity;
 import back.ahwhew.security.TokenProvider;
+import back.ahwhew.service.DashboardService;
 import back.ahwhew.service.MypageService;
 import back.ahwhew.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.util.UUID;
+import java.util.*;
 
 @RestController
 @Slf4j
-@RequestMapping("/mypage")
+@RequestMapping("/profile")
 public class MypageController {
     @Autowired
     private MypageService mypageService;
 
     @Autowired
     private TokenProvider tokenProvider;
+
+    @Autowired
+    DashboardService dashbaordService;
 
     @PostMapping("/account")
     public ResponseEntity<?> updateProfile(@AuthenticationPrincipal UserEntity userInfo, @RequestBody UserDTO dto) {
@@ -56,6 +61,46 @@ public class MypageController {
         } catch(Exception e) {
             ResponseDTO resDTO = ResponseDTO.builder().error(e.getMessage()).build();
             return ResponseEntity.badRequest().body(resDTO);
+        }
+    }
+    @GetMapping("/dashboard")
+    public ResponseEntity<?> dashboard(@AuthenticationPrincipal UserEntity userEntity) {
+        try{
+            log.info("Dashboard start");
+            log.info("userEntity : {}",userEntity);
+            if(userEntity==null)
+                return ResponseEntity.badRequest().body("로그인 후 이용해주세요.");
+            // 대시보드 정보 저장(유저 정보, 날짜 정보 등 저장해야함)
+            // 대시보드 정보 불러오기(유저 정보, 날짜 정보 등 저장해야함)
+            // 대시보드 정보 수정(유저 정보, 날짜 정보 등 저장해야함)
+            List<ResultEntity> userResultList = dashbaordService.dashboard(userEntity);
+
+            log.info("user의 dashboard list::{}",userResultList);
+
+            TreeMap<String, DashboardDTO> resultMap = new TreeMap<>();
+
+            for (ResultEntity result : userResultList) {
+                ResultDTO resultDTO = new ResultDTO();
+                resultDTO.setId(result.getId());
+                resultDTO.setPictureDiary(result.getPictureDiary());
+                resultDTO.setSentiment(result.getSentiment());
+                resultDTO.setPositiveRatio(result.getPositiveRatio());
+                resultDTO.setNegativeRatio(result.getNegativeRatio());
+                resultDTO.setNeutralRatio(result.getNeutralRatio());
+                resultDTO.setDate(result.getDate());
+                resultDTO.setRecommendedGif(result.getRecommendedGif());
+
+                // Create or update DashboardDTO based on date
+                DashboardDTO dashboardDTO = resultMap.computeIfAbsent(String.valueOf(result.getDate()), k -> DashboardDTO.builder().build());
+
+                // Set ResultDTO in DashboardDTO
+                dashboardDTO.setResult(resultDTO);
+            }
+
+
+            return ResponseEntity.ok().body(resultMap);
+        }catch(Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 }

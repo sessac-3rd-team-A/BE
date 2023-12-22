@@ -67,9 +67,9 @@ public class ResultEntity {
         resultEntity.setPictureDiary(resultDTO.getPictureDiary());
         resultEntity.setRecommendedGif(resultDTO.getRecommendedGif());
         resultEntity.setSentiment(resultDTO.getSentiment());
-        resultEntity.setPositiveRatio(resultDTO.getPositive());
-        resultEntity.setNegativeRatio(resultDTO.getNegative());
-        resultEntity.setNeutralRatio(resultDTO.getNeutral());
+        resultEntity.setPositiveRatio(resultDTO.getPositiveRatio());
+        resultEntity.setNegativeRatio(resultDTO.getNegativeRatio());
+        resultEntity.setNeutralRatio(resultDTO.getNeutralRatio());
         resultEntity.setDate(resultDTO.getDate());
 
         return resultEntity;
