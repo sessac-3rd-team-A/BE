@@ -55,14 +55,12 @@ public class UserController {
             // JsonNode를 String으로 변환
             String firstWord = wordsNode.get(0).asText();
 
+            log.info("nickname: " + firstWord);
+
             // 유저 유효성 검사
             String validCheck = isValidUser(dto);
             if (!validCheck.equals("checked")){
-                ResponseDTO resDTO = ResponseDTO.builder()
-                        .error(validCheck)
-                        .build();
-
-                return ResponseEntity.badRequest().body(resDTO);
+                return ResponseEntity.badRequest().body(false);
             }
 
                 UserEntity user = UserEntity.builder()
@@ -73,22 +71,13 @@ public class UserController {
                         .gender(dto.getGender())
                         .build();
 
-                UserEntity registeredUser = service.create(user);
+                service.create(user);
 
-                UserDTO resDTO = UserDTO.builder()
-//                        .id(registeredUser.getId())
-                        .userId(registeredUser.getUserId())
-                        .password(registeredUser.getPassword())
-                        .age(registeredUser.getAge())
-                        .nickname(registeredUser.getNickname())
-                        .gender(registeredUser.getGender())
-                        .build();
-
-                return ResponseEntity.ok().body(resDTO);
+            return ResponseEntity.ok().body(true);
         } catch(Exception e) {
-            ResponseDTO resDTO = ResponseDTO.builder().error(e.getMessage()).build();
-            return ResponseEntity.badRequest().body(resDTO);
+            return ResponseEntity.badRequest().body(false);
         }
+
     }
 
     @PostMapping("/signin")
