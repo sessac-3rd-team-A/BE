@@ -39,6 +39,8 @@ public interface ResultRepository extends JpaRepository<ResultEntity, Long> {
                 resultEntity = findByUserAndDate(user,LocalDate.now()); // 업데이트 후 엔터티를 조회하여 반환합니다..orElseThrow(); // 업데이트 후 엔터티를 조회하여 반환합니다.
             } else {
                 resultEntity = save(resultEntity); // save 메서드를 호출하고 반환된 엔터티로 업데이트
+
+
             }
         } else {
             resultEntity = save(resultEntity); // save 메서드를 호출하고 반환된 엔터티로 업데이트
