@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Repository
@@ -53,6 +54,8 @@ public interface ResultRepository extends JpaRepository<ResultEntity, Long> {
 
     List<ResultEntity> findAllByUser(UserEntity user);
 
+    Optional<ResultEntity> findById(Long id);
+
     private ResultEntity createResultEntity(UserEntity user, String sentiment, double positiveRatio, double negativeRatio,
                                             double neutralRatio, String gifUrl, String imageUrl) {
         ResultEntity resultEntity = new ResultEntity();
@@ -84,4 +87,5 @@ public interface ResultRepository extends JpaRepository<ResultEntity, Long> {
                 .date(resultEntity.getDate())
                 .build();
     }
+
 }
