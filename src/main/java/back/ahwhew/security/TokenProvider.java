@@ -2,9 +2,7 @@ package back.ahwhew.security;
 
 import back.ahwhew.config.jwt.JWTProperties;
 import back.ahwhew.entity.UserEntity;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,11 +19,13 @@ public class TokenProvider {
     @Autowired
     private JWTProperties jwtProperties;
 
-    // create(): JWT 생성
-    public String create(UserEntity userEntity){
-        log.info("creating token");
-        Date expiryDate = Date.from(Instant.now().plus(1, ChronoUnit.DAYS));// 지금으로부터 1일
+    // createAccessToken(): JWT accessToken 생성
+    public String createAccessToken(UserEntity userEntity){
+        log.info("creating access token");
+//        Date expiryDate = Date.from(Instant.now().plus(5, ChronoUnit.MINUTES));// 지금으로부터 5분
+        Date expiryDate = Date.from(Instant.now().plus(20, ChronoUnit.SECONDS));// 지금으로부터 20초
 
+        log.info("now Date: {}", Date.from(Instant.now()));
         log.info("set expiryDate: {}", expiryDate);
         // JWT 토큰
         // JWT: header, payload, signature
@@ -41,6 +41,27 @@ public class TokenProvider {
                 .claim("gender", String.valueOf(userEntity.getGender()))
                 .compact(); // 토큰 생성
     }
+
+    // createRefreshToken(): JWT refreshToken 생성
+    public String createRefreshToken(UserEntity userEntity){
+        log.info("creating refresh token");
+        Date expiryDate = Date.from(Instant.now().plus(1, ChronoUnit.DAYS));// 지금으로부터 1일
+
+        log.info("set expiryDate: {}", expiryDate);
+        // JWT 토큰
+        // JWT: header, payload, signature
+        return Jwts.builder()
+                // header에 들어갈 내용 및 서명을 하기 위한 SECRET_KEY
+                .signWith(SignatureAlgorithm.HS512,jwtProperties.getSecretKey())
+                // payload에 들어갈 내용
+                .setSubject(String.valueOf(userEntity.getId())) // 토큰 제목
+                .setIssuer(jwtProperties.getIssuer()) // iss: 토큰 발급자
+                .setIssuedAt(new Date()) // iat: 토큰이 발급된 시간
+                .setExpiration(expiryDate) // exp: 토큰 만료 시간
+                .compact(); // 토큰 생성
+    }
+
+
 
     // validateAndGetUserId()
     // - 토큰 디코딩 및 파싱하고 토큰 위조여부 확인 -> 사용자 아이디 반환
@@ -59,9 +80,22 @@ public class TokenProvider {
     }
 
     public Claims extractClaims(String token) {
-        return Jwts.parser()
-                .setSigningKey(jwtProperties.getSecretKey())
-                .parseClaimsJws(token)
-                .getBody();
+        log.info("extract");
+        try{
+            throw new RuntimeException();
+//            Claims claims = Jwts.parser()
+//                    .setSigningKey(jwtProperties.getSecretKey())
+//                    .parseClaimsJws(token)
+//                    .getBody();
+//            return claims;
+        }catch (ExpiredJwtException e){
+            log.warn("ExpiredJwtException!!");
+            Claims claims = Jwts.claims().setIssuer("Expired");
+            return claims;
+        }catch (Exception e) {
+            log.warn("Exception : {}", e);
+            Claims claims = Jwts.claims().setIssuer("Token error");
+            return claims;
+        }
     }
 }

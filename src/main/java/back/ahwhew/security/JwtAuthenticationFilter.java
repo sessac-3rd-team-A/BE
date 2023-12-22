@@ -2,6 +2,7 @@ package back.ahwhew.security;
 
 import back.ahwhew.entity.UserEntity;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwt;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -19,6 +20,8 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.sql.Date;
+import java.time.Instant;
 import java.util.UUID;
 
 @Slf4j
@@ -52,22 +55,46 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 //                String id = tokenProvider.validateAndGetId(token);
 //                log.info(("Authenticated user ID: " + id));
 
+                // 타입 체크 -> age랑 gender가 널인지 판단해서 체크 널이면 refresh토큰 있으면 access토큰
+                // 기한 체크 -> 엑세스토큰은 에러메세지 보내서 다시 발급 받을 수 있도록 함 , refresh토큰이면 다시 로그인 하도록 함
+
                 Claims claims = tokenProvider.extractClaims(token);
                 log.info("claims : {}", claims);
 
-                UserEntity user = new UserEntity();
-                user.setId(UUID.fromString(claims.getSubject()));
-                user.setAge(claims.get("age",String.class));
-                user.setGender(claims.get("gender", String.class).charAt(0));
+                // if문 순서 재배치 필요(가능하면 호출이 많은 순서로)
+                if(claims.getIssuer() == "Token error"){
 
-                // 인증 완료 -> SecurityContextHolder 에 등록 되어야 인증된 사용자!
-                AbstractAuthenticationToken authentication
-                        = new UsernamePasswordAuthenticationToken(user, null, AuthorityUtils.NO_AUTHORITIES); // 사용자 정보
-                authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request)); // 사용자 인증 세부 정보 설정
+                }else if(claims.getIssuer() == "Expired"){
+                    // 유효시간이 지난 경우(사실 에러가 발생한 경우)
+                    log.info("exppppppppppppppppppppppppiiiiiiiiiiiiiiiiiirrrrrrrrrrrrrrrrred");
+                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                    response.setContentType("application/json");
+                    response.setCharacterEncoding("UTF-8");
+                    response.getWriter().write("토큰 재발급을 받으세요");
+                    return;
+                }else if(claims.get("age", String.class) == null) {
+                    // 리프레시 토큰인 경우 (아직 처리할 로직이 없음) 사용자 등록 필요가 없음
+                    log.info("refreshToken!");
 
-                SecurityContext securityContext = SecurityContextHolder.createEmptyContext(); /// 빈 SecurityContext 생성
-                securityContext.setAuthentication(authentication); // context에 인증 정보 설정
-                SecurityContextHolder.setContext(securityContext); // SecurityContextHolder 저장
+                }else {
+                    // 엑세스 토큰인 경우 (기존과 동일한 로직 처리)
+                    if(claims.getExpiration().after(Date.from(Instant.now()))){
+
+                    }
+                    UserEntity user = new UserEntity();
+                    user.setId(UUID.fromString(claims.getSubject()));
+                    user.setAge(claims.get("age", String.class));
+                    user.setGender(claims.get("gender", String.class).charAt(0));
+
+                    // 인증 완료 -> SecurityContextHolder 에 등록 되어야 인증된 사용자!
+                    AbstractAuthenticationToken authentication
+                            = new UsernamePasswordAuthenticationToken(user, null, AuthorityUtils.NO_AUTHORITIES); // 사용자 정보
+                    authentication.setDetails(new WebAuthenticationDetailsSource().buildDetails(request)); // 사용자 인증 세부 정보 설정
+
+                    SecurityContext securityContext = SecurityContextHolder.createEmptyContext(); /// 빈 SecurityContext 생성
+                    securityContext.setAuthentication(authentication); // context에 인증 정보 설정
+                    SecurityContextHolder.setContext(securityContext); // SecurityContextHolder 저장
+                }
             }else{
                 log.warn("Token is null");
 //                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -96,4 +123,5 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         return null;
     }
+
 }

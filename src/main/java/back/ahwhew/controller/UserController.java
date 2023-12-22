@@ -96,7 +96,7 @@ public class UserController {
         log.info("Start signin");
 
         // 유저 유효성 검사
-        String validCheck = isValidUser(dto);
+                    String validCheck = isValidUser(dto);
         if (!validCheck.equals("checked")){
             ResponseDTO resDTO = ResponseDTO.builder()
                     .error(validCheck)
@@ -111,7 +111,8 @@ public class UserController {
         if(user != null){
             log.info("user is not null");
             // 이메일, 비번으로 찾은 유저 있음 = 로그인 성공
-            final String token = tokenProvider.create(user);
+            final String accessToken = tokenProvider.createAccessToken(user);
+            final String refreshToken = tokenProvider.createRefreshToken(user);
             log.info("finish creating token");
             final UserDTO resUserDTO = UserDTO.builder()
                     // 나중에 프론트와 연결시 필요한 요소 추가할것
@@ -120,7 +121,8 @@ public class UserController {
                     .nickname(user.getNickname())
                     .age(user.getAge())
                     .gender(user.getGender())
-                    .token(token) // jwt 토큰 설정
+                    .accessToken(accessToken) // jwt accessToken 설정
+                    .refreshToken(refreshToken) // jwt refreshToken 설정
                     .build();
 
             return ResponseEntity.ok().body(resUserDTO);
@@ -133,6 +135,13 @@ public class UserController {
 
             return ResponseEntity.badRequest().body(resDTO);
         }
+    }
+    @PostMapping("/accessToken")
+    public ResponseEntity<?> accessToken(@RequestBody UserDTO dto){
+
+        UserEntity user = service.getByCredentials(dto.getUserId(), dto.getPassword(), passwordEncoder);
+
+        return ResponseEntity.ok().body(null);
     }
 
     @GetMapping("/check")

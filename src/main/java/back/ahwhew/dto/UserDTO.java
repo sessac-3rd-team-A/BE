@@ -17,5 +17,6 @@ public class UserDTO {
     private String nickname;
     private String age;
     private char gender;
-    private String token; // jwt 저장공간
+    private String accessToken;
+    private String refreshToken;
 }
