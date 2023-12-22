@@ -10,10 +10,13 @@ import java.util.List;
 
 @Builder
 @AllArgsConstructor
+@NoArgsConstructor
 @Data
 public class DashboardDTO {
 
-
+    private String date;
     private ResultDTO result;
+//    private String yearMonth;
+//    private List<MonthlyUserStatisticsDTO> monthlyStatistics;
 
 }

@@ -1,9 +1,6 @@
 package back.ahwhew.controller;
 
-import back.ahwhew.dto.DashboardDTO;
-import back.ahwhew.dto.ResponseDTO;
-import back.ahwhew.dto.ResultDTO;
-import back.ahwhew.dto.UserDTO;
+import back.ahwhew.dto.*;
 import back.ahwhew.entity.ResultEntity;
 import back.ahwhew.entity.UserEntity;
 import back.ahwhew.security.TokenProvider;
@@ -17,7 +14,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @Slf4j
@@ -65,19 +65,20 @@ public class MypageController {
     }
     @GetMapping("/dashboard")
     public ResponseEntity<?> dashboard(@AuthenticationPrincipal UserEntity userEntity) {
-        try{
+        try {
             log.info("Dashboard start");
-            log.info("userEntity : {}",userEntity);
-            if(userEntity==null)
+            log.info("userEntity : {}", userEntity);
+            if (userEntity == null)
                 return ResponseEntity.badRequest().body("로그인 후 이용해주세요.");
+
             // 대시보드 정보 저장(유저 정보, 날짜 정보 등 저장해야함)
-            // 대시보드 정보 불러오기(유저 정보, 날짜 정보 등 저장해야함)
-            // 대시보드 정보 수정(유저 정보, 날짜 정보 등 저장해야함)
             List<ResultEntity> userResultList = dashbaordService.dashboard(userEntity);
 
-            log.info("user의 dashboard list::{}",userResultList);
+            log.info("user의 dashboard list::{}", userResultList);
+            log.info("user의 dashboard list 길이::{}", userResultList.size());
 
             TreeMap<String, DashboardDTO> resultMap = new TreeMap<>();
+
 
             for (ResultEntity result : userResultList) {
                 ResultDTO resultDTO = new ResultDTO();
@@ -90,16 +91,44 @@ public class MypageController {
                 resultDTO.setDate(result.getDate());
                 resultDTO.setRecommendedGif(result.getRecommendedGif());
 
-                // Create or update DashboardDTO based on date
                 DashboardDTO dashboardDTO = resultMap.computeIfAbsent(String.valueOf(result.getDate()), k -> DashboardDTO.builder().build());
-
-                // Set ResultDTO in DashboardDTO
                 dashboardDTO.setResult(resultDTO);
+                log.info("dashboardDTO::{}", dashboardDTO);
+
             }
 
 
-            return ResponseEntity.ok().body(resultMap);
-        }catch(Exception e) {
+
+
+            DashboardResDTO dashboardResDTO = DashboardResDTO.builder()
+                    .calender(resultMap.entrySet()
+                            .stream()
+                            .map(entry -> {
+                                DashboardDTO dashboardDTO = entry.getValue();
+                                dashboardDTO.setDate(entry.getKey());
+                                return dashboardDTO;
+                            })
+                            .collect(Collectors.toList()))
+                    .monthlyStatistics(MonthlyUserStatisticsDTO.calculateMonthlyStatistics(
+                            userResultList.stream()
+                                    .map(result -> ResultDTO.builder()
+                                            .positiveRatio(result.getPositiveRatio())
+                                            .negativeRatio(result.getNegativeRatio())
+                                            .neutralRatio(result.getNeutralRatio())
+                                            .date(result.getDate())
+                                            .build())
+                                    .collect(Collectors.toList())))
+                    .build();
+
+
+
+
+
+
+
+            return ResponseEntity.ok().body(dashboardResDTO);
+
+        } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
