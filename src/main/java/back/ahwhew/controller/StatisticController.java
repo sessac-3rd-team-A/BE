@@ -59,9 +59,9 @@ public class StatisticController {
             LocalDate startDate = endDate.minusMonths(1); //한달 전
             String gifUrl = null;
             if (gender != null && age != null) {
-//                gifUrl = statisticsService.getMemeByGenderAndAge(gender, age, startDate, endDate);
+                gifUrl = statisticsService.getMemeByGenderAndAge(gender, age, startDate, endDate);
             } else if (gender != null) {
-//                gifUrl = statisticsService.getMemeByGender(gender, startDate, endDate);
+                gifUrl = statisticsService.getMemeByGender(gender, startDate, endDate);
             } else if (age != null) {
                 gifUrl = statisticsService.getMemeByAge(age, startDate, endDate);
             } else {
