@@ -257,10 +257,6 @@ public class StatisticsService {
         return mostFrequentGif;
         }
 
-    }
-
-
-
 // 성별, 나이대별 가장 많이 나온 meme
 //    public String getMemeByGenderAndAge(Character gender, String age, LocalDate startDate, LocalDate endDate) {
 //        try {
@@ -288,10 +284,46 @@ public class StatisticsService {
 //    }
 
     // 나이대별 가장 많이 나온 meme
-//    public String getMemeByAge(String age,LocalDate startDate, LocalDate endDate){
-//
-//    }
+    public String getMemeByAge(String age,LocalDate startDate, LocalDate endDate){
+        List<StatisticsEntity> AgeData = repository.findByAge(age);
 
+        List<StatisticsEntity> filteredData = AgeData.stream()
+                .filter(entity -> {
+                    LocalDate entityDate = entity.getDate();
+                    return entityDate != null &&
+                            (entityDate.isEqual(startDate) || (entityDate.isAfter(startDate) && !entityDate.isAfter(endDate.plusDays(1))));
+                })
+                .collect(Collectors.toList());
+
+        // 각 recommend_Gif의 빈도를 세기 위한 맵 생성
+        Map<String, Integer> gifFrequencyMap = new HashMap<>();
+        for (StatisticsEntity entity : filteredData) {
+            String recommendGif = entity.getRecommendedGif();
+            gifFrequencyMap.put(recommendGif, gifFrequencyMap.getOrDefault(recommendGif, 0) + 1);
+        }
+
+        // 빈도가 가장 높은 recommend_Gif 찾기
+        String mostFrequentGif = Collections.max(gifFrequencyMap.entrySet(), Map.Entry.comparingByValue()).getKey();
+
+        // 가장 높은 빈도의 recommend_Gif가 여러 개인 경우 랜덤 선택
+        String currentGif = mostFrequentGif;   // effectively final 변수
+        List<String> mostFrequentGifs = gifFrequencyMap.entrySet().stream()
+                .filter(entry -> {
+                    return entry.getValue().equals(gifFrequencyMap.get(currentGif));
+                })
+                .map(Map.Entry::getKey)
+                .collect(Collectors.toList());
+
+
+        if (mostFrequentGifs.size() > 1) {
+            // 겹치는 값이 있을 경우 랜덤 선택
+            Random random = new Random();
+            mostFrequentGif = mostFrequentGifs.get(random.nextInt(mostFrequentGifs.size()));
+        }
+
+        return mostFrequentGif;
+    }
+}
 
 
 

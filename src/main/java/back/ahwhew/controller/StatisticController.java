@@ -63,7 +63,7 @@ public class StatisticController {
             } else if (gender != null) {
 //                gifUrl = statisticsService.getMemeByGender(gender, startDate, endDate);
             } else if (age != null) {
-//                gifUrl = statisticsService.getMemeByAge(age, startDate, endDate);
+                gifUrl = statisticsService.getMemeByAge(age, startDate, endDate);
             } else {
                 // 카테고리 선택 안했으면 전체 유저 평균 데이터 전송
                 gifUrl = statisticsService.getMemeByUser(startDate, endDate);
