@@ -1,6 +1,7 @@
 package back.ahwhew.controller;
 
 import back.ahwhew.dto.DiaryDTO;
+import back.ahwhew.dto.ResponseDTO;
 import back.ahwhew.dto.ResultDTO;
 import back.ahwhew.entity.ResultEntity;
 import back.ahwhew.entity.UserEntity;
@@ -41,6 +42,25 @@ public class ResultController {
 //    }
     @Autowired
     private ResultRepository resultRepository;
+    @GetMapping("/diary/{resultId}")
+    public ResponseEntity<ResultDTO> getDiaryPage(@PathVariable Long resultId) {
+        log.info("resultId : {}", resultId);
+        ResultEntity resultEntity = resultRepository.findById(resultId).orElse(null);
+        if (resultEntity == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        ResultDTO resultDTO= ResultDTO.builder()
+                .id(resultEntity.getId())
+                .sentiment(resultEntity.getSentiment())
+                .positiveRatio(resultEntity.getPositiveRatio())
+                .negativeRatio(resultEntity.getNegativeRatio())
+                .neutralRatio(resultEntity.getNeutralRatio())
+                .date(resultEntity.getDate())
+                .recommendedGif(resultEntity.getRecommendedGif())
+                .pictureDiary(resultEntity.getPictureDiary())
+                .build();
+        return ResponseEntity.ok(resultDTO);
+    }
 
 
     @PostMapping("/diary")
