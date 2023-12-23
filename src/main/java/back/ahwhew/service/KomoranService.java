@@ -117,4 +117,54 @@ public class KomoranService {
 
         return null; // 추출된 단어로부터 직종 카테고리를 결정할 수 없는 경우
     }
+    public List<String> extractNounPhrases(List<String> sentences) {
+        List<String> nounPhrases = new ArrayList<>();
+
+        Komoran komoran = new Komoran(DEFAULT_MODEL.FULL);
+
+        for (String sentence : sentences) {
+            List<Token> tokens = komoran.analyze(sentence).getTokenList();
+            StringBuilder nounPhraseBuilder = new StringBuilder();
+
+            for (Token token : tokens) {
+                String morph = token.getMorph().trim();
+
+                // 명사 또는 형용사인 경우에만 추가
+                if (token.getPos().equals("NNG") || token.getPos().equals("VA")) {
+                    if (!morph.isEmpty() && !morph.equals("같")) {
+                        nounPhraseBuilder.append(morph).append(" ");
+                    }
+                }
+
+                // 현재 토큰이 부정어인지 확인하고, 부정어가 있다면 해당 구를 포함하여 추가
+                if (isNegation(morph)) {
+                    for (int i = tokens.indexOf(token) - 1; i >= 0; i--) {
+                        Token phraseToken = tokens.get(i);
+                        String phraseMorph = phraseToken.getMorph().trim();
+                        if (!phraseMorph.isEmpty() && !isNegation(phraseMorph) &&
+                                !phraseToken.getPos().equals("NNG") &&
+                                !phraseToken.getPos().equals("VA")) {
+                            nounPhraseBuilder.insert(0, phraseMorph + " "); // 띄어쓰기 추가
+                            break;  // 부정어가 아니고 명사 또는 형용사가 아닌 경우 중지
+                        }
+                    }
+                }
+            }
+
+            // 현재 문장에 대한 명사구를 추가
+            String nounPhrase = nounPhraseBuilder.toString().trim();
+            if (!nounPhrase.isEmpty()) {
+                nounPhrases.add(nounPhrase);
+            }
+        }
+
+        return nounPhrases;
+    }
+
+    private boolean isNegation(String word) {
+        // 부정어를 식별하는 로직 추가
+        // 예를 들어, 미리 정의된 부정어 목록을 사용할 수 있습니다
+        List<String> negations = List.of("안", "못", "아니");
+        return negations.contains(word);
+    }
 }

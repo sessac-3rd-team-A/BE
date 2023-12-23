@@ -6,6 +6,7 @@ import back.ahwhew.entity.ResultEntity;
 import back.ahwhew.entity.StatisticsEntity;
 import back.ahwhew.entity.UserEntity;
 import back.ahwhew.repository.ResultRepository;
+import back.ahwhew.service.KomoranService;
 import back.ahwhew.service.StatisticsService;
 import back.ahwhew.service.UserService;
 import lombok.extern.slf4j.Slf4j;
@@ -48,6 +49,9 @@ public class ResultService {
 
     @Autowired
     UserService userService;
+
+    @Autowired
+    private KomoranService komoranService;
 
     @Autowired
     private StatisticsService statisticsService;
@@ -102,7 +106,12 @@ public class ResultService {
 
             //파파고 돌리기
             List<String> extractWords=naverSentimentService.extractWordsFromResult(sentimentResult);
-            List<String> translatedText=naverPapagoService.translate(extractWords);
+            log.info("extractWords:: {}",extractWords);
+            //한국어 자연어 처리(명사 위주로 추출)
+            List<String> phrasesWithNegations = komoranService.extractNounPhrases(extractWords);
+            log.info("phrases with negations:: {}", phrasesWithNegations);
+
+            List<String> translatedText=naverPapagoService.translate(phrasesWithNegations);
             log.info("translated result:: {}",translatedText);
 
             //karlo 돌리기(여기서는 base64로 인코딩된 값이 넘어옴
@@ -120,18 +129,6 @@ public class ResultService {
 
             ResultDTO resultDTO=resultRepository.saveOrUpdateResult(user,sentiment,positiveRatio,negativeRatio,neutralRatio,gifUrl,imageUrl);
 
-
-//            ResultDTO resultDTO = ResultDTO.builder()
-//                    .userId((user != null && user.getId() != null) ? UUID.fromString(user.getId().toString()) : null)
-//                    .sentiment(sentiment)
-//                    .positiveRatio(positiveRatio)
-//                    .negativeRatio(negativeRatio)
-//                    .neutralRatio(neutralRatio)
-//                    .recommendedGif(gifUrl)
-//                    .pictureDiary(imageUrl)
-//                    .date(LocalDate.now())
-//
-//                    .build();
 
             return resultDTO;
 
