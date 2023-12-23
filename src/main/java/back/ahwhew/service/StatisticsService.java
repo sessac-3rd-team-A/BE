@@ -204,8 +204,8 @@ public class StatisticsService {
 
             log.info("count : {}",count);
             if(count>0){
-                log.info("dailyAverage.getAveragePositive()는 : {}",dailyAverage.getAveragePositive());
-                log.info("dailyAverage.getAveragePositive()에서 나누면  : {}",dailyAverage.getAveragePositive() / count);
+//                log.info("dailyAverage.getAveragePositive()는 : {}",dailyAverage.getAveragePositive());
+//                log.info("dailyAverage.getAveragePositive()에서 나누면  : {}",dailyAverage.getAveragePositive() / count);
                 dailyAverage.setAveragePositive(dailyAverage.getAveragePositive() / count);
                 dailyAverage.setAverageNegative(dailyAverage.getAverageNegative() / count);
                 dailyAverage.setAverageNeutral(dailyAverage.getAverageNeutral() / count);
@@ -214,9 +214,7 @@ public class StatisticsService {
         }
         return new ArrayList<>(dailyAveragesMap.values());
         }
-
-    // 전체 유저별 가장 많이 나온 meme
-    public String getMemeByUser(LocalDate startDate, LocalDate endDate) {
+    public Map<String, Object> getTopMemesByUser(LocalDate startDate, LocalDate endDate) {
         try {
             // 기간 안에 데이터 가져옴
             List<StatisticsEntity> allDateInRange = repository.findAllByDateBetween(startDate, endDate);
@@ -236,35 +234,74 @@ public class StatisticsService {
                 gifFrequencyMap.put(recommendGif, gifFrequencyMap.getOrDefault(recommendGif, 0) + 1);
             }
 
-            if(allDateInRange.isEmpty()){
-                return "No data available";
-            }else{
-            // 빈도가 가장 높은 recommend_Gif 찾기
-            String mostFrequentGif = Collections.max(gifFrequencyMap.entrySet(), Map.Entry.comparingByValue()).getKey();
+            if (allDateInRange.isEmpty()) {
+                // 데이터가 없을 경우 예외 처리
+                return Collections.singletonMap("message", "데이터가 없습니다");
+            } else {
+                // 빈도가 높은 순으로 정렬된 상위 10개의 recommend_Gif 찾기
+                Map<String, Integer> topMemes = gifFrequencyMap.entrySet().stream()
+                        .sorted(Map.Entry.<String, Integer>comparingByValue().reversed())
+                        .limit(10)
+                        .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 
-            // 가장 높은 빈도의 recommend_Gif가 여러 개인 경우 랜덤 선택
-            String currentGif = mostFrequentGif;   // effectively final 변수
-            List<String> mostFrequentGifs = gifFrequencyMap.entrySet().stream()
-                    .filter(entry -> {
-                        return entry.getValue().equals(gifFrequencyMap.get(currentGif));
-                    })
-                    .map(Map.Entry::getKey)
-                    .collect(Collectors.toList());
-
-
-            if (mostFrequentGifs.size() > 1) {
-                // 겹치는 값이 있을 경우 랜덤 선택
-                Random random = new Random();
-                mostFrequentGif = mostFrequentGifs.get(random.nextInt(mostFrequentGifs.size()));
+                return Collections.singletonMap("topMemes", topMemes);
             }
-
-            return mostFrequentGif;
-            }
-        }catch(Exception e){
+        } catch (Exception e) {
             log.error("에러 발생: {}", e.getMessage(), e);
-            return "Error occured";
+            return Collections.singletonMap("message", "에러가 발생했습니다");
         }
     }
+
+//    // 전체 유저별 가장 많이 나온 meme
+//    public String getMemeByUser(LocalDate startDate, LocalDate endDate) {
+//        try {
+//            // 기간 안에 데이터 가져옴
+//            List<StatisticsEntity> allDateInRange = repository.findAllByDateBetween(startDate, endDate);
+//
+//            List<StatisticsEntity> filteredData = allDateInRange.stream()
+//                    .filter(entity -> {
+//                        LocalDate entityDate = entity.getDate();
+//                        return entityDate != null &&
+//                                (entityDate.isEqual(startDate) || (entityDate.isAfter(startDate) && !entityDate.isAfter(endDate.plusDays(1))));
+//                    })
+//                    .collect(Collectors.toList());
+//
+//            // 각 recommend_Gif의 빈도를 세기 위한 맵 생성
+//            Map<String, Integer> gifFrequencyMap = new HashMap<>();
+//            for (StatisticsEntity entity : filteredData) {
+//                String recommendGif = entity.getRecommendedGif();
+//                gifFrequencyMap.put(recommendGif, gifFrequencyMap.getOrDefault(recommendGif, 0) + 1);
+//            }
+//
+//            if(allDateInRange.isEmpty()){
+//                return "No data available";
+//            }else{
+//            // 빈도가 가장 높은 recommend_Gif 찾기
+//            String mostFrequentGif = Collections.max(gifFrequencyMap.entrySet(), Map.Entry.comparingByValue()).getKey();
+//
+//            // 가장 높은 빈도의 recommend_Gif가 여러 개인 경우 랜덤 선택
+//            String currentGif = mostFrequentGif;   // effectively final 변수
+//            List<String> mostFrequentGifs = gifFrequencyMap.entrySet().stream()
+//                    .filter(entry -> {
+//                        return entry.getValue().equals(gifFrequencyMap.get(currentGif));
+//                    })
+//                    .map(Map.Entry::getKey)
+//                    .collect(Collectors.toList());
+//
+//
+//            if (mostFrequentGifs.size() > 1) {
+//                // 겹치는 값이 있을 경우 랜덤 선택
+//                Random random = new Random();
+//                mostFrequentGif = mostFrequentGifs.get(random.nextInt(mostFrequentGifs.size()));
+//            }
+//
+//            return mostFrequentGif;
+//            }
+//        }catch(Exception e){
+//            log.error("에러 발생: {}", e.getMessage(), e);
+//            return "Error occured";
+//        }
+//    }
 
 // 성별, 나이대별 가장 많이 나온 meme
     public String getMemeByGenderAndAge(Character gender, String age, LocalDate startDate, LocalDate endDate) {
