@@ -25,10 +25,6 @@ public interface StatisticsRepository extends JpaRepository<StatisticsEntity,Lon
 
     List<StatisticsEntity> findAllByDateBetween(LocalDate startDate,LocalDate endDate);
 
-    @Query("SELECT CASE WHEN COUNT(r) > 0 THEN true ELSE false END " +
-            "FROM ResultEntity r " +
-            "WHERE r.user.id = :userId AND r.date = :date")
-    boolean existsByUserIdAndDate(@Param("userId") UUID userId, @Param("date") LocalDate date);
 
 }
 
