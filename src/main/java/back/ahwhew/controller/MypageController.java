@@ -48,13 +48,13 @@ public class MypageController {
             UserEntity registeredUser = mypageService.updateProfile(userInfo.getId(), user);
 
             // 토큰 재생성
-            final String token = tokenProvider.create(user);
+            final String token = tokenProvider.createAccessToken(user);
 
             final UserDTO resDTO = UserDTO.builder()
                     .userId(registeredUser.getUserId())
                     .age(registeredUser.getAge())
                     .gender(registeredUser.getGender())
-                    .token(token)
+                    .accessToken(token)
                     .build();
 
             return ResponseEntity.ok().body(resDTO);
