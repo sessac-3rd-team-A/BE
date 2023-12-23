@@ -69,10 +69,22 @@ public class UserService {
         if(originalUser != null && encoder.matches(password, originalUser.getPassword())) {
             log.info("samePassword");
             return originalUser;
+        }else if(originalUser == null){
+            log.info("wrong userId");
+            UserEntity user = new UserEntity();
+            user.setAge("wrong userId"); // age와 오류 메세지가 중복 가능섬이 없기 때문에 사용
+            return user;
+        }else if(!encoder.matches(password, originalUser.getPassword())){
+            log.info("wrong password");
+            UserEntity user = new UserEntity();
+            user.setAge("wrong password");
+            return user;
+        }else{
+            log.info("signin error");
+            UserEntity user = new UserEntity();
+            user.setAge("signin error");
+            return user;
         }
-
-        log.info("wrongPassword");
-        return null;
     }
 
     public UserEntity getById(UUID id){

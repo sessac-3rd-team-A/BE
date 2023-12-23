@@ -105,7 +105,7 @@ public class UserController {
         UserEntity user = service.getByCredentials(dto.getUserId(), dto.getPassword(), passwordEncoder);
 
         log.info("user: {}",user);
-        if(user != null){
+        if(user.getUserId() != null){
             log.info("user is not null");
             // 이메일, 비번으로 찾은 유저 있음 = 로그인 성공
             final String token = tokenProvider.createAccessToken(user);
@@ -127,10 +127,10 @@ public class UserController {
         } else {
             // userId, 비번으로 찾은 유저 없음 = 로그인 실패
             ResponseDTO resDTO = ResponseDTO.builder()
-                    .error("Login failed")
+                    .error(user.getAge()) // service에서 로그인 실패 사유를 age에 담아 보내기 때문
                     .build();
 
-            return ResponseEntity.badRequest().body(resDTO);
+            return ResponseEntity.status(401).body(resDTO);
         }
     }
     @PostMapping("/newToken")
