@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.HashMap;
 import java.util.stream.Collectors;
 
 @RestController
@@ -144,22 +145,34 @@ public class MypageController {
     @GetMapping("/my-shop")
     public ResponseEntity<?> myShop(@AuthenticationPrincipal UserEntity userEntity) {
         try {
-            //상품 추천을 위해 고객 정보를 보내줌
+            // 상품 추천을 위해 고객 정보를 보내줌
             DiaryEntity latestDiaryEntity = myshopService.getLatestDiary(userEntity);
             log.info("최신 일기 정보::{}", latestDiaryEntity);
+
             ResultEntity latestResultEntity = myshopService.getLatestResult(userEntity);
             log.info("최신 결과 정보::{}", latestResultEntity);
-            //대표감정 태그 불러오기
-            GifEntity gifEntity = myshopService.getGifEntity(latestResultEntity.getRecommendedGif());
-            log.info("gifEntity로 불러온 대표감정 태그값;;{}", gifEntity);
+
+            // MyShopDTO를 빌드하되, 최신 일기가 없는 경우 빈 객체로 생성
             MyShopDTO myshopDTO = MyShopDTO.builder()
-                    .jobCategories(latestDiaryEntity.getJobCategories())
-                    .jobRelatedWords(latestDiaryEntity.getJobRelatedWords())
-                    .tag(gifEntity.getTag())
-                    .sentiment(latestResultEntity.getSentiment())
+                    .jobCategories(latestDiaryEntity != null ? latestDiaryEntity.getJobCategories() : null)
+                    .jobRelatedWords(latestDiaryEntity != null ? latestDiaryEntity.getJobRelatedWords() : null)
+                    .tag(latestResultEntity != null ? myshopService.getGifEntity(latestResultEntity.getRecommendedGif()).getTag() : null)
+                    .sentiment(latestResultEntity != null ? latestResultEntity.getSentiment() : null)
                     .build();
 
-            return ResponseEntity.ok().body(myshopDTO);
+            // 응답 메시지 설정
+            Map<String, Object> response = new HashMap<>();
+            response.put("userInfo", myshopDTO);
+
+            if (latestDiaryEntity == null) {
+                // 최근 일기가 없는 경우 메시지 추가
+                Map<String, String> message = new HashMap<>();
+                message.put("message", "최근 일기가 없습니다.");
+                response.put("error", message);
+                return ResponseEntity.ok().body(response);
+            }
+
+            return ResponseEntity.ok().body(response);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
