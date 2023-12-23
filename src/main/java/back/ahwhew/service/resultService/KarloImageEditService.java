@@ -11,6 +11,7 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +30,7 @@ public class KarloImageEditService {
 
 
     public String changeImage(String base64EncodedImgInfo, List<String> translatedWords) {
+
         try{
             HttpHeaders headers= new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
@@ -41,7 +43,7 @@ public class KarloImageEditService {
             requestBodyMap.put("image",base64EncodedImgInfo);
             requestBodyMap.put("mask",base64EncodedImgInfo);
             requestBodyMap.put("prompt",String.join(",",translatedWords));
-            requestBodyMap.put("negative_prompt","text,letter,signature,watermark");
+            requestBodyMap.put("negative_prompt",String.join(",", KarloImageGeneratorService.negativePrompt));
             requestBodyMap.put("image_format","jpeg");
             requestBodyMap.put("return_type","base64_string");
 

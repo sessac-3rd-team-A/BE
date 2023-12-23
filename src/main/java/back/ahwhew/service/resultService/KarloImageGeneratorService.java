@@ -26,7 +26,7 @@ public class KarloImageGeneratorService {
 
     @Value("${karlo.key}")
     private String karloKey;
-    private static final List<String> negativePrompt = Arrays.asList("text","letter", "signature", "watermark","string");
+    static final List<String> negativePrompt = Arrays.asList("text","letter", "signature", "watermark", "string");
     public String getKarloResult(List<String> transferedWords) {
         try {
             HttpHeaders headers = new HttpHeaders();
@@ -37,7 +37,9 @@ public class KarloImageGeneratorService {
 
             // 요청 본문을 위한 맵 생성
             // 번역된 언어 이미지 생성을 위한 키워드 추가
-//            transferedWords.add("cartoon");
+            transferedWords.add("oil painting");
+            transferedWords.add("emotion centered");
+
             //cartoon을 프롬프트에 넣으니까 자꾸 텍스트가 추가되는 현상이 벌어짐
 //            transferedWords.add("cute");
 //            transferedWords.add("Draw a picture diary that matches this diary without text.");
