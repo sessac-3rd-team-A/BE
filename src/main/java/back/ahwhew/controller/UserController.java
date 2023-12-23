@@ -1,5 +1,6 @@
 package back.ahwhew.controller;
 
+import back.ahwhew.config.jwt.JWTProperties;
 import back.ahwhew.dto.ResponseDTO;
 import back.ahwhew.dto.UserDTO;
 import back.ahwhew.entity.UserEntity;
@@ -7,6 +8,8 @@ import back.ahwhew.security.TokenProvider;
 import back.ahwhew.service.UserService;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jwts;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +19,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
+
+import java.util.UUID;
 
 @RestController
 @Slf4j
@@ -29,6 +34,9 @@ public class UserController {
 
     @Autowired
     private ObjectMapper objectMapper;
+
+    @Autowired
+    private JWTProperties jwtProperties;
 
     private PasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
@@ -100,7 +108,8 @@ public class UserController {
         if(user != null){
             log.info("user is not null");
             // 이메일, 비번으로 찾은 유저 있음 = 로그인 성공
-            final String token = tokenProvider.create(user);
+            final String token = tokenProvider.createAccessToken(user);
+            final String refreshToken = tokenProvider.createRefreshToken(user);
             log.info("finish creating token");
             final UserDTO resUserDTO = UserDTO.builder()
                     // 나중에 프론트와 연결시 필요한 요소 추가할것
@@ -109,7 +118,8 @@ public class UserController {
                     .nickname(user.getNickname())
                     .age(user.getAge())
                     .gender(user.getGender())
-                    .token(token) // jwt 토큰 설정
+                    .accessToken(token) // jwt 토큰 설정
+                    .refreshToken(refreshToken)
                     .build();
 
             return ResponseEntity.ok().body(resUserDTO);
@@ -122,6 +132,33 @@ public class UserController {
 
             return ResponseEntity.badRequest().body(resDTO);
         }
+    }
+    @PostMapping("/newToken")
+    public ResponseEntity<?> createNewToken(HttpServletRequest request){
+        String token = request.getHeader("Authorization").substring(7);
+        log.info("create new Token from : {}", token);
+        Claims claims = Jwts.parser()
+                .setSigningKey(jwtProperties.getSecretKey())
+                .parseClaimsJws(token)
+                .getBody();
+        UUID id = UUID.fromString(claims.getSubject());
+
+
+        // 토큰으로 id를 이용해서 사람 찾고
+        UserEntity user = service.getById(id);
+        String accessToken = tokenProvider.createAccessToken(user);
+        // createAccesstoken에서 리턴
+        final UserDTO resUserDTO = UserDTO.builder()
+                // 나중에 프론트와 연결시 필요한 요소 추가할것
+                .userId(user.getUserId())
+                .password(user.getPassword())
+                .nickname(user.getNickname())
+                .age(user.getAge())
+                .gender(user.getGender())
+                .accessToken(accessToken)
+                .build();
+
+        return ResponseEntity.ok().body(resUserDTO);
     }
 
     @GetMapping("/check")
