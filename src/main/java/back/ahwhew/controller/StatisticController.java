@@ -61,7 +61,7 @@ public class StatisticController {
             LocalDate startDate = endDate.minusMonths(1); //한달 전
             Map<String, Object> response = new HashMap<>();
             if (gender != null && age != null) {
-//                response = statisticsService.getMemeByGenderAndAge(gender, age, startDate, endDate);
+                response = statisticsService.getTopMemesByGenderAndAge(gender, age, startDate, endDate);
             } else if (gender != null) {
 //                response = statisticsService.getMemeByGender(gender, startDate, endDate);
             } else if (age != null) {
