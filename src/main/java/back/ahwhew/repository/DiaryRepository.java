@@ -7,21 +7,23 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
-@Transactional
+@Repository
 public interface DiaryRepository extends JpaRepository<DiaryEntity, Long> {
 
     @Query("SELECT CASE WHEN COUNT(d) > 0 THEN true ELSE false END FROM DiaryEntity d WHERE d.user.id = :userId AND d.date = :date")
     boolean existsByUserIdAndDate(@Param("userId") UUID userId, @Param("date") LocalDate date);
 
-
     @Modifying
-    @Query("UPDATE DiaryEntity SET text = :text WHERE user.id = :userId AND date = :date")
-    void update(@Param("userId") UUID userId, @Param("text") String text, @Param("date") LocalDate date);
+    @Query("UPDATE DiaryEntity SET text = :text, jobRelatedWords = :jobRelatedWords, jobCategories = :jobCategories WHERE user.id = :userId AND date = :date")
+    void update(@Param("userId") UUID userId, @Param("text") String text, @Param("jobRelatedWords") String jobRelatedWords, @Param("jobCategories") String jobCategories, @Param("date") LocalDate date);
 
-    default void save(UserEntity user, String text) {
+    @Transactional
+    default void save(UserEntity user, String text, List<String> jobRelatedWords, List<String> jobCategories) {
         LocalDate today = LocalDate.now();
         boolean diaryExists = existsByUserIdAndDate(user.getId(), today);
 
@@ -29,12 +31,14 @@ public interface DiaryRepository extends JpaRepository<DiaryEntity, Long> {
             DiaryEntity diaryEntity = new DiaryEntity();
             diaryEntity.setUser(user);
             diaryEntity.setText(text);
+            diaryEntity.setJobRelatedWords(String.join(",", jobRelatedWords));
+            diaryEntity.setJobCategories(String.join(",", jobCategories));
             diaryEntity.setDate(today);
-            save(diaryEntity); // JpaRepository의 save 메서드 호출
-//            user.addDiary(diaryEntity);
+            save(diaryEntity);
         } else {
-            update(user.getId(), text, today);
+            update(user.getId(), text, String.join(",", jobRelatedWords), String.join(",", jobCategories), today);
         }
     }
 
+    DiaryEntity findTopByUserIdOrderByDateDesc(UUID id);
 }

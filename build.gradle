@@ -20,6 +20,7 @@ configurations {
 
 repositories {
 	mavenCentral()
+	maven { url 'https://jitpack.io' }
 }
 
 dependencies {
@@ -30,7 +31,7 @@ dependencies {
 //	implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.0'
 	implementation 'org.json:json:20210307'
 	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.0.1.RELEASE'
-
+	implementation 'com.github.shin285:KOMORAN:3.3.9'
 
 
 

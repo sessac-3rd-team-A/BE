@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.sql.Timestamp;
+import java.time.LocalDate;
 
 @Builder
 @NoArgsConstructor
@@ -15,7 +16,7 @@ public class DiaryDTO {
     private Long id;
     private String text;
     private String userId;
-    private Timestamp date;
+    private LocalDate date;
 
     // 생성자, 게터, 세터 등 필요한 메서드를 추가할 수 있습니다.
 
