@@ -8,6 +8,8 @@ import java.util.List;
 
 @Repository
 public interface GifRepository extends JpaRepository<GifEntity, Long> {
+     GifEntity findByGifUrl(String recommendedGif);
+
     List<GifEntity> findByTag(String tag);
 
     List<GifEntity> findAllByTag(String classifyTag);

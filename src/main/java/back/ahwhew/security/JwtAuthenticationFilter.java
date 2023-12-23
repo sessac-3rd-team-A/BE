@@ -55,7 +55,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 Claims claims = tokenProvider.extractClaims(token);
                 log.info("claims : {}", claims);
 
-                // if문 순서 재배치 필요(가능하면 호출이 많은 순서로)
+                 // if문 순서 재배치 필요(가능하면 호출이 많은 순서로)
                 if(claims.getIssuer() == "Token error"){
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     response.setContentType("application/json");
@@ -90,6 +90,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     securityContext.setAuthentication(authentication); // context에 인증 정보 설정
                     SecurityContextHolder.setContext(securityContext); // SecurityContextHolder 저장
                 }
+            }else{
+                log.warn("Token is null");
+//                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                // 응답 메시지 작성
+//                response.getWriter().write("토큰이 null이거나 유효하지 않습니다.");
+
+//                return;
             }
         }catch (Exception e){
             logger.error("Could not set user authentication in security context", e);

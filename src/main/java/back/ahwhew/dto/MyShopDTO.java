@@ -5,16 +5,13 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.List;
-import java.util.Map;
-
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Data
-public class ResponseDTO <T>{
-    private String error;
-    private List<T> data;
-
-
+public class MyShopDTO {
+    private String tag;
+    private String sentiment;
+    private String jobRelatedWords;
+    private String jobCategories;
 }
