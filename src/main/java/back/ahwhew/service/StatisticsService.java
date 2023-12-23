@@ -215,6 +215,7 @@ public class StatisticsService {
         return new ArrayList<>(dailyAveragesMap.values());
         }
     public Map<String, Object> getTopMemesByUser(LocalDate startDate, LocalDate endDate) {
+        Map<String, Object> response = new HashMap<>();
         try {
             // 기간 안에 데이터 가져옴
             List<StatisticsEntity> allDateInRange = repository.findAllByDateBetween(startDate, endDate);
@@ -236,7 +237,10 @@ public class StatisticsService {
 
             if (allDateInRange.isEmpty()) {
                 // 데이터가 없을 경우 예외 처리
-                return Collections.singletonMap("message", "데이터가 없습니다");
+                response.put("isSuccess", false);
+                response.put("message","No data available");
+
+                return response;
             } else {
                 // 빈도가 높은 순으로 정렬된 상위 10개의 recommend_Gif 찾기
                 Map<String, Integer> topMemes = gifFrequencyMap.entrySet().stream()
@@ -244,11 +248,17 @@ public class StatisticsService {
                         .limit(10)
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 
-                return Collections.singletonMap("topMemes", topMemes);
+                response.put("isSuccess", true);
+                response.put("message", "Data retrieved successfully");
+                response.put("topMemes", topMemes);
+
+                return response;
             }
         } catch (Exception e) {
             log.error("에러 발생: {}", e.getMessage(), e);
-            return Collections.singletonMap("message", "에러가 발생했습니다");
+            response.put("isSuccess", false);
+            response.put("message", "Error occurred");
+            return response;
         }
     }
 
@@ -305,7 +315,8 @@ public class StatisticsService {
 
 // 성별, 나이대별 가장 많이 나온 meme
 public Map<String, Object> getTopMemesByGenderAndAge(Character gender, String age, LocalDate startDate, LocalDate endDate) {
-    try {
+    Map<String, Object> response = new HashMap<>();
+        try {
         List<StatisticsEntity> genderAndAgeData = repository.findByGenderAndAge(gender, age);
 
         List<StatisticsEntity> filteredData = genderAndAgeData.stream()
@@ -325,7 +336,10 @@ public Map<String, Object> getTopMemesByGenderAndAge(Character gender, String ag
 
         if (genderAndAgeData.isEmpty()) {
             // 데이터가 없는 경우 처리
-            return Collections.singletonMap("message", "No data available");
+            response.put("isSuccess", false);
+            response.put("message","No data available");
+
+            return response;
         } else {
             // 빈도가 높은 순으로 정렬된 상위 10개의 recommend_Gif 찾기
             Map<String, Integer> topMemes = gifFrequencyMap.entrySet().stream()
@@ -333,17 +347,24 @@ public Map<String, Object> getTopMemesByGenderAndAge(Character gender, String ag
                     .limit(10)
                     .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 
-            return Collections.singletonMap("topMemes", topMemes);
+            response.put("isSuccess", true);
+            response.put("message", "Data retrieved successfully");
+            response.put("topMemes", topMemes);
+
+            return response;
         }
-    } catch (Exception e) {
-        log.error("에러 발생: {}", e.getMessage(), e);
-        return Collections.singletonMap("message", "Error occurred");
-    }
+        } catch (Exception e) {
+            log.error("에러 발생: {}", e.getMessage(), e);
+            response.put("isSuccess", false);
+            response.put("message", "Error occurred");
+            return response;
+        }
 }
 
 
     // 성별 가장 많이 나온 meme
     public Map<String, Object> getTopMemesByGender(Character gender, LocalDate startDate, LocalDate endDate) {
+        Map<String, Object> response = new HashMap<>();
         try {
             List<StatisticsEntity> genderData = repository.findByGender(gender);
 
@@ -364,7 +385,10 @@ public Map<String, Object> getTopMemesByGenderAndAge(Character gender, String ag
 
             if (genderData.isEmpty()) {
                 // 데이터가 없는 경우 처리
-                return Collections.singletonMap("message", "No data available");
+                response.put("isSuccess", false);
+                response.put("message","No data available");
+
+                return response;
             } else {
                 // 빈도가 높은 순으로 정렬된 상위 10개의 recommend_Gif 찾기
                 Map<String, Integer> topMemes = gifFrequencyMap.entrySet().stream()
@@ -372,16 +396,24 @@ public Map<String, Object> getTopMemesByGenderAndAge(Character gender, String ag
                         .limit(10)
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 
-                return Collections.singletonMap("topMemes", topMemes);
+//                return Collections.singletonMap("topMemes", topMemes);
+                response.put("isSuccess", true);
+                response.put("message", "Data retrieved successfully");
+                response.put("topMemes", topMemes);
+
+                return response;
             }
         } catch (Exception e) {
             log.error("에러 발생: {}", e.getMessage(), e);
-            return Collections.singletonMap("message", "Error occurred");
+            response.put("isSuccess", false);
+            response.put("message", "Error occurred");
+            return response;
         }
     }
 
     // 나이대별 가장 많이 나온 meme
     public Map<String, Object> getTopMemesByAge(String age, LocalDate startDate, LocalDate endDate) {
+        Map<String, Object> response = new HashMap<>();
         try {
             List<StatisticsEntity> ageData = repository.findByAge(age);
 
@@ -402,7 +434,10 @@ public Map<String, Object> getTopMemesByGenderAndAge(Character gender, String ag
 
             if (ageData.isEmpty()) {
                 // 데이터가 없는 경우 처리
-                return Collections.singletonMap("message", "No data available");
+                response.put("isSuccess", false);
+                response.put("message","No data available");
+
+                return response;
             } else {
                 // 빈도가 높은 순으로 정렬된 상위 10개의 recommend_Gif 찾기
                 Map<String, Integer> topMemes = gifFrequencyMap.entrySet().stream()
@@ -410,11 +445,17 @@ public Map<String, Object> getTopMemesByGenderAndAge(Character gender, String ag
                         .limit(10)
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (e1, e2) -> e1, LinkedHashMap::new));
 
-                return Collections.singletonMap("topMemes", topMemes);
+                response.put("isSuccess", true);
+                response.put("message", "Data retrieved successfully");
+                response.put("topMemes", topMemes);
+
+                return response;
             }
         } catch (Exception e) {
             log.error("에러 발생: {}", e.getMessage(), e);
-            return Collections.singletonMap("message", "Error occurred");
+            response.put("isSuccess", false);
+            response.put("message", "Error occurred");
+            return response;
         }
     }
 
