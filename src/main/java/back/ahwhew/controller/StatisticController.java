@@ -63,7 +63,7 @@ public class StatisticController {
             if (gender != null && age != null) {
                 response = statisticsService.getTopMemesByGenderAndAge(gender, age, startDate, endDate);
             } else if (gender != null) {
-//                response = statisticsService.getMemeByGender(gender, startDate, endDate);
+                response = statisticsService.getTopMemesByGender(gender, startDate, endDate);
             } else if (age != null) {
 //                response = statisticsService.getMemeByAge(age, startDate, endDate);
             } else {
