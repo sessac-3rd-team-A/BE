@@ -89,4 +89,5 @@ public interface ResultRepository extends JpaRepository<ResultEntity, Long> {
     }
 
     ResultEntity findTopByUserIdOrderByDateDesc(UUID id);
+
 }
