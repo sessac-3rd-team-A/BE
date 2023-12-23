@@ -139,14 +139,20 @@ public class UserController {
     }
 
     private String isValidUser(UserDTO userDTO){
-
         if(userDTO.getUserId() == null || userDTO.getUserId().isEmpty()){ //userId가 null이거나 빈 값일때
             log.warn("userId is null or empty");
             return "userId is null or empty";
         }else if(userDTO.getPassword() == null || userDTO.getPassword().isEmpty()){ //password가 null이거나 빈 값일때
             log.warn("password is null or empty");
             return "password is null or empty";
-        }else {
+        }else if(userDTO.getPassword().length() < 4 || userDTO.getPassword().length() > 12) {
+            log.warn("password is too long or short");
+            return "password is too long or short";
+        }else if(userDTO.getUserId().length() < 4 || userDTO.getUserId().length() > 12) {
+            log.warn("userId is too long or short");
+            return "userId is too long or short";
+        }
+        else {
             log.info("user valid checked");
             return "checked";
         }
