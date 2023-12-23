@@ -1,12 +1,13 @@
 package back.ahwhew.controller;
 
 import back.ahwhew.dto.*;
+import back.ahwhew.entity.DiaryEntity;
+import back.ahwhew.entity.GifEntity;
 import back.ahwhew.entity.ResultEntity;
 import back.ahwhew.entity.UserEntity;
+import back.ahwhew.repository.DiaryRepository;
 import back.ahwhew.security.TokenProvider;
-import back.ahwhew.service.DashboardService;
-import back.ahwhew.service.MypageService;
-import back.ahwhew.service.UserService;
+import back.ahwhew.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -31,6 +32,13 @@ public class MypageController {
 
     @Autowired
     DashboardService dashbaordService;
+
+    @Autowired
+    DiaryService diaryService;
+
+    @Autowired
+    MyshopService myshopService;
+
 
     @PostMapping("/account")
     public ResponseEntity<?> updateProfile(@AuthenticationPrincipal UserEntity userInfo, @RequestBody UserDTO dto) {
@@ -128,6 +136,30 @@ public class MypageController {
 
             return ResponseEntity.ok().body(dashboardResDTO);
 
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    @GetMapping("/my-shop")
+    public ResponseEntity<?> myShop(@AuthenticationPrincipal UserEntity userEntity) {
+        try {
+            //상품 추천을 위해 고객 정보를 보내줌
+            DiaryEntity latestDiaryEntity = myshopService.getLatestDiary(userEntity);
+            log.info("최신 일기 정보::{}", latestDiaryEntity);
+            ResultEntity latestResultEntity = myshopService.getLatestResult(userEntity);
+            log.info("최신 결과 정보::{}", latestResultEntity);
+            //대표감정 태그 불러오기
+            GifEntity gifEntity = myshopService.getGifEntity(latestResultEntity.getRecommendedGif());
+            log.info("gifEntity로 불러온 대표감정 태그값;;{}", gifEntity);
+            MyShopDTO myshopDTO = MyShopDTO.builder()
+                    .jobCategories(latestDiaryEntity.getJobCategories())
+                    .jobRelatedWords(latestDiaryEntity.getJobRelatedWords())
+                    .tag(gifEntity.getTag())
+                    .sentiment(latestResultEntity.getSentiment())
+                    .build();
+
+            return ResponseEntity.ok().body(myshopDTO);
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }

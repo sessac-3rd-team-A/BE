@@ -6,6 +6,7 @@ import org.hibernate.annotations.DynamicInsert;
 
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -27,6 +28,14 @@ public class DiaryEntity {
 
     @Column(name="text", length = 1000, nullable = false)
     private String text;
+
+
+    @Column(name = "job_related_words", length = 255) // 길이는 적절히 조절하세요.
+    private String jobRelatedWords;
+
+    @Column(name = "job_categories", length = 255) // 길이는 적절히 조절하세요.
+    private String jobCategories;
+
 
     @Column(name = "date", nullable = false)
     private LocalDate date;
