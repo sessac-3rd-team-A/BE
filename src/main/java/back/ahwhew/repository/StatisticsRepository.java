@@ -16,19 +16,15 @@ public interface StatisticsRepository extends JpaRepository<StatisticsEntity,Lon
     StatisticsEntity findById(long id);
     List<StatisticsEntity> findAll();
 
-    List<StatisticsEntity> findByGenderAndAge(char gender, String age);
+    List<StatisticsEntity> findAllByGenderAndAge(char gender, String age);
 
     List<StatisticsEntity> findByAge(String age);
-    List<StatisticsEntity> findByGender(char gender);
+    List<StatisticsEntity> findAllByGender(char gender);
 
     List<StatisticsEntity> findByDate(LocalDate date);
 
     List<StatisticsEntity> findAllByDateBetween(LocalDate startDate,LocalDate endDate);
 
-    @Query("SELECT CASE WHEN COUNT(r) > 0 THEN true ELSE false END " +
-            "FROM ResultEntity r " +
-            "WHERE r.user.id = :userId AND r.date = :date")
-    boolean existsByUserIdAndDate(@Param("userId") UUID userId, @Param("date") LocalDate date);
 
 }
 
