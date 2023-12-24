@@ -110,7 +110,7 @@ public class MypageController {
 
 
             DashboardResDTO dashboardResDTO = DashboardResDTO.builder()
-                    .calender(resultMap.entrySet()
+                    .calendar(resultMap.entrySet()
                             .stream()
                             .map(entry -> {
                                 DashboardDTO dashboardDTO = entry.getValue();
