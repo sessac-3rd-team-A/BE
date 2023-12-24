@@ -14,7 +14,7 @@ import java.util.Map;
 @Data
 public class DashboardResDTO {
     private String error;
-    private List<DashboardDTO> calender;
+    private List<DashboardDTO> calendar;
     private Map<String, MonthlyUserStatisticsDTO> monthlyStatistics;
 //    public void addData(String key, Object value) {
 //        if (data == null) {
