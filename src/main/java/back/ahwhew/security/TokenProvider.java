@@ -81,11 +81,17 @@ public class TokenProvider {
     public Claims extractClaims(String token) {
         log.info("extract");
         try{
-//            throw new RuntimeException();
             Claims claims = Jwts.parser()
                     .setSigningKey(jwtProperties.getSecretKey())
                     .parseClaimsJws(token)
                     .getBody();
+            log.info("Token expired date : {}", claims.getExpiration());
+            log.info("date now: {}", Date.from(Instant.now()));
+//            if(claims.getExpiration().before(Date.from(Instant.now()))){
+//                log.info("Token is before now");
+//                claims.setIssuer("Expired");
+//                throw new ExpiredJwtException(null, claims, "Token has expired", new Exception());
+//            } 여기 필요 없을듯 오류가 잘 동작함
             return claims;
         }catch (ExpiredJwtException e){
             log.warn("ExpiredJwtException!!");

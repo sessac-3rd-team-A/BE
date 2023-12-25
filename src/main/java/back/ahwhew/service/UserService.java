@@ -64,7 +64,7 @@ public class UserService {
     public UserEntity getByCredentials(final String userId, final String password, final PasswordEncoder encoder){
         log.info("find user by userId");
         final UserEntity originalUser = repo.findByUserId(userId);
-        log.info("original User: ", originalUser);
+        log.info("original User: {}", originalUser);
         // matches() 메소드 이용해서 패스워드 동일 여부 비교
         if(originalUser != null && encoder.matches(password, originalUser.getPassword())) {
             log.info("samePassword");
