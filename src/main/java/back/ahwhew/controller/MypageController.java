@@ -72,8 +72,8 @@ public class MypageController {
             return ResponseEntity.badRequest().body(resDTO);
         }
     }
-    @GetMapping("/dashboard")
-    public ResponseEntity<?> dashboard(@AuthenticationPrincipal UserEntity userEntity) {
+    @GetMapping("/dashboard/calendar")
+    public ResponseEntity<?> dashboardCalendar(@AuthenticationPrincipal UserEntity userEntity) {
         try {
             log.info("Dashboard start");
             log.info("userEntity : {}", userEntity);
@@ -118,15 +118,6 @@ public class MypageController {
                                 return dashboardDTO;
                             })
                             .collect(Collectors.toList()))
-                    .monthlyStatistics(MonthlyUserStatisticsDTO.calculateMonthlyStatistics(
-                            userResultList.stream()
-                                    .map(result -> ResultDTO.builder()
-                                            .positiveRatio(result.getPositiveRatio())
-                                            .negativeRatio(result.getNegativeRatio())
-                                            .neutralRatio(result.getNeutralRatio())
-                                            .date(result.getDate())
-                                            .build())
-                                    .collect(Collectors.toList())))
                     .build();
 
 
@@ -141,6 +132,49 @@ public class MypageController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+    @GetMapping("/dashboard/ratio")
+    public ResponseEntity<?> dashboardRatio(@AuthenticationPrincipal UserEntity userEntity) {
+        try {
+            log.info("DashboardRatio start");
+            log.info("userEntity : {}", userEntity);
+            if (userEntity == null)
+                return ResponseEntity.badRequest().body("로그인 후 이용해주세요.");
+
+            // 대시보드 정보 저장(유저 정보, 날짜 정보 등 저장해야함)
+            List<ResultEntity> userResultList = dashbaordService.dashboard(userEntity);
+
+            log.info("user의 dashboard list::{}", userResultList);
+            log.info("user의 dashboard list 길이::{}", userResultList.size());
+
+            // ResultEntity를 ResultDTO로 변환
+            List<ResultDTO> resultDTOList = userResultList.stream()
+                    .map(result -> {
+                        ResultDTO resultDTO = new ResultDTO();
+                        resultDTO.setId(result.getId());
+                        resultDTO.setPictureDiary(result.getPictureDiary());
+                        resultDTO.setSentiment(result.getSentiment());
+                        resultDTO.setPositiveRatio(result.getPositiveRatio());
+                        resultDTO.setNegativeRatio(result.getNegativeRatio());
+                        resultDTO.setNeutralRatio(result.getNeutralRatio());
+                        resultDTO.setDate(result.getDate());
+                        resultDTO.setRecommendedGif(result.getRecommendedGif());
+                        return resultDTO;
+                    })
+                    .collect(Collectors.toList());
+
+            // MonthlyUserStatisticsDTO로 변환
+//            List<MonthlyUserStatisticsDTO> monthlyStatisticsDTOList = MonthlyUserStatisticsDTO.calculateCurrentMonthStatistics(resultDTOList);
+            MonthlyUserStatisticsDTO monthlyStatisticsDTO = MonthlyUserStatisticsDTO.calculateCurrentMonthStatistics(resultDTOList);
+            Map<String, MonthlyUserStatisticsDTO> responseMap = new HashMap<>();
+            responseMap.put("currentMonthStatistics", monthlyStatisticsDTO);
+            // 최종 응답
+            return ResponseEntity.ok().body(responseMap);
+
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
 
     @GetMapping("/my-shop")
     public ResponseEntity<?> myShop(@AuthenticationPrincipal UserEntity userEntity) {
