@@ -10,7 +10,9 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -71,15 +73,15 @@ public class UserController {
                 return ResponseEntity.badRequest().body(false);
             }
 
-                UserEntity user = UserEntity.builder()
-                        .userId(dto.getUserId())
-                        .password(passwordEncoder.encode(dto.getPassword()))
-                        .nickname(firstWord)
-                        .age(dto.getAge())
-                        .gender(dto.getGender())
-                        .build();
+            UserEntity user = UserEntity.builder()
+                    .userId(dto.getUserId())
+                    .password(passwordEncoder.encode(dto.getPassword()))
+                    .nickname(firstWord)
+                    .age(dto.getAge())
+                    .gender(dto.getGender())
+                    .build();
 
-                service.create(user);
+            service.create(user);
 
             return ResponseEntity.ok().body(true);
         } catch(Exception e) {
@@ -89,7 +91,7 @@ public class UserController {
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<?> authenticate(@RequestBody UserDTO dto){
+    public ResponseEntity<?> authenticate(@RequestBody UserDTO dto, HttpServletResponse response){
         log.info("Start signin");
 
         // 유저 유효성 검사
@@ -118,9 +120,15 @@ public class UserController {
                     .nickname(user.getNickname())
                     .age(user.getAge())
                     .gender(user.getGender())
-                    .accessToken(token) // jwt 토큰 설정
-                    .refreshToken(refreshToken)
+//                    .accessToken(token) // jwt 토큰 설정
+//                    .refreshToken(refreshToken)
                     .build();
+
+            Cookie cookie1 = new Cookie("accessToken", token);
+            Cookie cookie2 = new Cookie("refreshToken", refreshToken);
+
+            response.addCookie(cookie1);
+            response.addCookie(cookie2);
 
             return ResponseEntity.ok().body(resUserDTO);
 
@@ -134,8 +142,19 @@ public class UserController {
         }
     }
     @PostMapping("/newToken")
-    public ResponseEntity<?> createNewToken(HttpServletRequest request){
-        String token = request.getHeader("Authorization").substring(7);
+    public ResponseEntity<?> createNewToken(HttpServletRequest request, HttpServletResponse response){
+//        String token = request.getHeader("Authorization").substring(7);
+//        String token = request.getCookies()[1].getValue();
+        Cookie[] cookies = request.getCookies();
+        String tokenName = null;
+        String token = null;
+        // refreshToken 찾기
+        for(Cookie cookie: cookies){
+            if(cookie.getName().equals("refreshToken")){
+                tokenName = cookie.getName();
+                token = cookie.getValue();
+            }
+        }
         log.info("create new Token from : {}", token);
         Claims claims = Jwts.parser()
                 .setSigningKey(jwtProperties.getSecretKey())
@@ -143,6 +162,7 @@ public class UserController {
                 .getBody();
         UUID id = UUID.fromString(claims.getSubject());
 
+        log.info("id : {}", id);
 
         // 토큰으로 id를 이용해서 사람 찾고
         UserEntity user = service.getById(id);
@@ -157,7 +177,8 @@ public class UserController {
                 .gender(user.getGender())
                 .accessToken(accessToken)
                 .build();
-
+        Cookie cookie = new Cookie("accessToken", accessToken);
+        response.addCookie(cookie);
         return ResponseEntity.ok().body(resUserDTO);
     }
 
@@ -176,14 +197,20 @@ public class UserController {
     }
 
     private String isValidUser(UserDTO userDTO){
-
         if(userDTO.getUserId() == null || userDTO.getUserId().isEmpty()){ //userId가 null이거나 빈 값일때
             log.warn("userId is null or empty");
             return "userId is null or empty";
         }else if(userDTO.getPassword() == null || userDTO.getPassword().isEmpty()){ //password가 null이거나 빈 값일때
             log.warn("password is null or empty");
             return "password is null or empty";
-        }else {
+        }else if(userDTO.getPassword().length() < 4 || userDTO.getPassword().length() > 12) {
+            log.warn("password is too long or short");
+            return "password is too long or short";
+        }else if(userDTO.getUserId().length() < 4 || userDTO.getUserId().length() > 12) {
+            log.warn("userId is too long or short");
+            return "userId is too long or short";
+        }
+        else {
             log.info("user valid checked");
             return "checked";
         }

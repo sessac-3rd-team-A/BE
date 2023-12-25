@@ -4,6 +4,7 @@ import back.ahwhew.entity.UserEntity;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
@@ -35,11 +36,29 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     // - 재정의한 메소드에서 하는 작업: JWT 토큰 검증, 사용자 정보를 Spring Security 의 SecurityContextHolder에 등록
 
     @Override
-    protected  void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
+    protected  void doFilterInternal(HttpServletRequest request,
+                                     HttpServletResponse response,
+                                     FilterChain filterChain)
             throws ServletException, IOException {
         try {
             log.info("Filter is running...");
-            String token = parseBearerToken(request);
+//            String token = parseBearerToken(request);
+
+            // 토큰 가져오는 부분
+            Cookie[] cookies = request.getCookies();
+            String tokenName = null;
+            String token = null;
+            if(cookies != null){
+                for(Cookie cookie: cookies){
+                    if(cookie.getName().equals("accessToken")){
+                        tokenName = cookie.getName();
+                        token = cookie.getValue();
+                    }
+                }
+            }
+            log.info("doFilter token name : {}", tokenName);
+            log.info("doFilter token value : {}", token);
+            log.info("cookies: {}", (Object) cookies);
 
             // token 검사
             // - 토큰 인증 부분 구현
@@ -54,28 +73,37 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
                 Claims claims = tokenProvider.extractClaims(token);
                 log.info("claims : {}", claims);
+                log.info("expire Time: {}", claims.getExpiration());
 
-                 // if문 순서 재배치 필요(가능하면 호출이 많은 순서로)
+                // if문 순서 재배치 필요(가능하면 호출이 많은 순서로)
                 if(claims.getIssuer() == "Token error"){
+                    log.info("Token error from filter");
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     response.setContentType("application/json");
                     response.setCharacterEncoding("UTF-8");
                     response.getWriter().write("토큰 에러 발생");
                 }else if(claims.getIssuer() == "Expired"){
-                    // 유효시간이 지난 경우(사실 에러가 발생한 경우)
+                    // 엑세스 토큰이 유효시간이 지난 경우(사실 에러가 발생한 경우)
+                    // 토큰 재발급 경로와 다른 경로들 분리 필요
                     log.info("Token is expired");
-                    response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                    response.setContentType("application/json");
-                    response.setCharacterEncoding("UTF-8");
-                    response.getWriter().write("토큰 재발급을 받으세요");
-                    return;
-                }else if(claims.get("age", String.class) == null) {
-                    // 리프레시 토큰인 경우 (아직 처리할 로직이 없음) 사용자 등록 필요가 없음
-                    log.info("refreshToken!");
+                    log.info("req url: {}", request.getContextPath());
+                    if(request.getServletPath().equals("/auth/newToken")){
+                        // 경로가 재발급 경로인 경우
+                    }else{
+                        // 엑세스 토큰이 만료되었지만 토큰 재발급 경로가 아닌 경우
+                        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+                        response.setContentType("application/json");
+                        response.setCharacterEncoding("UTF-8");
+                        response.getWriter().write("토큰 재발급을 받으세요");
+                        return;
+                    }
+//                }else if(claims.get("age", String.class) == null) {
+//                    // 리프레시 토큰인 경우
+//                    log.info("refreshToken!");
 
                 }else {
-                    // 엑세스 토큰인 경우 (기존과 동일한 로직 처리)
-
+                    // 엑세스 토큰인 경우 (기존과 동일한 로직 처리) (유효기간이 안지난 경우)
+                    log.info("insert new user");
                     UserEntity user = new UserEntity();
                     user.setId(UUID.fromString(claims.getSubject()));
                     user.setAge(claims.get("age", String.class));
