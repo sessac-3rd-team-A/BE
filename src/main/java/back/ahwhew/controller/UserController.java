@@ -127,6 +127,12 @@ public class UserController {
             Cookie cookie1 = new Cookie("accessToken", token);
             Cookie cookie2 = new Cookie("refreshToken", refreshToken);
 
+
+            cookie1.setDomain("localhost");
+            cookie1.setPath("/");
+            cookie2.setDomain("localhost");
+            cookie2.setPath("/");
+
             response.addCookie(cookie1);
             response.addCookie(cookie2);
 
@@ -179,6 +185,8 @@ public class UserController {
                 .build();
         Cookie cookie = new Cookie("accessToken", accessToken);
         response.addCookie(cookie);
+        cookie.setDomain("localhost");
+        cookie.setPath("/");
         return ResponseEntity.ok().body(resUserDTO);
     }
 
