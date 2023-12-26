@@ -201,9 +201,57 @@ public class UserController {
                 .accessToken(accessToken)
                 .build();
         Cookie cookie = new Cookie("accessToken", accessToken);
-        response.addCookie(cookie);
-        cookie.setDomain("localhost");
+//        cookie.setDomain("localhost");
         cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+
+        response.addCookie(cookie);
+
+        return ResponseEntity.ok().body(resUserDTO);
+    }
+    @PostMapping("/newRefreshToken")
+    public ResponseEntity<?> createNewRefreshToken(HttpServletRequest request, HttpServletResponse response){
+        Cookie[] cookies = request.getCookies();
+        String tokenName = null;
+        String token = null;
+        // refreshToken 찾기
+        for(Cookie cookie: cookies){
+            if(cookie.getName().equals("accessToken")){
+                tokenName = cookie.getName();
+                token = cookie.getValue();
+            }
+        }
+        log.info("create new refresh Token from : {}", token);
+        Claims claims = Jwts.parser()
+                .setSigningKey(jwtProperties.getSecretKey())
+                .parseClaimsJws(token)
+                .getBody();
+        UUID id = UUID.fromString(claims.getSubject());
+
+        log.info("id : {}", id);
+
+        // 토큰으로 id를 이용해서 사람 찾고
+        UserEntity user = service.getById(id);
+        String refreshToken = tokenProvider.createRefreshToken(user);
+        // createAccesstoken에서 리턴
+        final UserDTO resUserDTO = UserDTO.builder()
+                // 나중에 프론트와 연결시 필요한 요소 추가할것
+                .userId(user.getUserId())
+                .password(user.getPassword())
+                .nickname(user.getNickname())
+                .age(user.getAge())
+                .gender(user.getGender())
+                .build();
+
+        Cookie cookie = new Cookie("refreshToken", refreshToken);
+//        cookie.setDomain("localhost");
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        cookie.setSecure(true);
+
+        response.addCookie(cookie);
+
         return ResponseEntity.ok().body(resUserDTO);
     }
 
