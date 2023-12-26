@@ -121,8 +121,8 @@ public class UserController {
                     .nickname(user.getNickname())
                     .age(user.getAge())
                     .gender(user.getGender())
-                    .accessToken(token) // jwt 토큰 설정
-                    .refreshToken(refreshToken)
+//                    .accessToken(token) // jwt 토큰 설정
+//                    .refreshToken(refreshToken)
                     .build();
 
             Cookie cookie1 = new Cookie("accessToken", token);
