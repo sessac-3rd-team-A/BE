@@ -112,6 +112,7 @@ public class UserController {
             // 이메일, 비번으로 찾은 유저 있음 = 로그인 성공
             final String token = tokenProvider.createAccessToken(user);
             final String refreshToken = tokenProvider.createRefreshToken(user);
+            log.info("token value: {}", token);
             log.info("finish creating token");
             final UserDTO resUserDTO = UserDTO.builder()
                     // 나중에 프론트와 연결시 필요한 요소 추가할것
@@ -120,8 +121,8 @@ public class UserController {
                     .nickname(user.getNickname())
                     .age(user.getAge())
                     .gender(user.getGender())
-//                    .accessToken(token) // jwt 토큰 설정
-//                    .refreshToken(refreshToken)
+                    .accessToken(token) // jwt 토큰 설정
+                    .refreshToken(refreshToken)
                     .build();
 
             Cookie cookie1 = new Cookie("accessToken", token);
@@ -139,6 +140,14 @@ public class UserController {
             cookie2.setPath("/");
             cookie2.setHttpOnly(true);
             cookie2.setSecure(true);
+
+
+//            cookie1.setMaxAge(3600);
+//            cookie2.setMaxAge(3600);
+//            cookie1.setHttpOnly(true);
+//            cookie1.setSecure(true);
+
+            log.info("cookie1: {}", cookie1.getMaxAge());
 
 
             response.addCookie(cookie1);
