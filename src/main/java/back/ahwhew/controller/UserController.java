@@ -128,10 +128,18 @@ public class UserController {
             Cookie cookie2 = new Cookie("refreshToken", refreshToken);
 
 
-            cookie1.setDomain("localhost");
+//            cookie1.setDomain("localhost");
+// 도메인 설정: 쿠키가 사용될 도메인을 설정하는 코드, 현프로젝트에서는 localhost라서 설정할 필요없고 나중에 배포할때 도메인에 맞춰서 설정하면 보안에 도움됨
+
             cookie1.setPath("/");
-            cookie2.setDomain("localhost");
+            cookie1.setHttpOnly(true);
+            cookie1.setSecure(true);
+
+//            cookie2.setDomain("localhost");
             cookie2.setPath("/");
+            cookie2.setHttpOnly(true);
+            cookie2.setSecure(true);
+
 
             response.addCookie(cookie1);
             response.addCookie(cookie2);
