@@ -121,18 +121,26 @@ public class UserController {
                     .nickname(user.getNickname())
                     .age(user.getAge())
                     .gender(user.getGender())
-                    .accessToken(token) // jwt 토큰 설정
-                    .refreshToken(refreshToken)
+//                    .accessToken(token) // jwt 토큰 설정
+//                    .refreshToken(refreshToken)
                     .build();
 
             Cookie cookie1 = new Cookie("accessToken", token);
             Cookie cookie2 = new Cookie("refreshToken", refreshToken);
 
 
-            cookie1.setDomain("localhost");
+//            cookie1.setDomain("localhost");
+// 도메인 설정: 쿠키가 사용될 도메인을 설정하는 코드, 현프로젝트에서는 localhost라서 설정할 필요없고 나중에 배포할때 도메인에 맞춰서 설정하면 보안에 도움됨
+
             cookie1.setPath("/");
-            cookie2.setDomain("localhost");
+            cookie1.setHttpOnly(true);
+            cookie1.setSecure(true);
+
+//            cookie2.setDomain("localhost");
             cookie2.setPath("/");
+            cookie2.setHttpOnly(true);
+            cookie2.setSecure(true);
+
 
 //            cookie1.setMaxAge(3600);
 //            cookie2.setMaxAge(3600);
