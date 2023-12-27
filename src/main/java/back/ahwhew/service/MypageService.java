@@ -23,7 +23,7 @@ public class MypageService {
 
         final String userId = userEntity.getUserId();
         final String age = userEntity.getAge();
-        // gender는 문자열이 아니므로 필드가 비어있을 경우만 확인하면 됨
+        final char gender = userEntity.getGender();
 
         final UserEntity user = userRepository.findById(id); // 조건 문제
 
@@ -50,9 +50,13 @@ public class MypageService {
             throw new RuntimeException("Age is invalid arguments");
         }
 
+        if (gender != 'M' && gender != 'F') {
+            throw new RuntimeException("Gender is invalid arguments");
+        }
+
         user.setUserId(userId);
         user.setAge(age);
-        user.setGender(userEntity.getGender());
+        user.setGender(gender);
 
         return userRepository.save(user);
     }
