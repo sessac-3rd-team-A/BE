@@ -42,23 +42,21 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         try {
             log.info("Filter is running...");
-//            String token = parseBearerToken(request);
+            String token = parseBearerToken(request);
 
             // 토큰 가져오는 부분
-            Cookie[] cookies = request.getCookies();
-            String tokenName = null;
-            String token = null;
-            if(cookies != null){
-                for(Cookie cookie: cookies){
-                    if(cookie.getName().equals("accessToken")){
-                        tokenName = cookie.getName();
-                        token = cookie.getValue();
-                    }
-                }
-            }
-            log.info("doFilter token name : {}", tokenName);
+//            Cookie[] cookies = request.getCookies();
+//            String tokenName = null;
+//            String token = null;
+//            if(cookies != null){
+//                for(Cookie cookie: cookies){
+//                    if(cookie.getName().equals("accessToken")){
+//                        tokenName = cookie.getName();
+//                        token = cookie.getValue();
+//                    }
+//                }
+//            }
             log.info("doFilter token value : {}", token);
-            log.info("cookies: {}", (Object) cookies);
 
             // token 검사
             // - 토큰 인증 부분 구현
@@ -87,22 +85,22 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                     // 토큰 재발급 경로와 다른 경로들 분리 필요
                     log.info("Token is expired");
                     log.info("req url: {}", request.getContextPath());
-                    if(request.getServletPath().equals("/auth/newToken")){
-                        // 경로가 재발급 경로인 경우
-                    }else{
+//                    if(request.getServletPath().equals("/auth/newToken")){
+//                        // 경로가 재발급 경로인 경우
+//                    }else{
                         // 엑세스 토큰이 만료되었지만 토큰 재발급 경로가 아닌 경우
                         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                         response.setContentType("application/json");
                         response.setCharacterEncoding("UTF-8");
                         response.getWriter().write("토큰 재발급을 받으세요");
                         return;
-                    }
+//                    }
 //                }else if(claims.get("age", String.class) == null) {
 //                    // 리프레시 토큰인 경우
 //                    log.info("refreshToken!");
 
                 }else {
-                    // 엑세스 토큰인 경우 (기존과 동일한 로직 처리) (유효기간이 안지난 경우)
+                    // 토큰의 유효기간이 안지난 경우
                     log.info("insert new user");
                     UserEntity user = new UserEntity();
                     user.setId(UUID.fromString(claims.getSubject()));
