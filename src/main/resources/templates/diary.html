@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Dynamic Form Submission with Axios</title>
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+</head>
+<body>
+<img src="https://example-bucket-seeun.s3.ap-northeast-2.amazonaws.com/9aa3a3b3-cb97-40c9-8af7-f8fc2730c144.jpeg" alt="이미지 설명">
+
+
+<form id="dynamicForm">
+    <label for="textDiary">Text Diary:</label>
+    <input type="text" id="textDiary" name="textDiary" required>
+
+    <button type="button" onclick="submitForm()">Submit</button>
+</form>
+
+<script>
+    function submitForm() {
+        // Get form data
+        var textDiary = document.getElementById('textDiary').value;
+
+        // Prepare data for Axios
+        var formData = { textDiary: textDiary };
+
+        // Make a POST request using Axios
+        axios.post('/diary', formData)
+            .then(response => {
+                console.log('Form submitted successfully:', response.data);
+                // Handle the response if needed
+            })
+            .catch(error => {
+                console.error('Error submitting form:', error);
+                // Handle errors if needed
+            });
+    }
+</script>
+
+</body>
+</html>

@@ -1,0 +1,53 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '3.2.0'
+	id 'io.spring.dependency-management' version '1.1.4'
+}
+
+group = 'back'
+version = '0.0.1-SNAPSHOT'
+
+java {
+	sourceCompatibility = '17'
+}
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+
+}
+
+repositories {
+	mavenCentral()
+	maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+//	implementation 'com.fasterxml.jackson.core:jackson-databind:2.13.0'
+	implementation 'org.json:json:20210307'
+	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.0.1.RELEASE'
+	implementation 'com.github.shin285:KOMORAN:3.3.9'
+
+
+
+//	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+//	testImplementation 'org.springframework.security:spring-security-test'
+	runtimeOnly 'com.mysql:mysql-connector-j'
+
+	implementation 'io.jsonwebtoken:jjwt:0.9.1' // 자바 JWT 라이브러리
+	implementation 'javax.xml.bind:jaxb-api:2.3.1' // XML 문서와 JAVA 객체간 매핑 자동화
+
+	implementation 'org.springframework.boot:spring-boot-starter-webflux' // 외부 api와의 통신
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
