@@ -25,7 +25,7 @@ public class TokenProvider {
     // create(): JWT 생성
     public String createAccessToken(UserEntity userEntity){
         log.info("creating access token");
-        Date expiryDate = Date.from(Instant.now().plus(5, ChronoUnit.MINUTES));// 지금으로부터 5분
+        Date expiryDate = Date.from(Instant.now().plus(1, ChronoUnit.HOURS));
 
         log.info("set access token expiryDate: {}", expiryDate);
         // JWT 토큰
@@ -44,7 +44,7 @@ public class TokenProvider {
     }
     public String createRefreshToken(UserEntity userEntity){
         log.info("creating refresh token");
-        Date expiryDate = Date.from(Instant.now().plus(1, ChronoUnit.DAYS));// 지금으로부터 1일
+        Date expiryDate = Date.from(Instant.now().plus(1, ChronoUnit.DAYS));
 
         log.info("set refresh token expiryDate: {}", expiryDate);
         // JWT 토큰
