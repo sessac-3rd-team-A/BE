@@ -10,18 +10,15 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.reactive.function.client.WebClient;
-
 import java.util.UUID;
 
 @RestController
@@ -92,97 +89,119 @@ public class UserController {
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticate(@RequestBody UserDTO dto){
-        log.info("Start signin");
+        try {
+            log.info("Start signin");
 
-        // 유저 유효성 검사
-        String validCheck = isValidUser(dto);
-        if (!validCheck.equals("checked")){
-            ResponseDTO resDTO = ResponseDTO.builder()
-                    .error(validCheck)
-                    .build();
+            // 유저 유효성 검사
+            String validCheck = isValidUser(dto);
+            if (!validCheck.equals("checked")) {
+                ResponseDTO resDTO = ResponseDTO.builder()
+                        .error(validCheck)
+                        .build();
 
-            return ResponseEntity.badRequest().body(resDTO);
-        }
+                return ResponseEntity.badRequest().body(resDTO);
+            }
 
-        UserEntity user = service.getByCredentials(dto.getUserId(), dto.getPassword(), passwordEncoder);
-        log.info("user: {}",user);
+            UserEntity user = service.getByCredentials(dto.getUserId(), dto.getPassword(), passwordEncoder);
+            log.info("user: {}", user);
 
-        if(user.getUserId() != null){
-            log.info("user is not null");
-            // userId, password로 찾은 유저 있음 = 로그인 성공
-            final String accessToken = tokenProvider.createAccessToken(user);
-            final String refreshToken = tokenProvider.createRefreshToken(user);
-            log.info("accessToken value: {}", accessToken);
-            log.info("finish creating token");
+            if (user.getUserId() != null) {
+                log.info("user is not null");
+                // userId, password로 찾은 유저 있음 = 로그인 성공
+                final String accessToken = tokenProvider.createAccessToken(user);
+                final String refreshToken = tokenProvider.createRefreshToken(user);
+                log.info("accessToken value: {}", accessToken);
+                log.info("finish creating token");
 
-            final UserDTO resUserDTO = UserDTO.builder()
-                    .userId(user.getUserId())
-                    .password(user.getPassword())
-                    .nickname(user.getNickname())
-                    .age(user.getAge())
-                    .gender(user.getGender())
-                    .accessToken(accessToken)
-                    .refreshToken(refreshToken)
-                    .build();
+                final UserDTO resUserDTO = UserDTO.builder()
+                        .userId(user.getUserId())
+                        .password(user.getPassword())
+                        .nickname(user.getNickname())
+                        .age(user.getAge())
+                        .gender(user.getGender())
+                        .accessToken(accessToken)
+                        .refreshToken(refreshToken)
+                        .build();
 
-            return ResponseEntity.ok().body(resUserDTO);
+                return ResponseEntity.ok().body(resUserDTO);
 
-        } else {
-            // userId, password로 찾은 유저 없음 = 로그인 실패
-            ResponseDTO resDTO = ResponseDTO.builder()
-                    .error(user.getAge()) // service에서 로그인 실패 사유를 age에 담아 보내기 때문
-                    .build();
+            } else if(user.getAge() != "getByCredentials error"){
+                // userId, password로 찾은 유저 없음 = 로그인 실패
+                ResponseDTO resDTO = ResponseDTO.builder()
+                        .error(user.getAge()) // service에서 로그인 실패 사유를 age에 담아 보내기 때문
+                        .build();
 
-            return ResponseEntity.status(401).body(resDTO);
+                return ResponseEntity.status(401).body(resDTO);
+            }else {
+                // UserService 에러 발생
+                ResponseDTO resDTO = ResponseDTO.builder()
+                        .error(user.getAge())
+                        .build();
+
+                return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(resDTO);
+            }
+        }catch (Exception e){
+            log.error("exception in /auth/signin", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("signin fail");
         }
     }
 
     // accessToken 재발급
     @PostMapping("/newToken")
     public ResponseEntity<?> createNewToken(HttpServletRequest request){
-        String token = request.getHeader("Authorization").substring(7);
-        log.info("create new accessToken from : {}", token);
+        try {
+            String token = request.getHeader("Authorization").substring(7);
+            log.info("create new accessToken from : {}", token);
 
-        Claims claims = Jwts.parser()
-                .setSigningKey(jwtProperties.getSecretKey())
-                .parseClaimsJws(token)
-                .getBody();
+            Claims claims = Jwts.parser()
+                    .setSigningKey(jwtProperties.getSecretKey())
+                    .parseClaimsJws(token)
+                    .getBody();
 
-        UUID id = UUID.fromString(claims.getSubject());
-        log.info("id : {}", id);
+            UUID id = UUID.fromString(claims.getSubject());
+            log.info("id : {}", id);
 
-        UserEntity user = service.getById(id);
-        String accessToken = tokenProvider.createAccessToken(user);
-        final UserDTO resUserDTO = UserDTO.builder()
-                .userId(user.getUserId())
-                .accessToken(accessToken)
-                .build();
+            UserEntity user = service.getById(id);
+            String accessToken = tokenProvider.createAccessToken(user);
+            final UserDTO resUserDTO = UserDTO.builder()
+                    .userId(user.getUserId())
+                    .accessToken(accessToken)
+                    .build();
 
-        return ResponseEntity.ok().body(resUserDTO);
+            return ResponseEntity.ok().body(resUserDTO);
+        }catch (Exception e){
+            log.error("/auth/newToken 실행 중 예외 발생", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("newToken fail");
+        }
     }
 
     // refreshToken 재발급
     @PostMapping("/newRefreshToken")
     public ResponseEntity<?> createNewRefreshToken(HttpServletRequest request){
-        String token = request.getHeader("Authorization").substring(7);
-        log.info("create new refresh Token from : {}", token);
+        try {
+            String token = request.getHeader("Authorization").substring(7);
+            log.info("create new refresh Token from : {}", token);
 
-        Claims claims = Jwts.parser()
-                .setSigningKey(jwtProperties.getSecretKey())
-                .parseClaimsJws(token)
-                .getBody();
+            Claims claims = Jwts.parser()
+                    .setSigningKey(jwtProperties.getSecretKey())
+                    .parseClaimsJws(token)
+                    .getBody();
 
-        UUID id = UUID.fromString(claims.getSubject());
-        log.info("id : {}", id);
+            UUID id = UUID.fromString(claims.getSubject());
+            log.info("id : {}", id);
 
-        UserEntity user = service.getById(id);
-        String refreshToken = tokenProvider.createRefreshToken(user);
-        final UserDTO resUserDTO = UserDTO.builder()
-                .userId(user.getUserId())
-                .refreshToken(refreshToken)
-                .build();
+            UserEntity user = service.getById(id);
+            String refreshToken = tokenProvider.createRefreshToken(user);
+            final UserDTO resUserDTO = UserDTO.builder()
+                    .userId(user.getUserId())
+                    .refreshToken(refreshToken)
+                    .build();
 
-        return ResponseEntity.ok().body(resUserDTO);
+            return ResponseEntity.ok().body(resUserDTO);
+        }catch (Exception e){
+            log.error("/auth/newrefreshToken 실행 중 예외 발생", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("newRefreshToken fail");
+        }
     }
 
     private String isValidUser(UserDTO userDTO){
