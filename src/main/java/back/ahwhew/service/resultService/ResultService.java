@@ -27,28 +27,28 @@ public class ResultService {
     private ResultRepository resultRepository;
 
     @Autowired
-    NaverSentimentService naverSentimentService;
+    private NaverSentimentService naverSentimentService;
 
     @Autowired
-    NaverPapagoService naverPapagoService;
+    private NaverPapagoService naverPapagoService;
 
     @Autowired
-    KarloImageGeneratorService karloImageGeneratorService;
+    private KarloImageGeneratorService karloImageGeneratorService;
 
     @Autowired
-    KarloImageEditService karloImageEditService;
+    private KarloImageEditService karloImageEditService;
 
     @Autowired
-    AmazonS3Service amazonS3Service;
+    private AmazonS3Service amazonS3Service;
 
     @Autowired
-    ClassifyTagService classifyTagService;
+    private ClassifyTagService classifyTagService;
 
     @Autowired
-    GifService gifService;
+    private GifService gifService;
 
     @Autowired
-    UserService userService;
+    private UserService userService;
 
     @Autowired
     private KomoranService komoranService;
