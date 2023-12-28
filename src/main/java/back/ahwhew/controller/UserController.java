@@ -91,7 +91,7 @@ public class UserController {
     }
 
     @PostMapping("/signin")
-    public ResponseEntity<?> authenticate(@RequestBody UserDTO dto, HttpServletResponse response){
+    public ResponseEntity<?> authenticate(@RequestBody UserDTO dto){
         log.info("Start signin");
 
         // 유저 유효성 검사
@@ -105,58 +105,30 @@ public class UserController {
         }
 
         UserEntity user = service.getByCredentials(dto.getUserId(), dto.getPassword(), passwordEncoder);
-
         log.info("user: {}",user);
+
         if(user.getUserId() != null){
             log.info("user is not null");
-            // 이메일, 비번으로 찾은 유저 있음 = 로그인 성공
-            final String token = tokenProvider.createAccessToken(user);
+            // userId, password로 찾은 유저 있음 = 로그인 성공
+            final String accessToken = tokenProvider.createAccessToken(user);
             final String refreshToken = tokenProvider.createRefreshToken(user);
-            log.info("token value: {}", token);
+            log.info("accessToken value: {}", accessToken);
             log.info("finish creating token");
+
             final UserDTO resUserDTO = UserDTO.builder()
-                    // 나중에 프론트와 연결시 필요한 요소 추가할것
                     .userId(user.getUserId())
                     .password(user.getPassword())
                     .nickname(user.getNickname())
                     .age(user.getAge())
                     .gender(user.getGender())
-                    .accessToken(token) // jwt 토큰 설정
+                    .accessToken(accessToken)
                     .refreshToken(refreshToken)
                     .build();
-
-//            Cookie cookie1 = new Cookie("accessToken", token);
-//            Cookie cookie2 = new Cookie("refreshToken", refreshToken);
-
-
-//            cookie1.setDomain("localhost");
-// 도메인 설정: 쿠키가 사용될 도메인을 설정하는 코드, 현프로젝트에서는 localhost라서 설정할 필요없고 나중에 배포할때 도메인에 맞춰서 설정하면 보안에 도움됨
-
-//            cookie1.setPath("/");
-//            cookie1.setHttpOnly(true);
-//            cookie1.setSecure(true);
-
-//            cookie2.setDomain("localhost");
-//            cookie2.setPath("/");
-//            cookie2.setHttpOnly(true);
-//            cookie2.setSecure(true);
-
-
-//            cookie1.setMaxAge(3600);
-//            cookie2.setMaxAge(3600);
-//            cookie1.setHttpOnly(true);
-//            cookie1.setSecure(true);
-
-//            log.info("cookie1: {}", cookie1.getMaxAge());
-//
-//
-//            response.addCookie(cookie1);
-//            response.addCookie(cookie2);
 
             return ResponseEntity.ok().body(resUserDTO);
 
         } else {
-            // userId, 비번으로 찾은 유저 없음 = 로그인 실패
+            // userId, password로 찾은 유저 없음 = 로그인 실패
             ResponseDTO resDTO = ResponseDTO.builder()
                     .error(user.getAge()) // service에서 로그인 실패 사유를 age에 담아 보내기 때문
                     .build();
@@ -164,109 +136,53 @@ public class UserController {
             return ResponseEntity.status(401).body(resDTO);
         }
     }
+
+    // accessToken 재발급
     @PostMapping("/newToken")
-    public ResponseEntity<?> createNewToken(HttpServletRequest request, HttpServletResponse response){
+    public ResponseEntity<?> createNewToken(HttpServletRequest request){
         String token = request.getHeader("Authorization").substring(7);
-//        Cookie[] cookies = request.getCookies();
-//        String tokenName = null;
-//        String token = null;
-//        // refreshToken 찾기
-//        for(Cookie cookie: cookies){
-//            if(cookie.getName().equals("refreshToken")){
-//                tokenName = cookie.getName();
-//                token = cookie.getValue();
-//            }
-//        }
-        log.info("create new Token from : {}", token);
+        log.info("create new accessToken from : {}", token);
+
         Claims claims = Jwts.parser()
                 .setSigningKey(jwtProperties.getSecretKey())
                 .parseClaimsJws(token)
                 .getBody();
-        UUID id = UUID.fromString(claims.getSubject());
 
+        UUID id = UUID.fromString(claims.getSubject());
         log.info("id : {}", id);
 
-        // 토큰으로 id를 이용해서 사람 찾고
         UserEntity user = service.getById(id);
         String accessToken = tokenProvider.createAccessToken(user);
-        // createAccesstoken에서 리턴
         final UserDTO resUserDTO = UserDTO.builder()
-                // 나중에 프론트와 연결시 필요한 요소 추가할것
                 .userId(user.getUserId())
-                .password(user.getPassword())
-                .nickname(user.getNickname())
-                .age(user.getAge())
-                .gender(user.getGender())
                 .accessToken(accessToken)
                 .build();
-//        Cookie cookie = new Cookie("accessToken", accessToken);
-//        cookie.setDomain("localhost");
-//        cookie.setPath("/");
-//        cookie.setHttpOnly(true);
-//        cookie.setSecure(true);
-//        response.addCookie(cookie);
 
         return ResponseEntity.ok().body(resUserDTO);
     }
+
+    // refreshToken 재발급
     @PostMapping("/newRefreshToken")
-    public ResponseEntity<?> createNewRefreshToken(HttpServletRequest request, HttpServletResponse response){
+    public ResponseEntity<?> createNewRefreshToken(HttpServletRequest request){
         String token = request.getHeader("Authorization").substring(7);
-//        Cookie[] cookies = request.getCookies();
-//        String tokenName = null;
-//        String token = null;
-//        // refreshToken 찾기
-//        for(Cookie cookie: cookies){
-//            if(cookie.getName().equals("accessToken")){
-//                tokenName = cookie.getName();
-//                token = cookie.getValue();
-//            }
-//        }
         log.info("create new refresh Token from : {}", token);
+
         Claims claims = Jwts.parser()
                 .setSigningKey(jwtProperties.getSecretKey())
                 .parseClaimsJws(token)
                 .getBody();
-        UUID id = UUID.fromString(claims.getSubject());
 
+        UUID id = UUID.fromString(claims.getSubject());
         log.info("id : {}", id);
 
-        // 토큰으로 id를 이용해서 사람 찾고
         UserEntity user = service.getById(id);
         String refreshToken = tokenProvider.createRefreshToken(user);
-        // createAccesstoken에서 리턴
         final UserDTO resUserDTO = UserDTO.builder()
-                // 나중에 프론트와 연결시 필요한 요소 추가할것
                 .userId(user.getUserId())
-                .password(user.getPassword())
-                .nickname(user.getNickname())
-                .age(user.getAge())
-                .gender(user.getGender())
                 .refreshToken(refreshToken)
                 .build();
 
-//        Cookie cookie = new Cookie("refreshToken", refreshToken);
-////        cookie.setDomain("localhost");
-//        cookie.setPath("/");
-//        cookie.setHttpOnly(true);
-//        cookie.setSecure(true);
-//
-//        response.addCookie(cookie);
-
         return ResponseEntity.ok().body(resUserDTO);
-    }
-
-    @GetMapping("/check")
-    public ResponseEntity<?> check(@AuthenticationPrincipal UserEntity user, HttpServletRequest request){
-        // @AuthenticationPrincipal UserEntity user 사용시 주의 사항
-        // user에는 id, age, gender만 들어가있음. 이외에는 service.getById(user.getId());를 활용해 user값을 가져와야함
-        log.info("UserEntity age from 어노테이션 : {}", user.getAge());
-        log.info("UserEntity Gender from 어노테이션 : {}", user.getGender());
-
-        // 요청에 토큰 담아서 보냈을때 User정보 가져오는 코드
-        log.info("check 경로 id : {}", user.getId());
-        UserEntity newUser = service.getById(user.getId());
-        log.info("check 경로 UserEntity : {}", String.valueOf(newUser));
-        return ResponseEntity.ok().body(String.valueOf(newUser));
     }
 
     private String isValidUser(UserDTO userDTO){

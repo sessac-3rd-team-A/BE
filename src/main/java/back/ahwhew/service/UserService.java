@@ -63,26 +63,37 @@ public class UserService {
 
     public UserEntity getByCredentials(final String userId, final String password, final PasswordEncoder encoder){
         log.info("find user by userId");
+
         final UserEntity originalUser = repo.findByUserId(userId);
         log.info("original User: {}", originalUser);
-        // matches() 메소드 이용해서 패스워드 동일 여부 비교
+
         if(originalUser != null && encoder.matches(password, originalUser.getPassword())) {
             log.info("samePassword");
+
             return originalUser;
+
         }else if(originalUser == null){
             log.info("wrong userId");
+
             UserEntity user = new UserEntity();
-            user.setAge("wrong userId"); // age와 오류 메세지가 중복 가능섬이 없기 때문에 사용
+            user.setAge("wrong userId"); // age와 오류 메세지가 중복 가능성이 없기 때문에 사용
+
             return user;
+
         }else if(!encoder.matches(password, originalUser.getPassword())){
             log.info("wrong password");
+
             UserEntity user = new UserEntity();
             user.setAge("wrong password");
+
             return user;
+
         }else{
             log.info("signin error");
+
             UserEntity user = new UserEntity();
             user.setAge("signin error");
+
             return user;
         }
     }
