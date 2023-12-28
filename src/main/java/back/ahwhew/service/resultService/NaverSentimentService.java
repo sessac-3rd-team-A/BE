@@ -70,10 +70,6 @@ public class NaverSentimentService {
 
             log.info("감정 분석 결과: {}", result);
 
-//            List<String> extractWords = extractWordsFromResult(result);
-//            naverPapagoService.transfer(extractWords);
-
-//            saveSentimentToDatabase(result);
 
             return result;
 
@@ -92,32 +88,6 @@ public class NaverSentimentService {
         return headers;
     }
 
-    public void saveSentimentToDatabase(String result) {
-        try {
-            String sentiment = extractSentiment(result);
-            log.info("naverSentimentService로 저장할 대표 감정 -> {}", sentiment);
-
-            double positiveRatio = extractPositiveRatio(result);
-//            log.info("positiveRatio: {}", positiveRatio);
-
-            double negativeRatio = extractNegativeRatio(result);
-//            log.info("negativeRatio: {}", negativeRatio);
-
-            double neutralRatio = extractNeutralRatio(result);
-//            log.info("neutralRatio: {}", neutralRatio);
-
-            ResultEntity resultEntity = new ResultEntity();
-            resultEntity.setSentiment(sentiment);
-            resultEntity.setPositiveRatio(positiveRatio);
-            resultEntity.setNegativeRatio(negativeRatio);
-            resultEntity.setNeutralRatio(neutralRatio);
-
-            resultRepository.save(resultEntity);
-
-        } catch (Exception e) {
-            log.error("결과를 데이터베이스에 저장하는 중 오류 발생", e);
-        }
-    }
 
     public List<String> extractWordsFromResult(String result) {
         List<String> extractedWords = new ArrayList<>();
