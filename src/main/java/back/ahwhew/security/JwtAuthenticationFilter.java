@@ -25,16 +25,11 @@ import java.util.UUID;
 @Slf4j
 @Component
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-    // OncePerRequestFilter
-    // - 한 요청당 한 번 실행됨
 
     @Autowired
     private TokenProvider tokenProvider;
 
-    // doFilterInternal 메소드
-    // - OncePerREquestFilter 에 정의된 추상 메소드 중 하나
-    // - 재정의한 메소드에서 하는 작업: JWT 토큰 검증, 사용자 정보를 Spring Security 의 SecurityContextHolder에 등록
-
+    // token을 사용하여 사용자 인증 및 등록
     @Override
     protected  void doFilterInternal(HttpServletRequest request,
                                      HttpServletResponse response,
@@ -44,60 +39,30 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             log.info("Filter is running...");
             String token = parseBearerToken(request);
 
-            // 토큰 가져오는 부분
-//            Cookie[] cookies = request.getCookies();
-//            String tokenName = null;
-//            String token = null;
-//            if(cookies != null){
-//                for(Cookie cookie: cookies){
-//                    if(cookie.getName().equals("accessToken")){
-//                        tokenName = cookie.getName();
-//                        token = cookie.getValue();
-//                    }
-//                }
-//            }
             log.info("doFilter token value : {}", token);
 
-            // token 검사
-            // - 토큰 인증 부분 구현
-            // - 유효시간 검사 생략
-            if(token != null && !token.equalsIgnoreCase("null")){ //equalsIgnoreCase 대소문자 상관 안하고 비교
-                // 토큰이 null, "null"이 아니라면 토큰 검사 진행
-
-                // user의 id 가져오기
-                // - 만약 토큰이 위조되었다면 예외 처리
-//                String id = tokenProvider.validateAndGetId(token);
-//                log.info(("Authenticated user ID: " + id));
-
-                Claims claims = tokenProvider.extractClaims(token);
+            if(token != null && !token.equalsIgnoreCase("null")){
+                Claims claims = tokenProvider.validateAndGetClaims(token);
                 log.info("claims : {}", claims);
                 log.info("expire Time: {}", claims.getExpiration());
 
-                // if문 순서 재배치 필요(가능하면 호출이 많은 순서로)
                 if(claims.getIssuer() == "Token error"){
                     log.info("Token error from filter");
                     response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                     response.setContentType("application/json");
                     response.setCharacterEncoding("UTF-8");
                     response.getWriter().write("토큰 에러 발생");
+                    return;
+
                 }else if(claims.getIssuer() == "Expired"){
-                    // 엑세스 토큰이 유효시간이 지난 경우(사실 에러가 발생한 경우)
-                    // 토큰 재발급 경로와 다른 경로들 분리 필요
+                    // 엑세스 토큰이 유효시간이 지난 경우
                     log.info("Token is expired");
                     log.info("req url: {}", request.getContextPath());
-//                    if(request.getServletPath().equals("/auth/newToken")){
-//                        // 경로가 재발급 경로인 경우
-//                    }else{
-                        // 엑세스 토큰이 만료되었지만 토큰 재발급 경로가 아닌 경우
                         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
                         response.setContentType("application/json");
                         response.setCharacterEncoding("UTF-8");
                         response.getWriter().write("토큰 재발급을 받으세요");
                         return;
-//                    }
-//                }else if(claims.get("age", String.class) == null) {
-//                    // 리프레시 토큰인 경우
-//                    log.info("refreshToken!");
 
                 }else {
                     // 토큰의 유효기간이 안지난 경우
@@ -118,11 +83,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
                 }
             }else{
                 log.warn("Token is null");
-//                response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                // 응답 메시지 작성
-//                response.getWriter().write("토큰이 null이거나 유효하지 않습니다.");
-
-//                return;
             }
         }catch (Exception e){
             logger.error("Could not set user authentication in security context", e);
