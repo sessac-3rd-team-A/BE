@@ -10,9 +10,9 @@ import java.util.*;
 @Service
 public class KomoranService {
 
-    private static final Map<String, String> jobCategoryKeywords = initializeJobCategoryKeywords();
+    public Map<String, String> jobCategoryKeywords = initializeJobCategoryKeywords();
 
-    private static Map<String, String> initializeJobCategoryKeywords() {
+    public Map<String, String> initializeJobCategoryKeywords() {
         // 직업 카테고리 키워드 초기화
         Map<String, String> keywords = new HashMap<>();
         keywords.put("IT", "프로그래머, 개발자, 소프트웨어 엔지니어, 시스템 엔지니어, 네트워크 엔지니어, 데이터 과학자, 보안 전문가, 클라우드 엔지니어, 머신러닝 엔지니어, 블록체인 개발자, 데이터베이스 관리자, 시스템 분석가, 네트워크 보안 전문가, IT 컨설턴트, IT 프로젝트 매니저");
@@ -28,21 +28,7 @@ public class KomoranService {
         return keywords;
     }
 
-//    public List<String> extractNouns(String text) {
-//        List<String> nouns = new ArrayList<>();
-//
-//        // Komoran을 사용하여 형태소 분석
-//        Komoran komoran = new Komoran(DEFAULT_MODEL.FULL);
-//        List<Token> tokens = komoran.analyze(text).getTokenList();
-//
-//        for (Token token : tokens) {
-//            if (token.getPos().equals("NNG")) {
-//                nouns.add(token.getMorph());
-//            }
-//        }
-//
-//        return nouns;
-//    }
+
 
     public List<String> extractJobRelatedWords(String text) {
         List<String> jobRelatedWords = new ArrayList<>();
