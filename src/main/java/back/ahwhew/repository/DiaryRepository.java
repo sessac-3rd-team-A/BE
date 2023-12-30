@@ -10,6 +10,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.UUID;
 @Repository
@@ -24,7 +25,7 @@ public interface DiaryRepository extends JpaRepository<DiaryEntity, Long> {
 
     @Transactional
     default void save(UserEntity user, String text, List<String> jobRelatedWords, List<String> jobCategories) {
-        LocalDate today = LocalDate.now();
+        LocalDate today = LocalDate.now(ZoneId.of("Asia/Seoul"));
         boolean diaryExists = existsByUserIdAndDate(user.getId(), today);
 
         if (!diaryExists) {

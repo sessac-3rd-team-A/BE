@@ -11,6 +11,7 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -34,10 +35,10 @@ public interface ResultRepository extends JpaRepository<ResultEntity, Long> {
         ResultEntity resultEntity = createResultEntity(user, sentiment, positiveRatio, negativeRatio, neutralRatio, gifUrl, imageUrl);
 
         if (user != null && user.getId() != null) {
-            boolean exists = existsByUserIdAndDate(user.getId(), LocalDate.now());
+            boolean exists = existsByUserIdAndDate(user.getId(), LocalDate.now(ZoneId.of("Asia/Seoul")));
             if (exists) {
                 update(user.getId(), sentiment, positiveRatio, negativeRatio, neutralRatio, gifUrl, imageUrl, LocalDate.now());
-                resultEntity = findByUserAndDate(user,LocalDate.now()); // 업데이트 후 엔터티를 조회하여 반환합니다..orElseThrow(); // 업데이트 후 엔터티를 조회하여 반환합니다.
+                resultEntity = findByUserAndDate(user,LocalDate.now(ZoneId.of("Asia/Seoul"))); // 업데이트 후 엔터티를 조회하여 반환합니다..orElseThrow(); // 업데이트 후 엔터티를 조회하여 반환합니다.
             } else {
                 resultEntity = save(resultEntity); // save 메서드를 호출하고 반환된 엔터티로 업데이트
 
@@ -59,7 +60,7 @@ public interface ResultRepository extends JpaRepository<ResultEntity, Long> {
     private ResultEntity createResultEntity(UserEntity user, String sentiment, double positiveRatio, double negativeRatio,
                                             double neutralRatio, String gifUrl, String imageUrl) {
         ResultEntity resultEntity = new ResultEntity();
-        resultEntity.setDate(LocalDate.now());
+        resultEntity.setDate(LocalDate.now(ZoneId.of("Asia/Seoul")));
 
         if (user != null) {
             resultEntity.setUser(user);
