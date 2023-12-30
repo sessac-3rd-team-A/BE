@@ -6,6 +6,7 @@ import org.hibernate.annotations.DynamicInsert;
 
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.UUID;
 
@@ -37,12 +38,13 @@ public class DiaryEntity {
     private String jobCategories;
 
 
+
     @Column(name = "date", nullable = false)
     private LocalDate date;
 
     @PrePersist
     protected void onCreate() {
-        date = LocalDate.now();
+        date = LocalDate.now(ZoneId.of("Asia/Seoul"));
     }
 
 }

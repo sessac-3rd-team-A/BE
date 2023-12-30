@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.UUID;
 
 @Entity
@@ -52,9 +53,10 @@ public class ResultEntity {
     @Column(name="recommendedGif",nullable = false)
     private String recommendedGif;
 
+
     @PrePersist
     protected void onCreate() {
-        date = LocalDate.now();
+        date = LocalDate.now(ZoneId.of("Asia/Seoul"));
     }
 
 

@@ -9,6 +9,7 @@ import org.hibernate.annotations.DynamicInsert;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 
 @Entity
@@ -44,8 +45,9 @@ public class StatisticsEntity {
     @Column(name="age")
     private String age;
 
+
     @PrePersist
     protected void onCreate() {
-        date = LocalDate.now();
+        date = LocalDate.now(ZoneId.of("Asia/Seoul"));
     }
 }
