@@ -22,6 +22,10 @@ public interface ResultRepository extends JpaRepository<ResultEntity, Long> {
     @Query("SELECT CASE WHEN COUNT(r) > 0 THEN true ELSE false END FROM ResultEntity r WHERE r.user.id = :userId AND r.date = :date")
     boolean existsByUserIdAndDate(@Param("userId") UUID userId, @Param("date") LocalDate date);
 
+    @Query("SELECT r FROM ResultEntity r WHERE r.user = :user AND r.date = :now")
+    ResultEntity findByUserAndDate(@Param("user") UserEntity user, @Param("now") LocalDate now);
+
+
     @Modifying
     @Transactional
     @Query("UPDATE ResultEntity SET sentiment = :sentiment, positiveRatio = :positiveRatio, negativeRatio = :negativeRatio, " +
@@ -37,7 +41,7 @@ public interface ResultRepository extends JpaRepository<ResultEntity, Long> {
         if (user != null && user.getId() != null) {
             boolean exists = existsByUserIdAndDate(user.getId(), LocalDate.now(ZoneId.of("Asia/Seoul")));
             if (exists) {
-                update(user.getId(), sentiment, positiveRatio, negativeRatio, neutralRatio, gifUrl, imageUrl, LocalDate.now());
+                update(user.getId(), sentiment, positiveRatio, negativeRatio, neutralRatio, gifUrl, imageUrl, LocalDate.now(ZoneId.of("Asia/Seoul")));
                 resultEntity = findByUserAndDate(user,LocalDate.now(ZoneId.of("Asia/Seoul"))); // 업데이트 후 엔터티를 조회하여 반환합니다..orElseThrow(); // 업데이트 후 엔터티를 조회하여 반환합니다.
             } else {
                 resultEntity = save(resultEntity); // save 메서드를 호출하고 반환된 엔터티로 업데이트
@@ -51,7 +55,6 @@ public interface ResultRepository extends JpaRepository<ResultEntity, Long> {
         return mapEntityToDTO(resultEntity);
     }
 
-    ResultEntity findByUserAndDate(UserEntity user, LocalDate now);
 
     List<ResultEntity> findAllByUser(UserEntity user);
 
