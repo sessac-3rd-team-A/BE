@@ -59,26 +59,8 @@ public class ResultEntity {
         date = LocalDate.now(ZoneId.of("Asia/Seoul"));
     }
 
-
-    public static ResultEntity fromDTO(ResultDTO resultDTO) {
-        ResultEntity resultEntity = new ResultEntity();
-
-        UserEntity userEntity = new UserEntity();
-        userEntity.setId(UUID.fromString(String.valueOf(resultDTO.getUserId())));
-        resultEntity.setUser(userEntity);
-        resultEntity.setPictureDiary(resultDTO.getPictureDiary());
-        resultEntity.setRecommendedGif(resultDTO.getRecommendedGif());
-        resultEntity.setSentiment(resultDTO.getSentiment());
-        resultEntity.setPositiveRatio(resultDTO.getPositiveRatio());
-        resultEntity.setNegativeRatio(resultDTO.getNegativeRatio());
-        resultEntity.setNeutralRatio(resultDTO.getNeutralRatio());
-        resultEntity.setDate(resultDTO.getDate());
-
-        return resultEntity;
+    @PreUpdate
+    protected void onUpdate()  {
+        date = LocalDate.now(ZoneId.of("Asia/Seoul"));
     }
-
-
-
-
-
 }

@@ -208,6 +208,7 @@ public class MypageController {
 
             return ResponseEntity.ok().body(response);
         } catch (Exception e) {
+            log.info("Error occurred while getting my shop information: {}", e.getMessage());
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }

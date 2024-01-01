@@ -34,7 +34,7 @@ public interface ResultRepository extends JpaRepository<ResultEntity, Long> {
                 @Param("negativeRatio") double negativeRatio, @Param("neutralRatio") double neutralRatio,
                 @Param("gifUrl") String gifUrl, @Param("imageUrl") String imageUrl, @Param("date") LocalDate date);
 
-    default ResultDTO saveOrUpdateResult(UserEntity user, String sentiment, double positiveRatio, double negativeRatio,
+    default ResultEntity saveOrUpdateResult(UserEntity user, String sentiment, double positiveRatio, double negativeRatio,
                                          double neutralRatio, String gifUrl, String imageUrl) {
         ResultEntity resultEntity = createResultEntity(user, sentiment, positiveRatio, negativeRatio, neutralRatio, gifUrl, imageUrl);
 
@@ -52,7 +52,7 @@ public interface ResultRepository extends JpaRepository<ResultEntity, Long> {
             resultEntity = save(resultEntity); // save 메서드를 호출하고 반환된 엔터티로 업데이트
         }
 
-        return mapEntityToDTO(resultEntity);
+        return resultEntity;
     }
 
 
@@ -77,19 +77,6 @@ public interface ResultRepository extends JpaRepository<ResultEntity, Long> {
         resultEntity.setRecommendedGif(gifUrl);
 
         return resultEntity;
-    }
-    private ResultDTO mapEntityToDTO(ResultEntity resultEntity) {
-        return ResultDTO.builder()
-                .id(resultEntity.getId())
-                .userId(resultEntity.getUser() != null ? resultEntity.getUser().getId() : null)
-                .sentiment(resultEntity.getSentiment())
-                .positiveRatio(resultEntity.getPositiveRatio())
-                .negativeRatio(resultEntity.getNegativeRatio())
-                .neutralRatio(resultEntity.getNeutralRatio())
-                .recommendedGif(resultEntity.getRecommendedGif())
-                .pictureDiary(resultEntity.getPictureDiary())
-                .date(resultEntity.getDate())
-                .build();
     }
 
     ResultEntity findTopByUserIdOrderByDateDesc(UUID id);

@@ -59,19 +59,6 @@ public class ResultService {
 
     public  ResultDTO getTextDiary(UserEntity user, String textDiary) {
         try {
-            String userId = (user != null && user.getId() != null) ? user.getId().toString() : null;
-
-            UserEntity newUser = null;
-            Optional<UserEntity> optionalUser = null;
-            if (userId != null) {
-                optionalUser = Optional.ofNullable(userService.getById(UUID.fromString(userId)));
-                newUser = optionalUser.orElse(null);
-                log.info("check 경로 UserEntity: {}", String.valueOf(newUser));
-            } else {
-                // userId가 null인 경우 처리
-                log.warn("User ID is null");
-            }
-
             //센티멘트 전체 결과값
             String sentimentResult = naverSentimentService.getSentiment(textDiary);
             //대표 감정 추출
@@ -127,8 +114,18 @@ public class ResultService {
             String imageUrl=amazonS3Service.uploadImageFromBase64(editedImgInfo);
             log.info("s3에 업로드한 imageUrl::{}",imageUrl);
 
-            ResultDTO resultDTO=resultRepository.saveOrUpdateResult(user,sentiment,positiveRatio,negativeRatio,neutralRatio,gifUrl,imageUrl);
-
+            ResultEntity resultEntity=resultRepository.saveOrUpdateResult(user,sentiment,positiveRatio,negativeRatio,neutralRatio,gifUrl,imageUrl);
+            ResultDTO resultDTO= ResultDTO.builder()
+                    .id(resultEntity.getId())
+                    .userId(resultEntity.getUser() != null ? resultEntity.getUser().getId() : null)
+                    .sentiment(resultEntity.getSentiment())
+                    .positiveRatio(resultEntity.getPositiveRatio())
+                    .negativeRatio(resultEntity.getNegativeRatio())
+                    .neutralRatio(resultEntity.getNeutralRatio())
+                    .date(resultEntity.getDate())
+                    .recommendedGif(resultEntity.getRecommendedGif())
+                    .pictureDiary(resultEntity.getPictureDiary())
+                    .build();
 
             return resultDTO;
 
@@ -137,20 +134,6 @@ public class ResultService {
             // 예외 발생 시 로깅
             log.error("getTextDiary 메서드 실행 중 예외 발생", e);
             throw new RuntimeException("Failed to process text diary", e);
-        }
-    }
-    public String save( ResultEntity resultEntity) {
-        try {
-
-            // ResultEntity를 저장
-            resultRepository.save(resultEntity);
-
-
-            return "success"; // 또는 저장 성공에 대한 적절한 응답 메시지
-        } catch (Exception e) {
-            // 예외 처리
-            e.printStackTrace(); // 혹은 로깅
-            return "fail"; // 또는 실패에 대한 적절한 응답 메시지
         }
     }
 }
