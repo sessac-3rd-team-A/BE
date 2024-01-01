@@ -40,7 +40,7 @@ public class DiaryService {
             List<String> jobCategories = komoranService.extractJobCategories(text);
             log.info("직종 관련단어들-직종 카테고리::{}-{}", jobRelatedWords, jobCategories);
 
-            diaryRepository.save(newUser, text, jobRelatedWords, jobCategories);
+            diaryRepository.saveOrUpdate(newUser, text, jobRelatedWords, jobCategories);
 
             return "success";
         } catch (Exception e) {

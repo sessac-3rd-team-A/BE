@@ -46,5 +46,7 @@ public class DiaryEntity {
     protected void onCreate() {
         date = LocalDate.now(ZoneId.of("Asia/Seoul"));
     }
+    @PreUpdate
+    protected void onUpdate() {date= LocalDate.now(ZoneId.of("Asia/Seoul"));}
 
 }
