@@ -10,11 +10,11 @@
 >
 > ### 개발기간: 2023.12.11~ 2023.12.29
 
-### 🩵[프로젝트 배포 주소](http://ahwhew.site/)
+### 📎[프로젝트 배포 주소](http://ahwhew.site/)
 
 ### 💜[팀노션](https://even-taurus-17e.notion.site/Ah-whew-1c7815da1532435c81c35ff4a476c917?pvs=4)
 
-### 🩷[피그마](https://www.figma.com/community/file/1322241717698834138/ah-whew)
+### 📎[피그마](https://www.figma.com/community/file/1322241717698834138/ah-whew)
 
 ## 📦주요 기능
 
