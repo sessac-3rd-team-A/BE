@@ -10,11 +10,11 @@
 >
 > ### 개발기간: 2023.12.11~ 2023.12.29
 
-### 🩵[프로젝트 배포 주소](http://ahwhew.site/)
+### 📎[프로젝트 배포 주소](http://ahwhew.site/)
 
 ### 💜[팀노션](https://even-taurus-17e.notion.site/Ah-whew-1c7815da1532435c81c35ff4a476c917?pvs=4)
 
-### 🩷[피그마](https://www.figma.com/community/file/1322241717698834138/ah-whew)
+### 📎[피그마](https://www.figma.com/community/file/1322241717698834138/ah-whew)
 
 ## 📦주요 기능
 
@@ -63,15 +63,15 @@ $ npm run dev
 | :-------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------: | :------------------------------------------------------------------------------: | :------------------------------------------------------------------------------: | :------------------------------------------------------------------------------: |
 | <img  width="100px" src="https://avatars.githubusercontent.com/u/43949061?v=4" /> | <img width="100px" src="https://avatars.githubusercontent.com/u/113359008?v=4" /> | <img width="100px" src="https://avatars.githubusercontent.com/u/123625444?v=4"/> | <img width="100px" src="https://avatars.githubusercontent.com/u/100843910?v=4"/> | <img width="100px" src="https://avatars.githubusercontent.com/u/139740067?v=4"/> |
 |                    [@Sangwoo97](https://github.com/Sangwoo97)                     |                      [@sy33002](https://github.com/sy33002)                       |                     [@hoonsdev](https://github.com/hoonsdev)                     |                       [@22-JWL](https://github.com/22-JWL)                       |                       [@jjsh03](https://github.com/jjsh03)                       |
-|                          메인화면 <br /> 회원가입/로그인                          |                          회원 정보 수정<br /> 추첨 상점                           |                                유저 감정 & 캘린더                                |                                   감정 트렌드                                    |                       일기 작성 & 결과 <br /> 에러 & 로딩                        |
+|                          메인화면 <br /> 회원가입/로그인                          |                          회원 정보 수정<br /> 추천 상점                           |                                유저 감정 & 캘린더                                |                           감정 트렌드 & 사진 추천 순위                           |                       일기 작성 & 결과 <br /> 에러 & 로딩                        |
 
 ### BACKEND
 
-|                                         김세은                                          |                                      김정윤                                      |                                        김효중                                        |                                     홍민영                                      |
-| :-------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------: | :-----------------------------------------------------------------------------: |
-| <img  width="100px" src="https://avatars.githubusercontent.com/u/139741006?s=60&v=4" /> | <img width="100px" src="https://avatars.githubusercontent.com/u/95032287?v=4" /> | <img width="100px" src="https://avatars.githubusercontent.com/u/71661011?s=60&v=4"/> | <img width="100px" src="https://avatars.githubusercontent.com/u/65701100?v=4"/> |
-|                       [@seeun0210](https://github.com/seeun0210)                        |           [@pipi-shortstocking](https://github.com/pipi-shortstocking)           |                      [@rlagywnd4](https://github.com/rlagywnd4)                      |                [@HongMinYeong](https://github.com/HongMinYeong)                 |
-|                                   그림일기 AI 관련 기능 <br /> 프로필 대시보드 및 <br /> 추천상점 기능 <br /> docker 배포                                    |                         회원정보 수정 <br /> 유효성 검사 <br />  자동 별명생성 기능                      |                       로그인 기능 <br /> 사용자 인증 관련 기능                       |                                 전체 유저 및 카테고리별 <br /> 평균값, 밈 랭킹 <br /> 통계 관련 기능 <br /> docker 배포                                  |
+|                                         김세은                                          |                                      김정윤                                      |                                        김효중                                        |                                         홍민영                                          |
+| :-------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------: |
+| <img  width="100px" src="https://avatars.githubusercontent.com/u/139741006?s=60&v=4" /> | <img width="100px" src="https://avatars.githubusercontent.com/u/95032287?v=4" /> | <img width="100px" src="https://avatars.githubusercontent.com/u/71661011?s=60&v=4"/> |     <img width="100px" src="https://avatars.githubusercontent.com/u/65701100?v=4"/>     |
+|                       [@seeun0210](https://github.com/seeun0210)                        |           [@pipi-shortstocking](https://github.com/pipi-shortstocking)           |                      [@rlagywnd4](https://github.com/rlagywnd4)                      |                    [@HongMinYeong](https://github.com/HongMinYeong)                     |
+| 그림일기 AI 관련 기능 <br /> 프로필 대시보드 및 <br /> 추천상점 기능 <br /> docker 배포 |            회원정보 수정 <br /> 유효성 검사 <br /> 자동 별명생성 기능            |                       로그인 기능 <br /> 사용자 인증 관련 기능                       | 전체 유저 및 카테고리별 <br /> 평균값, 밈 랭킹 <br /> 통계 관련 기능 <br /> docker 배포 |
 
 ## 🖱 사용 기술
 
