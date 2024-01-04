@@ -46,11 +46,8 @@ public class WebConfig implements WebMvcConfigurer {
                 .csrf(CsrfConfigurer::disable) // CSRF 보호 비활성화
                 .httpBasic(withDefaults())
                 .sessionManagement(sessionManagement -> sessionManagement
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 사용하지 않음 (STATELESS 설정)
-                .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/", "/auth/**","/api/diary/**","/api/**","/profile/**").permitAll() // /, /auth/** 경로는 모두 허용
-                        .anyRequest().authenticated() // 그 외 나머지 경로에 대한 요청은 인증 필요
-                );
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)); // 세션 사용하지 않음 (STATELESS 설정)
+
 
         // 매 요청마다 CorsFilter 실행한 후에 jwtAuthenticationFilter 를 실행해달라고 등록
         http.addFilterAfter(jwtAuthenticationFilter, CorsFilter.class);
