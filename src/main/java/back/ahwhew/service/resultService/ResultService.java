@@ -91,15 +91,20 @@ public class ResultService {
             List<StatisticsEntity> statisticsEntities = statisticsService.create(user,sentimentResult,gifUrl);
 
 
-            //파파고 돌리기
+
             List<String> extractWords=naverSentimentService.extractWordsFromResult(sentimentResult);
             log.info("extractWords:: {}",extractWords);
-            //한국어 자연어 처리(명사 위주로 추출)
-            List<String> phrasesWithNegations = komoranService.extractNounPhrases(extractWords);
-            log.info("phrases with negations:: {}", phrasesWithNegations);
-
-            List<String> translatedText=naverPapagoService.translate(phrasesWithNegations);
-            log.info("translated result:: {}",translatedText);
+            List<String> translatedText = null;
+            if (extractWords.get(0).length() <= 10) {
+                // 길이가 10 이하인 경우 Papago 번역기 사용
+                translatedText = naverPapagoService.translate(extractWords);
+            } else {
+                // 길이가 10 초과인 경우 KomoranService 사용
+                List<String> phrasesWithNegations = komoranService.extractNounPhrases(extractWords);
+                log.info("phrases with negations:: {}", phrasesWithNegations);
+                translatedText = naverPapagoService.translate(phrasesWithNegations);
+            }
+            log.info("translatedText::{}",translatedText);
 
             //karlo 돌리기(여기서는 base64로 인코딩된 값이 넘어옴
             String karloImgEncodedInfo= karloImageGeneratorService.getKarloResult(translatedText);
