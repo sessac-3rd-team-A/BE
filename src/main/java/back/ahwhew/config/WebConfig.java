@@ -26,14 +26,6 @@ import static org.springframework.security.config.Customizer.withDefaults;
 @Slf4j
 public class WebConfig implements WebMvcConfigurer {
 
-//    @Override
-//    public void addCorsMappings(CorsRegistry registry) {
-//        registry.addMapping("/diary")
-//                .allowedOrigins("*")
-//                .allowedMethods("GET", "POST")
-//                .allowCredentials(false)
-//                .maxAge(3600);
-//    }
 
     @Autowired
     private JwtAuthenticationFilter jwtAuthenticationFilter;
@@ -42,20 +34,23 @@ public class WebConfig implements WebMvcConfigurer {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         // http 객체를 이용해서 http 요청에 대한 보안 설정
         http
-                .cors(withDefaults()) // CORS 활성화
-                .csrf(CsrfConfigurer::disable) // CSRF 보호 비활성화
+                .cors(withDefaults())
+                .csrf(CsrfConfigurer::disable)
                 .httpBasic(withDefaults())
                 .sessionManagement(sessionManagement -> sessionManagement
-                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // 세션 사용하지 않음 (STATELESS 설정)
+                        .sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/", "/auth/**","/api/diary/**","/api/**","/profile/**").permitAll() // /, /auth/** 경로는 모두 허용
-                        .anyRequest().authenticated() // 그 외 나머지 경로에 대한 요청은 인증 필요
-                );
+                        .requestMatchers("/", "/auth/**", "/api/diary/**", "/api/**", "/profile/**").permitAll()
+                        .anyRequest().authenticated())
+                .requiresChannel(channelConfigurer -> channelConfigurer
+                        .requestMatchers(r -> r.getHeader("X-Forwarded-Proto") != null)
+                        .requiresSecure());
 
-        // 매 요청마다 CorsFilter 실행한 후에 jwtAuthenticationFilter 를 실행해달라고 등록
         http.addFilterAfter(jwtAuthenticationFilter, CorsFilter.class);
 
         return http.build();
+
+
     }
 
     @Bean
@@ -64,7 +59,7 @@ public class WebConfig implements WebMvcConfigurer {
 
         // cors 설정
         config.setAllowCredentials(true);
-        config.setAllowedOriginPatterns(Arrays.asList("http://localhost:3000"));
+        config.setAllowedOriginPatterns(Arrays.asList("https://www.ahwhew.com"));
         config.setAllowedMethods(Arrays.asList("HEAD", "POST", "GET", "DELETE", "PUT", "PATCH"));
         config.setAllowedHeaders(Arrays.asList("*"));
 
