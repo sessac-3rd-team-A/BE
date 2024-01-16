@@ -1,0 +1,8 @@
+# 환경변수 분리
+/src/main/resources
+# 키파일 분리
+cert.pem
+fullchain.pem
+key.pem
+privkey.pem
+/src/test
