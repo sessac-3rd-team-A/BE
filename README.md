@@ -71,7 +71,7 @@ $ npm run dev
 | :-------------------------------------------------------------------------------------: | :------------------------------------------------------------------------------: | :----------------------------------------------------------------------------------: | :-------------------------------------------------------------------------------------: |
 | <img  width="100px" src="https://avatars.githubusercontent.com/u/139741006?s=60&v=4" /> | <img width="100px" src="https://avatars.githubusercontent.com/u/95032287?v=4" /> | <img width="100px" src="https://avatars.githubusercontent.com/u/71661011?s=60&v=4"/> |     <img width="100px" src="https://avatars.githubusercontent.com/u/65701100?v=4"/>     |
 |                       [@seeun0210](https://github.com/seeun0210)                        |           [@pipi-shortstocking](https://github.com/pipi-shortstocking)           |                      [@rlagywnd4](https://github.com/rlagywnd4)                      |                    [@HongMinYeong](https://github.com/HongMinYeong)                     |
-| 그림일기 AI 관련 기능 <br /> 프로필 대시보드 및 <br /> 추천상점 기능 <br /> docker 배포 |            회원정보 수정 <br /> 유효성 검사 <br /> 자동 별명생성 기능            |                       로그인 기능 <br /> 사용자 인증 관련 기능                       | 전체 유저 및 카테고리별 <br /> 평균값, 밈 랭킹 <br /> 통계 관련 기능 <br /> docker 배포 |
+| 그림일기 AI 관련 기능 <br /> 프로필 대시보드 및 <br /> 추천상점 기능 <br /> docker&Https배포 |            회원정보 수정 <br /> 유효성 검사 <br /> 자동 별명생성 기능            |                       로그인 기능 <br /> 사용자 인증 관련 기능                       | 전체 유저 및 카테고리별 <br /> 평균값, 밈 랭킹 <br /> 통계 관련 기능 <br /> docker 배포 |
 
 ## 🖱 사용 기술
 
@@ -87,6 +87,13 @@ $ npm run dev
 - 언어: <img src="https://img.shields.io/badge/Java-007396?style=flat-square&logo=Java&logoColor=white" />
 - 프레임워크 및 라이브러리: <img src="https://img.shields.io/badge/Spring-6DB33F?style=flat&logo=Spring&logoColor=white"/> <img src="https://img.shields.io/badge/Spring Boot-6DB33F?style=flat&logo=Spring Boot&logoColor=white"/> <img src="https://img.shields.io/badge/Spring Security-6DB33F?style=flat&logo=Spring Security&logoColor=white"/> <img src="https://img.shields.io/badge/MySQL-4479A1?style=flat&logo=MySQL&logoColor=white"/> <img src="https://img.shields.io/badge/Jpa-6DB33F?style=flat-square&logo=Java&logoColor=white" /> <img src="https://img.shields.io/badge/JSON-000000?style=flat-square&logo=JSON&logoColor=white" /> <img src="https://img.shields.io/badge/Amazon s3-569A31?style=flat-square&logo=Amazon s3&logoColor=white" /> <img src="https://img.shields.io/badge/KOMORAN-007396?style=flat-square&logo=KOMORAN&logoColor=white" />
 - Open API : <img src="https://img.shields.io/badge/CLOVA Sentiment-03C75A?style=flat-square&logo=Naver&logoColor=white" /> <img src="https://img.shields.io/badge/Papago Translation-03C75A?style=flat-square&logo=Naver&logoColor=white" /> <img src="https://img.shields.io/badge/Karlo-007396?style=flat-square&logo=&logoColor=white" /> <img src="https://img.shields.io/badge/한국어 별명 생성기-007396?style=flat-square&logo=&logoColor=white" />
+
+### Server
+
+- 배포 도구: <img src="https://img.shields.io/badge/Docker-2496ED?style=flat&logo=Docker&logoColor=white"/>
+- 데이터베이스 서버: <img src="https://img.shields.io/badge/AWS EC2-232F3E?style=flat&logo=Amazon AWS&logoColor=white"/>
+- Https 설정 및 보안: <img src="https://img.shields.io/badge/AWS Lightsail-232F3E?style=flat&logo=Amazon AWS&logoColor=white"/> <img src="https://img.shields.io/badge/AWS LoadBalancer-232F3E?style=flat&logo=Amazon AWS&logoColor=white"/> <img src="https://img.shields.io/badge/AWS Route 53-232F3E?style=flat&logo=Amazon AWS&logoColor=white"/>
+
 
 ## 🖥️ ERD
 
