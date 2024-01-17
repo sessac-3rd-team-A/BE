@@ -49,6 +49,7 @@ public class MypageController {
             log.info("확인: " + userInfo.getId());
 
             UserEntity user = UserEntity.builder()
+                    .id(userInfo.getId())
                     .userId(dto.getUserId())
                     .age(dto.getAge())
                     .gender(dto.getGender())
