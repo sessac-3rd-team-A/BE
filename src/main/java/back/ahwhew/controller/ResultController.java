@@ -60,18 +60,17 @@ public class ResultController {
 
     @PostMapping("/diary")
     @ResponseBody
-    public ResponseEntity<ResultDTO> postTextDiary(@AuthenticationPrincipal UserEntity user, @RequestBody DiaryDTO diaryRequest) {
+    public ResponseEntity<?> postTextDiary(@AuthenticationPrincipal UserEntity user,
+                                                   @RequestBody DiaryDTO diaryRequest) {
 
         try {
             String textDiary = diaryRequest.getTextDiary();
-            //로그인한 유저의 경우에만 ㅈ장
+            //로그인한 유저의 경우에만 저장
             String saveDiary= diaryService.saveDiary(user,textDiary);
             log.info("saveDiary : {}",saveDiary);
             //서비스에서 ai로직 처리
             ResultDTO resultDTO = resultService.getTextDiary(user, textDiary);
-
             return ResponseEntity.ok().body(resultDTO);
-
 
         } catch (Exception e) {
             // 예외 발생 시 로깅

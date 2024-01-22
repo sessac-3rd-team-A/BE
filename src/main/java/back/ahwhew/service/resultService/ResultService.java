@@ -80,18 +80,17 @@ public class ResultService {
             String detailNegativeSentiment=naverSentimentService.extractDetailNegativeSentiment(sentimentResult);
             log.info("detailNegativeSentiment:: {}",detailNegativeSentiment);
 
-            //Gif 태그값 지정
-            String classifyTag= classifyTagService.classifySentiment(sentiment,positiveRatio,negativeRatio,neutralRatio,detailNegativeSentiment);
-            log.info("지정된 태그값:: {}",classifyTag);
+//            //Gif 태그값 지정
+//            String classifyTag= classifyTagService.classifySentiment(sentiment,positiveRatio,negativeRatio,neutralRatio,detailNegativeSentiment);
+//            log.info("지정된 태그값:: {}",classifyTag);
+//
+//            //지정된 태그값으로 사진 가져오기
+//            String gifUrl=gifService.getRandomGifUrl(classifyTag);
+//            log.info("imageUrls:: {}",gifUrl);
 
-            //지정된 태그값으로 사진 가져오기
-            String gifUrl=gifService.getRandomGifUrl(classifyTag);
-            log.info("imageUrls:: {}",gifUrl);
 
 
 
-            // 통계값 저장
-            List<StatisticsEntity> statisticsEntities = statisticsService.create(user,sentimentResult,gifUrl);
 
 
 
@@ -128,6 +127,9 @@ public class ResultService {
 
             jjalUrl = jjalkeyService.searchJjalkey(jjalQuery);
             log.info("jjalkey :: {}", jjalUrl);
+            // 통계값 저장
+            List<StatisticsEntity> statisticsEntities = statisticsService.create(user,sentimentResult,jjalUrl);
+            //파파고 번역기 돌리기
             translatedText = naverPapagoService.translate(extractWords);
 
             //karlo 돌리기(여기서는 base64로 인코딩된 값이 넘어옴

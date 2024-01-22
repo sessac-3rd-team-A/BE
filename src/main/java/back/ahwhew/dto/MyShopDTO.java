@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Data
 public class MyShopDTO {
-    private String tag;
+//    private String tag;
     private String sentiment;
     private String jobRelatedWords;
     private String jobCategories;

@@ -76,19 +76,12 @@ public class MypageController {
     @GetMapping("/dashboard/calendar")
     public ResponseEntity<?> dashboardCalendar(@AuthenticationPrincipal UserEntity userEntity) {
         try {
-            log.info("Dashboard start");
-            log.info("userEntity : {}", userEntity);
             if (userEntity == null)
                 return ResponseEntity.badRequest().body("로그인 후 이용해주세요.");
 
-            // 대시보드 정보 저장(유저 정보, 날짜 정보 등 저장해야함)
             List<ResultEntity> userResultList = dashbaordService.dashboard(userEntity);
 
-            log.info("user의 dashboard list::{}", userResultList);
-            log.info("user의 dashboard list 길이::{}", userResultList.size());
-
             TreeMap<String, DashboardDTO> resultMap = new TreeMap<>();
-
 
             for (ResultEntity result : userResultList) {
                 ResultDTO resultDTO = new ResultDTO();
@@ -101,15 +94,11 @@ public class MypageController {
                 resultDTO.setDate(result.getDate());
                 resultDTO.setRecommendedGif(result.getRecommendedGif());
 
-                DashboardDTO dashboardDTO = resultMap.computeIfAbsent(String.valueOf(result.getDate()), k -> DashboardDTO.builder().build());
+                DashboardDTO dashboardDTO = resultMap.computeIfAbsent(String.valueOf(result.getDate()),
+                        k -> DashboardDTO.builder().build());
                 dashboardDTO.setResult(resultDTO);
                 log.info("dashboardDTO::{}", dashboardDTO);
-
             }
-
-
-
-
             DashboardResDTO dashboardResDTO = DashboardResDTO.builder()
                     .calendar(resultMap.entrySet()
                             .stream()
@@ -120,15 +109,7 @@ public class MypageController {
                             })
                             .collect(Collectors.toList()))
                     .build();
-
-
-
-
-
-
-
             return ResponseEntity.ok().body(dashboardResDTO);
-
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
@@ -136,18 +117,11 @@ public class MypageController {
     @GetMapping("/dashboard/ratio")
     public ResponseEntity<?> dashboardRatio(@AuthenticationPrincipal UserEntity userEntity) {
         try {
-            log.info("DashboardRatio start");
-            log.info("userEntity : {}", userEntity);
             if (userEntity == null)
                 return ResponseEntity.badRequest().body("로그인 후 이용해주세요.");
 
-            // 대시보드 정보 저장(유저 정보, 날짜 정보 등 저장해야함)
             List<ResultEntity> userResultList = dashbaordService.dashboard(userEntity);
 
-            log.info("user의 dashboard list::{}", userResultList);
-            log.info("user의 dashboard list 길이::{}", userResultList.size());
-
-            // ResultEntity를 ResultDTO로 변환
             List<ResultDTO> resultDTOList = userResultList.stream()
                     .map(result -> {
                         ResultDTO resultDTO = new ResultDTO();
@@ -163,8 +137,6 @@ public class MypageController {
                     })
                     .collect(Collectors.toList());
 
-            // MonthlyUserStatisticsDTO로 변환
-//            List<MonthlyUserStatisticsDTO> monthlyStatisticsDTOList = MonthlyUserStatisticsDTO.calculateCurrentMonthStatistics(resultDTOList);
             MonthlyUserStatisticsDTO monthlyStatisticsDTO = MonthlyUserStatisticsDTO.calculateCurrentMonthStatistics(resultDTOList);
             Map<String, MonthlyUserStatisticsDTO> responseMap = new HashMap<>();
             responseMap.put("currentMonthStatistics", monthlyStatisticsDTO);
@@ -191,7 +163,7 @@ public class MypageController {
             MyShopDTO myshopDTO = MyShopDTO.builder()
                     .jobCategories(latestDiaryEntity != null ? latestDiaryEntity.getJobCategories() : null)
                     .jobRelatedWords(latestDiaryEntity != null ? latestDiaryEntity.getJobRelatedWords() : null)
-                    .tag(latestResultEntity != null ? myshopService.getGifEntity(latestResultEntity.getRecommendedGif()).getTag() : null)
+//                    .tag(latestResultEntity != null ? myshopService.getGifEntity(latestResultEntity.getRecommendedGif()).getTag() : null)
                     .sentiment(latestResultEntity != null ? latestResultEntity.getSentiment() : null)
                     .build();
 
