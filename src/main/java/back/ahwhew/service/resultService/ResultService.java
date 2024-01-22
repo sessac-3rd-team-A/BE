@@ -89,26 +89,46 @@ public class ResultService {
             log.info("imageUrls:: {}",gifUrl);
 
 
+
             // 통계값 저장
             List<StatisticsEntity> statisticsEntities = statisticsService.create(user,sentimentResult,gifUrl);
 
 
 
-            List<String> extractWords=naverSentimentService.extractWordsFromResult(sentimentResult);
-            log.info("extractWords:: {}",extractWords);
+            List<String> extractWords = naverSentimentService.extractWordsFromResult(sentimentResult);
+            log.info("extractWords:: {}", extractWords);
+
             List<String> translatedText = null;
-            if (extractWords.get(0).length() <= 10) {
+            String jjalUrl = null;
+            String jjalQuery;
+
+            if (extractWords.size() == 1 && extractWords.get(0).length() <= 10) {
                 // 길이가 10 이하인 경우 Papago 번역기 사용
-                translatedText = naverPapagoService.translate(extractWords);
+                jjalQuery = extractWords.get(0);
+                log.info("짤 검색어:: {}", jjalQuery);
             } else {
                 // 길이가 10 초과인 경우 KomoranService 사용
                 List<String> phrasesWithNegations = komoranService.extractNounPhrases(extractWords);
+
                 log.info("phrases with negations:: {}", phrasesWithNegations);
-                JjalkeyService.JjalkeyResponse jjalkeyResponse = jjalkeyService.searchJjalkey("안녕");
-                log.info("jjalkey :: {}", jjalkeyResponse);
-                translatedText = naverPapagoService.translate(phrasesWithNegations);
+                jjalQuery = phrasesWithNegations.get(0);
+                log.info("짤 검색어:: {}", jjalQuery);
             }
-            log.info("translatedText::{}",translatedText);
+
+            // jjalQuery에 공백이 있는 경우 처리
+            if (jjalQuery.contains(" ")) {
+                // 공백을 기준으로 나누어서 필요한 부분 사용
+                String[] splitWords = jjalQuery.split("\\s+");
+                if (splitWords.length > 1) {
+
+                    jjalQuery = splitWords[0];
+                }
+            }
+            log.info("jjalQuery::{}",jjalQuery);
+
+            jjalUrl = jjalkeyService.searchJjalkey(jjalQuery);
+            log.info("jjalkey :: {}", jjalUrl);
+            translatedText = naverPapagoService.translate(extractWords);
 
             //karlo 돌리기(여기서는 base64로 인코딩된 값이 넘어옴
             String karloImgEncodedInfo= karloImageGeneratorService.getKarloResult(translatedText);
@@ -123,7 +143,7 @@ public class ResultService {
             String imageUrl=amazonS3Service.uploadImageFromBase64(editedImgInfo);
             log.info("s3에 업로드한 imageUrl::{}",imageUrl);
 
-            ResultEntity resultEntity=resultRepository.saveOrUpdateResult(user,sentiment,positiveRatio,negativeRatio,neutralRatio,gifUrl,imageUrl);
+            ResultEntity resultEntity=resultRepository.saveOrUpdateResult(user,sentiment,positiveRatio,negativeRatio,neutralRatio,jjalUrl,imageUrl);
             ResultDTO resultDTO= ResultDTO.builder()
                     .id(resultEntity.getId())
                     .userId(resultEntity.getUser() != null ? resultEntity.getUser().getId() : null)
