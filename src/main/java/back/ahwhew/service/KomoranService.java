@@ -141,6 +141,9 @@ public class KomoranService {
             String nounPhrase = nounPhraseBuilder.toString().trim();
             if (!nounPhrase.isEmpty()) {
                 nounPhrases.add(nounPhrase);
+            } else {
+                // 만약 nounPhrase가 비어있으면, 원래 문장을 추가합니다.
+                nounPhrases.add(sentence);
             }
         }
 
