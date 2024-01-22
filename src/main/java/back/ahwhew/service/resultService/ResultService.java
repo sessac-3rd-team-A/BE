@@ -27,6 +27,8 @@ public class ResultService {
     private ResultRepository resultRepository;
 
     @Autowired
+    private JjalkeyService jjalkeyService;
+    @Autowired
     private NaverSentimentService naverSentimentService;
 
     @Autowired
@@ -102,6 +104,8 @@ public class ResultService {
                 // 길이가 10 초과인 경우 KomoranService 사용
                 List<String> phrasesWithNegations = komoranService.extractNounPhrases(extractWords);
                 log.info("phrases with negations:: {}", phrasesWithNegations);
+                JjalkeyService.JjalkeyResponse jjalkeyResponse = jjalkeyService.searchJjalkey("안녕");
+                log.info("jjalkey :: {}", jjalkeyResponse);
                 translatedText = naverPapagoService.translate(phrasesWithNegations);
             }
             log.info("translatedText::{}",translatedText);
