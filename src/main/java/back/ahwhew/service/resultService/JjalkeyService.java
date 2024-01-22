@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.springframework.web.util.UriComponentsBuilder;
 
 import java.util.Collections;
 import java.util.HashMap;
@@ -49,23 +50,22 @@ public class JjalkeyService {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
 
+            // 요청 URL 설정
+            String requestUrl = jjalkeyEndpoint;
+
             // 요청 파라미터 설정
-            Map<String, Object> queryParams = new HashMap<>();
-            queryParams.put("api_key", jjalkeyApiKey);
-            queryParams.put("q", query);
-            queryParams.put("grade", 4);
-            queryParams.put("limit", 1);
-            queryParams.put("offset", 1);
+            UriComponentsBuilder uriBuilder = UriComponentsBuilder.fromUriString(requestUrl)
+                    .queryParam("api_key", jjalkeyApiKey)
+                    .queryParam("q", query)
+                    .queryParam("grade", 4)
+                    .queryParam("limit", 1)
+                    .queryParam("offset", 1);
 
-            log.info("Jjalkey URL :: {}", jjalkeyEndpoint);
+            log.info("Jjalkey URL :: {}", uriBuilder.toUriString());
 
-            // 맵을 JSON으로 직렬화
-            ObjectMapper objectMapper = new ObjectMapper();
-            String queryString = objectMapper.writeValueAsString(queryParams);
-
-            HttpEntity<String> entity = new HttpEntity<>(queryString, headers);
+            HttpEntity<String> entity = new HttpEntity<>(headers);
             RestTemplate restTemplate = new RestTemplate();
-            ResponseEntity<String> response = restTemplate.exchange(jjalkeyEndpoint, HttpMethod.GET, entity, String.class);
+            ResponseEntity<String> response = restTemplate.exchange(uriBuilder.toUriString(), HttpMethod.GET, entity, String.class);
 
             if (response.getStatusCode() == HttpStatus.OK) {
                 // 응답이 OK인 경우에만 JSON 매핑 시도
@@ -93,7 +93,7 @@ public class JjalkeyService {
             }
         } catch (HttpClientErrorException e) {
             log.error("Jjalkey API 검색 요청 오류: {} - {}", e.getRawStatusCode(), e.getResponseBodyAsString());
-        } catch (RestClientException | JsonProcessingException e) {
+        } catch (RestClientException e) {
             log.error("Jjalkey API 검색 요청 오류: {}", e.getMessage());
         }
         return null;
